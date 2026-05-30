@@ -4,8 +4,6 @@ import { HERO_DATA } from "./heroData";
 const HeroContent = () => {
   return (
     <div className="relative z-10 max-w-7xl mx-auto w-full">
-
-      {/* Massive heading — the entire design */}
       <h1
         className="
           font-black uppercase leading-[0.88] tracking-[-3px] mb-10
@@ -13,9 +11,7 @@ const HeroContent = () => {
         "
       >
         {/* Line 1 — white */}
-        <span className="block text-white">
-          {HERO_DATA.title.line1}
-        </span>
+        <span className="block text-white">{HERO_DATA.title.line1}</span>
 
         {/* Line 2 — white + ghost */}
         <span className="block">
@@ -28,7 +24,7 @@ const HeroContent = () => {
           </span>
         </span>
 
-        {/* Line 3 — ghost + white */}
+       
         <span className="block">
           <span
             className="text-transparent"
@@ -41,8 +37,7 @@ const HeroContent = () => {
       </h1>
 
       {/* Bottom row — description + buttons side by side */}
-      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between border-t border-white/[0.06] pt-8">
-
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between border-t border-white/6 pt-8">
         {/* Description */}
         <p className="text-sm leading-relaxed text-zinc-500 max-w-sm">
           {HERO_DATA.description}
@@ -77,16 +72,12 @@ const HeroContent = () => {
       <div className="mt-10 flex flex-wrap gap-x-10 gap-y-3">
         {HERO_DATA.stats.map((item, i) => (
           <div key={i} className="flex items-center gap-3">
-            {i > 0 && (
-              <div className="h-4 w-px bg-white/[0.08]" />
-            )}
+            {i > 0 && <div className="h-4 w-px bg-white/8" />}
             <div>
               <span className="text-xs font-semibold text-zinc-400">
                 {item.value}
               </span>
-              <span className="text-xs text-zinc-700 ml-2">
-                {item.label}
-              </span>
+              <span className="text-xs text-zinc-700 ml-2">{item.label}</span>
             </div>
           </div>
         ))}
