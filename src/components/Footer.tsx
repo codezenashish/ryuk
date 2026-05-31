@@ -3,8 +3,8 @@ import Link from "next/link";
 
 const Footer = () => {
   return (
-    <footer className="w-full bg-zinc-950 text-zinc-400 border-t border-zinc-900">
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+    <footer className="w-full  text-zinc-400 ">
+      <div className="mx-auto max-w-7xl border-t border-gray-700 px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
         {/* Main Footer Content Grid */}
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           {/* Brand Section */}

@@ -10,7 +10,7 @@ export default function MarketingLayout({
   return (
     <div className="flex flex-col min-h-screen w-full">
       <Navbar />
-      <main className="flex-grow w-full">{children}</main>
+      <main className="grow w-full">{children}</main>
       <Footer />
     </div>
   );
