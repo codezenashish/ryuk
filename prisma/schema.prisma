@@ -1,6 +1,5 @@
-
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../src/generated/prisma"
 }
 
@@ -8,11 +7,48 @@ datasource db {
   provider = "postgresql"
 }
 
-model Bookmarks {
-  id Int @id @default(autoincrement())
-  title String 
-  url String?
-  userId String
+model Bookmark {
+  id      Int     @id @default(autoincrement())
+  title   String
+  url     String?
+  favicon String
+  userId  String // Clerk User ID
+
+  position Int @default(0)
+
+  isPublic   Boolean @default(false)
+  shareToken String  @unique @default(cuid())
+
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  tags       Tag[]     @relation("BookmarkToTag")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([categoryId])
+}
+
+model Category {
+  id       String @id @default(cuid())
+  name     String
+  color    String @default("#6366F1")
+  userId   String // Clerk User ID
+  position Int    @default(0)
+
+  bookmarks Bookmark[] // Ab ye upper wale Bookmark model se perfectly match karega
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Tag {
+  id        String     @id @default(cuid())
+  name      String     @unique
+  bookmarks Bookmark[] @relation("BookmarkToTag")
+
+  createdAt DateTime @default(now())
 }
