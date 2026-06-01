@@ -1,88 +1,134 @@
 "use client";
 
-import React, { useState } from "react";
-import {
-  Bookmark,
-  FileText,
-  Layers,
-  CheckSquare,
-  BarChart2,
-  Settings,
-  ArrowRight,
-} from "lucide-react";
+import { useEffect, useState, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 
-const tabs = [
-  { id: "bookmarks", label: "Bookmarks", icon: Bookmark },
-  { id: "notes", label: "Notes", icon: FileText },
-  { id: "diagrams", label: "Diagrams", icon: Layers },
-  { id: "habits", label: "Habits", icon: CheckSquare },
-  { id: "analytics", label: "Analytics", icon: BarChart2 },
-  { id: "settings", label: "Settings", icon: Settings },
-];
+import { tabs } from "./data";
+import AnimatedPlaceholder from "./AnimatedPlaceholder";
 
 export default function HeroSearchInput() {
-  const [activeTab, setActiveTab] = useState("bookmarks");
-  const [url, setUrl] = useState("");
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!url) return;
-    console.log(`Navigating to ${activeTab} with search/URL: ${url}`);
-  };
+  useEffect(() => {
+    if (isPaused) return;
+
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % tabs.length);
+    }, 4500);
+
+    return () => clearInterval(interval);
+  }, [isPaused]);
+
+  const handleTabClick = useCallback((index: number) => {
+    setActiveIndex(index);
+    setIsPaused(true); // Pause auto-rotation upon manual interaction
+  }, []);
+
+  const activeTab = tabs[activeIndex];
 
   return (
     <div className="w-full max-w-4xl mx-auto px-4 mt-8">
-      <div className="bg-white/3 border border-white/8 rounded-[28px] p-3 backdrop-blur-xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] ring-1 ring-white/5">
+      <div className="bg-zinc-900/40 border border-white/10 rounded-[28px] p-3 backdrop-blur-xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.7)] ring-1 ring-white/5">
+        
+        {/* Navigation Tabs */}
         <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-3 px-1">
-          {tabs.map((tab) => {
+          {tabs.map((tab, index) => {
             const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
+            const isActive = activeIndex === index;
 
             return (
               <button
                 key={tab.id}
                 type="button"
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-medium transition-all duration-300 relative ${
-                  isActive
-                    ? "bg-white/8 text-white border border-white/15 shadow-[0_4px_12px_rgba(255,255,255,0.03)]"
-                    : "text-zinc-400 hover:text-zinc-200 hover:bg-white/4 border border-transparent"
-                }`}
+                onClick={() => handleTabClick(index)}
+                className="relative flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50"
               >
-                <div
-                  className={`p-0.5 rounded transition-colors ${isActive ? "text-indigo-400" : "text-zinc-500"}`}
+                {isActive && (
+                  <motion.div
+                    layoutId="heroActivePillGlow"
+                    className="absolute inset-0 rounded-xl bg-white/5 border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]"
+                    transition={{
+                      type: "spring",
+                      stiffness: 380,
+                      damping: 30,
+                    }}
+                  />
+                )}
+
+                <Icon
+                  className={`relative z-10 w-4 h-4 transition-colors duration-200 ${
+                    isActive ? "text-indigo-400" : "text-zinc-500"
+                  }`}
+                />
+
+                <span
+                  className={`relative z-10 transition-colors duration-200 ${
+                    isActive ? "text-zinc-100" : "text-zinc-400 hover:text-zinc-200"
+                  }`}
                 >
-                  <Icon className="w-4 h-4" />
-                </div>
-                <span>{tab.label}</span>
+                  {tab.label}
+                </span>
               </button>
             );
           })}
 
-          {/* Frosted +4 Badge */}
-          <span className="text-[11px] font-semibold text-zinc-400 bg-white/5 border border-white/8 px-2 py-1 rounded-md ml-1 select-none">
+          <span className="text-[11px] font-semibold text-zinc-500 bg-white/5 border border-white/5 px-2 py-1 rounded-md ml-1 select-none">
             +4
           </span>
         </div>
 
-        <form onSubmit={handleSubmit} className="relative flex items-center">
-          <input
-            type="url"
-            required
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="Paste a link or quick search across your vault..."
-            className="w-full pl-6 pr-16 py-4 bg-black/40 border border-white/6 rounded-[20px] text-base text-zinc-200 placeholder-zinc-600 outline-none focus:border-white/15 focus:bg-black/60 focus:ring-2 focus:ring-indigo-500/10 transition-all backdrop-blur-md"
-          />
+        {/* Dynamic Search Box Display */}
+        <div className="relative flex items-center group">
+          <div
+            className="
+              relative
+              w-full
+              pl-6
+              pr-16
+              py-6
+              bg-black/60
+              border
+              border-white/5
+              rounded-[20px]
+              backdrop-blur-md
+              overflow-hidden
+              transition-all
+              duration-300
+              group-focus-within:border-indigo-500/30
+              group-focus-within:ring-1
+              group-focus-within:ring-indigo-500/20
+            "
+          >
+            <AnimatedPlaceholder text={activeTab.placeholder} />
+          </div>
 
+          {/* Action button with subtle entry animation context */}
           <button
-            type="submit"
-            disabled={!url}
-            className="absolute right-3 p-2.5 bg-white text-black rounded-full hover:bg-zinc-200 hover:scale-105 active:scale-95 disabled:opacity-20 disabled:scale-100 transition-all cursor-pointer shadow-[0_0_15px_rgba(255,255,255,0.1)] flex items-center justify-center"
+            type="button"
+            aria-label="Submit search"
+            className="
+              absolute
+              right-3
+              p-2.5
+              bg-zinc-100
+              text-zinc-950
+              rounded-full
+              shadow-lg
+              transition-all
+              duration-200
+              hover:bg-white
+              hover:scale-105
+              active:scale-95
+              focus-visible:outline-none
+              focus-visible:ring-2
+              focus-visible:ring-indigo-400
+            "
           >
             <ArrowRight className="w-5 h-5 stroke-[2.5]" />
           </button>
-        </form>
+        </div>
       </div>
     </div>
   );
