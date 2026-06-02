@@ -1,5 +1,6 @@
 import Sidebar from "@/src/components/navigation/Sidebar";
-import Topbar from "@/src/components/topbar/Topbar";
+import WorkspaceHeader from "@/src/components/navigation/WorkspaceHeader";
+import PageTransition from "@/src/components/page-transition";
 
 export default function DashboardLayout({
   children,
@@ -7,8 +8,8 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex h-screen w-full flex-col overflow-hidden select-none bg-black">
-      <Topbar />
+    <div className="flex h-screen w-full flex-col overflow-hidden  bg-black">
+      <WorkspaceHeader />
 
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />
@@ -24,7 +25,7 @@ export default function DashboardLayout({
 
         <div className="flex flex-1 flex-col overflow-hidden bg-black">
           <main className="flex-1 overflow-y-auto bg-black p-6 md:p-8 text-white">
-            {children}
+            <PageTransition>{children}</PageTransition>
           </main>
         </div>
       </div>
