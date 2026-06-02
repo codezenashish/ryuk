@@ -8,7 +8,7 @@ interface Props {
 export function NavSection({ section }: Props) {
   return (
     <div>
-      <p className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-600">
+      <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-widest text-zinc-600">
         {section.title}
       </p>
 

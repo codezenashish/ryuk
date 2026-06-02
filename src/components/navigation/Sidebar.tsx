@@ -1,30 +1,13 @@
 "use client";
 
-import Link from "next/link";
-import { RiBookmarkLine } from "react-icons/ri";
-
 import { bottomItems, sections } from "./data";
 import { NavItem } from "./NavItem";
 import { NavSection } from "./NavSection";
 
 export default function Sidebar() {
   return (
-    <aside className="flex h-screen w-64 flex-col border-r border-zinc-900 bg-black">
-      {/* Header */}
-      <div className="flex h-16 items-center border-b border-zinc-900 px-6">
-        <Link href="/" className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-500/10">
-            <RiBookmarkLine className="text-indigo-400" size={16} />
-          </div>
-
-          <span className="text-sm font-semibold tracking-wide text-zinc-100">
-            DevNest
-          </span>
-        </Link>
-      </div>
-
-      {/* Content */}
-      <div className="flex flex-1 flex-col overflow-y-auto px-4 py-5">
+    <aside className="flex h-full w-72 flex-col bg-black">
+      <div className="flex flex-1 flex-col overflow-y-auto px-4 py-5 scrollbar-none">
         <nav className="space-y-6">
           {sections.map((section) => (
             <NavSection key={section.title} section={section} />
@@ -39,7 +22,7 @@ export default function Sidebar() {
             ))}
           </div>
 
-          <button className="mt-4 flex h-10 w-full items-center justify-center rounded-xl bg-indigo-500 text-sm font-semibold text-white transition-opacity hover:opacity-90">
+          <button className="mt-4 flex h-9 w-full items-center justify-center rounded-xl border border-zinc-800 bg-zinc-950 text-xs font-semibold uppercase tracking-wider text-zinc-300 transition-all hover:border-zinc-700 hover:bg-zinc-900 hover:text-white">
             Upgrade to Pro
           </button>
         </div>
