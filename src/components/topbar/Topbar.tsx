@@ -25,7 +25,7 @@ const actions = [
 
 export default function Topbar() {
   return (
-    <header className="flex h-14 items-center justify-between border-b border-zinc-900 bg-zinc-950 px-6">
+    <header className="flex h-14 items-center justify-between border-b border-zinc-900 bg-black/80 px-6">
       {/* Search */}
       <div className="group relative w-full max-w-xs">
         <RiSearchLine className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-zinc-500 transition-colors group-focus-within:text-zinc-400" />
@@ -72,9 +72,7 @@ export default function Topbar() {
           </div>
 
           <div className="hidden text-left sm:block">
-            <p className="text-sm font-medium text-zinc-100">
-              Ashish Kumar
-            </p>
+            <p className="text-sm font-medium text-zinc-100">Ashish Kumar</p>
 
             <span className="text-[11px] uppercase tracking-wide text-zinc-500">
               Free Plan
