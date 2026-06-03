@@ -14,7 +14,6 @@ export default function Sidebar() {
           ))}
         </nav>
 
-        {/* Bottom */}
         <div className="mt-auto border-t border-zinc-900 pt-5">
           <div className="space-y-1">
             {bottomItems.map((item) => (

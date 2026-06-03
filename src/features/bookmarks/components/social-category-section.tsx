@@ -9,10 +9,8 @@ import {
   RiCheckLine,
 } from "react-icons/ri";
 
-// Apne icon-registry helper ko import karo jo string ko React component me badalta hai
 import { getIconComponent } from "../utils/icon-mapper"; 
 
-// TypeScript definitions table rows ke liye
 interface BookmarkItem {
   id: string;
   title: string;
@@ -37,26 +35,19 @@ export default function CategoryGridSection({
   const [isPinned, setIsPinned] = useState(false);
   const [categoryName, setCategoryName] = useState(initialName);
   
-  // Real Database state array
   const [bookmarks, setBookmarks] = useState<BookmarkItem[]>(initialBookmarks);
 
-  // Dynamic Icon pick ho raha hai aapke database strings se (e.g., 'RiTerminalBoxLine')
   const CategoryHeaderIcon = getIconComponent(initialIcon);
 
   const handleDelete = async (bookmarkId: string) => {
-    // 1. UI se instantly filter out karo smooth feels ke liye
     setBookmarks(bookmarks.filter((b) => b.id !== bookmarkId));
     
-    // TODO: Yahan hum aage chalkar humara background db delete action link karenge:
-    // await deleteBookmarkAction(bookmarkId);
   };
 
   return (
     <div className="w-full max-w-7xl mt-6 select-none">
-      {/* --- HEADER ROW --- */}
       <div className="flex items-center justify-between mb-4 px-1">
         <div className="flex items-center gap-3">
-          {/* Header Icon Loader */}
           <CategoryHeaderIcon className="h-4 w-4 text-zinc-400 shrink-0" />
           
           {isEditing ? (
@@ -78,7 +69,6 @@ export default function CategoryGridSection({
           </span>
         </div>
 
-        {/* --- HEADER CONTROLS --- */}
         <div className="flex items-center gap-1.5">
           <button
             onClick={() => setIsPinned(!isPinned)}
@@ -104,7 +94,6 @@ export default function CategoryGridSection({
         </div>
       </div>
 
-      {/* --- GRID BODY CONTAINMENT --- */}
       <div
         className={`w-full rounded-2xl p-2 transition-all duration-300 ${
           isEditing
@@ -124,7 +113,6 @@ export default function CategoryGridSection({
                 key={bookmark.id}
                 className="group relative flex flex-col items-center justify-center h-20 w-full rounded-xl border border-white/[0.04] bg-white/[0.01] text-zinc-500 transition-all duration-200 hover:border-white/[0.08] hover:bg-white/[0.03] overflow-visible"
               >
-                {/* Delete Button inside edit mode */}
                 {isEditing && (
                   <button
                     onClick={() => handleDelete(bookmark.id)}
@@ -134,7 +122,6 @@ export default function CategoryGridSection({
                   </button>
                 )}
 
-                {/* Main Link Wrap */}
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
@@ -143,14 +130,12 @@ export default function CategoryGridSection({
                     isEditing ? "pointer-events-none opacity-40" : "cursor-pointer"
                   }`}
                 >
-                  {/* Dynamic favicon generator fallback checker */}
                   {bookmark.favicon ? (
                     <img
                       src={bookmark.favicon}
                       alt={bookmark.title}
                       className="w-6 h-6 object-contain rounded transition-transform group-hover:scale-105"
                       onError={(e) => {
-                        // Fallback image line setup if URL blocks direct requests
                         (e.target as HTMLImageElement).src = `https://avatar.vercel.sh/${new URL(bookmark.url).hostname}`;
                       }}
                     />
@@ -161,7 +146,6 @@ export default function CategoryGridSection({
                   )}
                 </a>
 
-                {/* Hover Tooltip Labels */}
                 {!isEditing && (
                   <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 scale-95 opacity-0 pointer-events-none transition-all duration-200 group-hover:opacity-100 group-hover:scale-100 group-hover:-bottom-10 z-20 whitespace-nowrap px-2 py-1 rounded-md border border-white/[0.08] bg-zinc-950 text-[10px] font-medium font-mono text-zinc-300 shadow-xl">
                     {bookmark.title}

@@ -70,22 +70,15 @@ export default function AddBookmarkDialog({
   const totalVisibleDropdownOptions =
     filteredCategories.length + (isNewCategoryTyped ? 1 : 0);
 
-  // ⚡ Instant Save + Background AI Enrichment pattern
-  // Step 1: URL hostname ya user-typed title ko temporary fallback ke roop mein use karo
-  // Step 2: DB mein turant save karo
-  // Step 3: Dialog instantly band karo — zero wait time for user
-  // Step 4: AI background mein title+category enrich karta hai silently
   const handleFormSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     if (!bookmarkUrl) return;
 
-    // Auto-fallback: agar user ne title ya category nahi daali
     let hostname = bookmarkUrl;
     try {
       hostname = new URL(bookmarkUrl).hostname;
     } catch {
-      // Invalid URL — hostname as-is
     }
     const finalTitle = bookmarkTitle.trim() || hostname;
     const finalCategory = selectedCategory.trim() || "General";
@@ -102,16 +95,12 @@ export default function AddBookmarkDialog({
     setIsSaving(false);
 
     if (response.success) {
-      // Reset form state
       setBookmarkUrl("");
       setBookmarkTitle("");
       resetCategoryCombobox();
 
-      // ⚡ Dialog instantly close — user ko 0ms wait
       onDialogClose();
 
-      // 🔥 Fire-and-forget AI enrichment — NO await
-      // Ye background mein chal kar DB row silently update karega
       processBookmarkAIInBackground(
         bookmarkUrl,
         response.bookmark.id,

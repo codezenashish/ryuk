@@ -11,7 +11,6 @@ export default function AnimatedPlaceholder({ text }: AnimatedPlaceholderProps) 
 
   useEffect(() => {
     let index = 0;
-    // Clear immediately to prevent text jumping during state changes
     setDisplayText(""); 
 
     const interval = setInterval(() => {
@@ -21,7 +20,7 @@ export default function AnimatedPlaceholder({ text }: AnimatedPlaceholderProps) 
       if (index >= text.length) {
         clearInterval(interval);
       }
-    }, 20); // 20ms provides a slightly snappier typewriter cadence
+    }, 20);
 
     return () => clearInterval(interval);
   }, [text]);
@@ -31,7 +30,6 @@ export default function AnimatedPlaceholder({ text }: AnimatedPlaceholderProps) 
       <span className="font-mono text-xs sm:text-sm text-zinc-400 whitespace-nowrap">
         {displayText}
       </span>
-      {/* Blinking cursor mimic */}
       <span className="ml-1 h-4 w-[2px] bg-indigo-400 animate-pulse shrink-0" />
     </div>
   );

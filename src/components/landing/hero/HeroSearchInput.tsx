@@ -23,7 +23,7 @@ export default function HeroSearchInput() {
 
   const handleTabClick = useCallback((index: number) => {
     setActiveIndex(index);
-    setIsPaused(true); // Pause auto-rotation upon manual interaction
+    setIsPaused(true);
   }, []);
 
   const activeTab = tabs[activeIndex];
@@ -32,7 +32,6 @@ export default function HeroSearchInput() {
     <div className="w-full max-w-4xl mx-auto px-4 mt-8">
       <div className="bg-zinc-900/40 border border-white/10 rounded-[28px] p-3 backdrop-blur-xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.7)] ring-1 ring-white/5">
         
-        {/* Navigation Tabs */}
         <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-3 px-1">
           {tabs.map((tab, index) => {
             const Icon = tab.icon;
@@ -79,7 +78,6 @@ export default function HeroSearchInput() {
           </span>
         </div>
 
-        {/* Dynamic Search Box Display */}
         <div className="relative flex items-center group">
           <div
             className="
@@ -104,7 +102,6 @@ export default function HeroSearchInput() {
             <AnimatedPlaceholder text={activeTab.placeholder} />
           </div>
 
-          {/* Action button with subtle entry animation context */}
           <button
             type="button"
             aria-label="Submit search"

@@ -2,11 +2,9 @@ import PageHeader from "@/src/features/bookmarks/components/PageHeader";
 import CategoryGridSection from "@/src/features/bookmarks/components/social-category-section";
 import { db } from "@/src/lib/db";
 
-// Temporary mock userId — aage Clerk se replace hoga
 const MOCK_USER_ID = "mock-user-id-123";
 
 export default async function BookmarksPage() {
-  // DB se saari categories fetch karo — har category ke saath uske bookmarks bhi
   const categories = await db.category.findMany({
     where: { userId: MOCK_USER_ID },
     orderBy: { position: "asc" },

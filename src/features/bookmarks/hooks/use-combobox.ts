@@ -22,7 +22,6 @@ export function useCombobox(
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
-  // ✅ Pre-lowercase once — not on every render or filter call
   const lowercasedItems = useMemo(
     () => availableComboboxItems.map((item) => ({
       ...item,
@@ -31,7 +30,6 @@ export function useCombobox(
     [availableComboboxItems],
   );
 
-  // ✅ useMemo — only recomputes when inputValue changes
   const { filteredItems, isNewValueTyped } = useMemo(() => {
     const lowerInput = inputValue.toLowerCase();
     const trimmedInput = inputValue.trim().toLowerCase();

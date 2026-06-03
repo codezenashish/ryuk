@@ -12,17 +12,15 @@ function getCategoryIconName(categoryName: string): string {
   return "RiFolder5Line";
 }
 
-// ✅ Extracted helper — no more duplication
 async function findOrCreateCategory(categoryName: string, userId: string) {
   const trimmed = categoryName.trim() || "General";
 
   const existing = await db.category.findFirst({
     where: { name: trimmed, userId },
-    select: { id: true }, // ✅ Only fetch id — avoid pulling full row
+    select: { id: true },
   });
   if (existing) return existing;
 
-  // ✅ Use aggregate MAX instead of findFirst + orderBy DESC
   const { _max } = await db.category.aggregate({
     where: { userId },
     _max: { position: true },
@@ -36,7 +34,7 @@ async function findOrCreateCategory(categoryName: string, userId: string) {
       icon: getCategoryIconName(trimmed),
       position: nextPosition,
     },
-    select: { id: true }, // ✅ Return only what we need
+    select: { id: true },
   });
 }
 
@@ -52,7 +50,6 @@ export async function createBookmarkAction(input: CreateBookmarkInput) {
     const { url, title, categoryName, userId } = input;
     if (!url || !title) return { success: false, error: "URL and title are required" };
 
-    // ✅ Run category lookup + bookmark position lookup in PARALLEL
     const [category, { _max: bmMax }] = await Promise.all([
       findOrCreateCategory(categoryName, userId),
       db.bookmark.aggregate({
@@ -61,7 +58,6 @@ export async function createBookmarkAction(input: CreateBookmarkInput) {
       }),
     ]);
 
-    // ✅ Run within a transaction — atomic, no orphaned rows on failure
     const newBookmark = await db.$transaction(async (tx) => {
       const { _max } = await tx.bookmark.aggregate({
         where: { userId, categoryId: category.id },
@@ -96,7 +92,6 @@ export async function updateBookmarkMetadataInBackground(
   userId: string,
 ) {
   try {
-    // ✅ Reuse shared helper — no duplicate logic
     const category = await findOrCreateCategory(categoryName, userId);
 
     await db.bookmark.update({
