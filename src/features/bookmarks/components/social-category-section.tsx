@@ -10,9 +10,10 @@ import {
 } from "react-icons/ri";
 
 import { getIconComponent } from "../utils/icon-mapper"; 
+import { useDeleteBookmarkMutation } from "../hooks/use-bookmarks";
 
 interface BookmarkItem {
-  id: string;
+  id: number;
   title: string;
   url: string;
   favicon?: string | null;
@@ -22,26 +23,28 @@ interface CategoryGridSectionProps {
   id: string;
   initialName: string;
   initialIcon: string;
-  initialBookmarks: BookmarkItem[];
+  bookmarks: BookmarkItem[];
 }
 
 export default function CategoryGridSection({
   id: _id,
   initialName,
   initialIcon,
-  initialBookmarks,
+  bookmarks,
 }: CategoryGridSectionProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
   const [categoryName, setCategoryName] = useState(initialName);
-  
-  const [bookmarks, setBookmarks] = useState<BookmarkItem[]>(initialBookmarks);
+
+  const deleteMutation = useDeleteBookmarkMutation();
 
   const CategoryHeaderIcon = getIconComponent(initialIcon);
 
-  const handleDelete = async (bookmarkId: string) => {
-    setBookmarks(bookmarks.filter((b) => b.id !== bookmarkId));
-    
+  const handleDelete = (bookmarkId: number) => {
+    deleteMutation.mutate({
+      bookmarkId,
+      userId: "mock-user-id-123",
+    });
   };
 
   return (

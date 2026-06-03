@@ -1,6 +1,6 @@
 "use client";
-import { createBookmarkAction } from "../actions/db-operations";
-import { processBookmarkAIInBackground } from "../actions/ai-operations";
+import { fetchBookmarkMetadata } from "../actions/fetch-metadata";
+import { useCreateBookmarkMutation } from "../hooks/use-bookmarks";
 
 import {
   X,
@@ -13,8 +13,9 @@ import {
   FileText,
   Palette,
   Plus,
+  Loader2,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCombobox } from "../hooks/use-combobox";
 
@@ -36,7 +37,15 @@ export default function AddBookmarkDialog({
 }: AddBookmarkDialogProps) {
   const [bookmarkUrl, setBookmarkUrl] = useState("");
   const [bookmarkTitle, setBookmarkTitle] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
+  const [bookmarkFavicon, setBookmarkFavicon] = useState("");
+  const [isFetchingMeta, setIsFetchingMeta] = useState(false);
+
+  const createMutation = useCreateBookmarkMutation();
+  const isSaving = createMutation.isPending;
+
+  // Track whether the title was manually edited by the user so we don't
+  // overwrite their custom title when metadata comes back.
+  const titleManuallyEdited = useRef(false);
 
   const {
     inputValue: selectedCategory,
@@ -63,6 +72,9 @@ export default function AddBookmarkDialog({
     if (isDialogOpen) {
       setBookmarkUrl("");
       setBookmarkTitle("");
+      setBookmarkFavicon("");
+      setIsFetchingMeta(false);
+      titleManuallyEdited.current = false;
       resetCategoryCombobox();
     }
   }, [isDialogOpen, resetCategoryCombobox]);
@@ -70,6 +82,43 @@ export default function AddBookmarkDialog({
   const totalVisibleDropdownOptions =
     filteredCategories.length + (isNewCategoryTyped ? 1 : 0);
 
+  // ── Metadata pre-fetch ──────────────────────────────────────────────
+  const handleUrlBlur = useCallback(async () => {
+    const url = bookmarkUrl.trim();
+    if (!url) return;
+
+    // Quick sanity check — don't fetch for obviously incomplete input
+    try {
+      new URL(url);
+    } catch {
+      return;
+    }
+
+    setIsFetchingMeta(true);
+    try {
+      const meta = await fetchBookmarkMetadata(url);
+      if (meta.success) {
+        // Only pre-fill title if the user hasn't manually typed one
+        if (!titleManuallyEdited.current && meta.title) {
+          setBookmarkTitle(meta.title);
+        }
+        if (meta.icon) {
+          setBookmarkFavicon(meta.icon);
+        }
+      }
+    } catch {
+      // Silently fail — the user can still type a title manually
+    } finally {
+      setIsFetchingMeta(false);
+    }
+  }, [bookmarkUrl]);
+
+  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setBookmarkTitle(event.target.value);
+    titleManuallyEdited.current = true;
+  };
+
+  // ── Form submission ─────────────────────────────────────────────────
   const handleFormSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
@@ -78,37 +127,42 @@ export default function AddBookmarkDialog({
     let hostname = bookmarkUrl;
     try {
       hostname = new URL(bookmarkUrl).hostname;
-    } catch {
-    }
+    } catch {}
     const finalTitle = bookmarkTitle.trim() || hostname;
     const finalCategory = selectedCategory.trim() || "General";
 
-    setIsSaving(true);
+    // If no favicon was resolved yet (e.g. user submitted before blur
+    // finished), fall back to Google S2
+    const finalFavicon =
+      bookmarkFavicon ||
+      `https://www.google.com/s2/favicons?sz=64&domain=${hostname}`;
 
-    const response = await createBookmarkAction({
-      url: bookmarkUrl,
-      title: finalTitle,
-      categoryName: finalCategory,
-      userId: "mock-user-id-123",
-    });
-
-    setIsSaving(false);
-
-    if (response.success) {
-      setBookmarkUrl("");
-      setBookmarkTitle("");
-      resetCategoryCombobox();
-
-      onDialogClose();
-
-      processBookmarkAIInBackground(
-        bookmarkUrl,
-        response.bookmark.id,
-        "mock-user-id-123",
-      );
-    } else {
-      alert(`Error saving bookmark: ${response.error}`);
-    }
+    createMutation.mutate(
+      {
+        url: bookmarkUrl,
+        title: finalTitle,
+        favicon: finalFavicon,
+        categoryName: finalCategory,
+        userId: "mock-user-id-123",
+      },
+      {
+        onSuccess: (response) => {
+          if (response.success) {
+            setBookmarkUrl("");
+            setBookmarkTitle("");
+            setBookmarkFavicon("");
+            titleManuallyEdited.current = false;
+            resetCategoryCombobox();
+            onDialogClose();
+          } else {
+            alert(`Error saving bookmark: ${response.error}`);
+          }
+        },
+        onError: () => {
+          alert("Failed to save bookmark. Please try again.");
+        },
+      },
+    );
   };
 
   const handleModalDismissal = () => {
@@ -168,6 +222,7 @@ export default function AddBookmarkDialog({
                     required
                     value={bookmarkUrl}
                     onChange={(event) => setBookmarkUrl(event.target.value)}
+                    onBlur={handleUrlBlur}
                     disabled={isSaving}
                     placeholder="https://github.com/..."
                     className="h-9 w-full rounded-xl border border-white/[0.04] bg-zinc-900/20 pr-3 pl-9 text-xs text-zinc-200 transition-all outline-none placeholder:text-zinc-700 focus:border-white/[0.1] focus:bg-zinc-900/40 disabled:opacity-50"
@@ -176,17 +231,32 @@ export default function AddBookmarkDialog({
               </div>
 
               <div className="space-y-1.5">
-                <label className="block font-mono text-[10px] font-medium tracking-widest text-zinc-500 uppercase">
+                <label className="flex items-center gap-2 font-mono text-[10px] font-medium tracking-widest text-zinc-500 uppercase">
                   Title
+                  {isFetchingMeta && (
+                    <Loader2 className="h-3 w-3 animate-spin text-indigo-400/70" />
+                  )}
                 </label>
                 <div className="relative">
-                  <Bookmark className="pointer-events-none absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 text-zinc-600" />
+                  {bookmarkFavicon ? (
+                    <img
+                      src={bookmarkFavicon}
+                      alt=""
+                      className="pointer-events-none absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 rounded-sm object-contain"
+                    />
+                  ) : (
+                    <Bookmark className="pointer-events-none absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 text-zinc-600" />
+                  )}
                   <input
                     type="text"
                     value={bookmarkTitle}
-                    onChange={(event) => setBookmarkTitle(event.target.value)}
+                    onChange={handleTitleChange}
                     disabled={isSaving}
-                    placeholder="Repository or Website Name (optional — AI will fill)"
+                    placeholder={
+                      isFetchingMeta
+                        ? "Extracting title…"
+                        : "Website title (auto-filled from URL)"
+                    }
                     className="h-9 w-full rounded-xl border border-white/[0.04] bg-zinc-900/20 pr-3 pl-9 text-xs text-zinc-200 transition-all outline-none placeholder:text-zinc-700 focus:border-white/[0.1] focus:bg-zinc-900/40 disabled:opacity-50"
                   />
                 </div>
