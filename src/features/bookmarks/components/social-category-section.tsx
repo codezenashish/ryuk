@@ -9,7 +9,7 @@ import {
   RiCheckLine,
 } from "react-icons/ri";
 
-import { getIconComponent } from "../utils/icon-mapper"; 
+import { getIconComponent } from "../utils/icon-mapper";
 import { useDeleteBookmarkMutation } from "../hooks/use-bookmarks";
 
 interface BookmarkItem {
@@ -48,26 +48,26 @@ export default function CategoryGridSection({
   };
 
   return (
-    <div className="w-full max-w-7xl mt-6 select-none">
-      <div className="flex items-center justify-between mb-4 px-1">
+    <div className="mt-6 w-full max-w-7xl select-none">
+      <div className="mb-4 flex items-center justify-between px-1">
         <div className="flex items-center gap-3">
-          <CategoryHeaderIcon className="h-4 w-4 text-zinc-400 shrink-0" />
-          
+          <CategoryHeaderIcon className="h-4 w-4 shrink-0 text-zinc-400" />
+
           {isEditing ? (
             <input
               type="text"
               value={categoryName}
               onChange={(e) => setCategoryName(e.target.value)}
-              className="text-xs font-bold uppercase tracking-widest text-white font-mono bg-white/[0.04] border border-white/[0.1] rounded px-2 py-0.5 outline-none focus:border-indigo-500"
+              className="rounded border border-white/[0.1] bg-white/[0.04] px-2 py-0.5 font-mono text-xs font-bold tracking-widest text-white outline-none focus:border-indigo-500"
               autoFocus
             />
           ) : (
-            <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400 font-mono">
+            <h2 className="font-mono text-xs font-bold tracking-widest text-zinc-400">
               {categoryName}
             </h2>
           )}
 
-          <span className="text-[10px] font-bold font-mono px-2 py-0.5 rounded-md border border-white/[0.06] bg-white/[0.02] text-zinc-500">
+          <span className="rounded-md border border-white/[0.06] bg-white/[0.02] px-2 py-0.5 font-mono text-[10px] font-bold text-zinc-500">
             {bookmarks.length} Total
           </span>
         </div>
@@ -75,21 +75,25 @@ export default function CategoryGridSection({
         <div className="flex items-center gap-1.5">
           <button
             onClick={() => setIsPinned(!isPinned)}
-            className={`p-1.5 rounded-lg border transition-colors cursor-pointer active:scale-95 ${
+            className={`cursor-pointer rounded-lg border p-1.5 transition-colors active:scale-95 ${
               isPinned
                 ? "border-indigo-500/30 bg-indigo-500/10 text-indigo-400"
                 : "border-white/[0.06] bg-white/[0.02] text-zinc-500 hover:text-white"
             }`}
           >
-            {isPinned ? <RiPushpinFill size={14} /> : <RiPushpinLine size={14} />}
+            {isPinned ? (
+              <RiPushpinFill size={14} />
+            ) : (
+              <RiPushpinLine size={14} />
+            )}
           </button>
 
           <button
             onClick={() => setIsEditing(!isEditing)}
-            className={`p-1.5 rounded-lg border transition-colors cursor-pointer active:scale-95 ${
+            className={`cursor-pointer rounded-lg border p-1.5 transition-colors active:scale-95 ${
               isEditing
                 ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
-                : "border-white/[0.06] bg-white/[0.02] text-zinc-500 hover:text-white hover:border-white/12"
+                : "border-white/[0.06] bg-white/[0.02] text-zinc-500 hover:border-white/12 hover:text-white"
             }`}
           >
             {isEditing ? <RiCheckLine size={14} /> : <RiEditLine size={14} />}
@@ -109,17 +113,17 @@ export default function CategoryGridSection({
             : "inset 0 0 24px rgba(99, 102, 241, 0.03), inset 0 0 12px rgba(99, 102, 241, 0.02)",
         }}
       >
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-2">
+        <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-12">
           {bookmarks.map((bookmark) => {
             return (
               <div
                 key={bookmark.id}
-                className="group relative flex flex-col items-center justify-center h-20 w-full rounded-xl border border-white/[0.04] bg-white/[0.01] text-zinc-500 transition-all duration-200 hover:border-white/[0.08] hover:bg-white/[0.03] overflow-visible"
+                className="group relative flex h-20 w-full flex-col items-center justify-center overflow-visible rounded-xl border border-white/[0.04] bg-white/[0.01] text-zinc-500 transition-all duration-200 hover:border-white/[0.08] hover:bg-white/[0.03]"
               >
                 {isEditing && (
                   <button
                     onClick={() => handleDelete(bookmark.id)}
-                    className="absolute -top-1 -right-1 z-30 p-0.5 rounded-md bg-zinc-900 border border-white/10 text-zinc-400 hover:text-red-400 hover:border-red-500/30 transition-colors cursor-pointer animate-in fade-in zoom-in-75 duration-150"
+                    className="animate-in fade-in zoom-in-75 absolute -top-1 -right-1 z-30 cursor-pointer rounded-md border border-white/10 bg-zinc-900 p-0.5 text-zinc-400 transition-colors duration-150 hover:border-red-500/30 hover:text-red-400"
                   >
                     <RiCloseLine size={12} />
                   </button>
@@ -129,28 +133,31 @@ export default function CategoryGridSection({
                   target="_blank"
                   rel="noopener noreferrer"
                   href={isEditing ? undefined : bookmark.url}
-                  className={`w-full h-full flex flex-col items-center justify-center rounded-xl p-2 ${
-                    isEditing ? "pointer-events-none opacity-40" : "cursor-pointer"
+                  className={`flex h-full w-full flex-col items-center justify-center rounded-xl p-2 ${
+                    isEditing
+                      ? "pointer-events-none opacity-40"
+                      : "cursor-pointer"
                   }`}
                 >
                   {bookmark.favicon ? (
                     <img
                       src={bookmark.favicon}
                       alt={bookmark.title}
-                      className="w-6 h-6 object-contain rounded transition-transform group-hover:scale-105"
+                      className="h-6 w-6 rounded object-contain transition-transform group-hover:scale-105"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = `https://avatar.vercel.sh/${new URL(bookmark.url).hostname}`;
+                        (e.target as HTMLImageElement).src =
+                          `https://avatar.vercel.sh/${new URL(bookmark.url).hostname}`;
                       }}
                     />
                   ) : (
-                    <div className="w-6 h-6 rounded bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-400">
+                    <div className="flex h-6 w-6 items-center justify-center rounded bg-zinc-800 text-[10px] font-bold text-zinc-400">
                       {bookmark.title.slice(0, 2).toUpperCase()}
                     </div>
                   )}
                 </a>
 
                 {!isEditing && (
-                  <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 scale-95 opacity-0 pointer-events-none transition-all duration-200 group-hover:opacity-100 group-hover:scale-100 group-hover:-bottom-10 z-20 whitespace-nowrap px-2 py-1 rounded-md border border-white/[0.08] bg-zinc-950 text-[10px] font-medium font-mono text-zinc-300 shadow-xl">
+                  <div className="pointer-events-none absolute -bottom-8 left-1/2 z-20 -translate-x-1/2 scale-95 rounded-md border border-white/[0.08] bg-zinc-950 px-2 py-1 font-mono text-[10px] font-medium whitespace-nowrap text-zinc-300 opacity-0 shadow-xl transition-all duration-200 group-hover:-bottom-10 group-hover:scale-100 group-hover:opacity-100">
                     {bookmark.title}
                   </div>
                 )}
