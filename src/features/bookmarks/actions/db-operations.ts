@@ -1,7 +1,8 @@
 "use server";
 
 import { db } from "@/src/lib/db";
-import { revalidatePath } from "next/cache";
+
+// ── Helpers ────────────────────────────────────────────────────────────
 
 function getCategoryIconName(categoryName: string): string {
   const name = categoryName.toLowerCase().trim();
@@ -38,25 +39,44 @@ async function findOrCreateCategory(categoryName: string, userId: string) {
   });
 }
 
+// ── Queries ────────────────────────────────────────────────────────────
+
+export async function fetchBookmarksAction(userId: string) {
+  const categories = await db.category.findMany({
+    where: { userId },
+    orderBy: { position: "asc" },
+    include: {
+      bookmarks: {
+        orderBy: { position: "asc" },
+        select: {
+          id: true,
+          title: true,
+          url: true,
+          favicon: true,
+        },
+      },
+    },
+  });
+
+  return categories;
+}
+
+// ── Mutations ──────────────────────────────────────────────────────────
+
 interface CreateBookmarkInput {
   url: string;
   title: string;
+  favicon: string;
   categoryName: string;
   userId: string;
 }
 
 export async function createBookmarkAction(input: CreateBookmarkInput) {
   try {
-    const { url, title, categoryName, userId } = input;
-    if (!url || !title) return { success: false, error: "URL and title are required" };
+    const { url, title, favicon, categoryName, userId } = input;
+    if (!url || !title) return { success: false as const, error: "URL and title are required" };
 
-    const [category, { _max: bmMax }] = await Promise.all([
-      findOrCreateCategory(categoryName, userId),
-      db.bookmark.aggregate({
-        where: { userId, categoryId: undefined }, // resolved after category
-        _max: { position: true },
-      }),
-    ]);
+    const category = await findOrCreateCategory(categoryName, userId);
 
     const newBookmark = await db.$transaction(async (tx) => {
       const { _max } = await tx.bookmark.aggregate({
@@ -64,12 +84,11 @@ export async function createBookmarkAction(input: CreateBookmarkInput) {
         _max: { position: true },
       });
 
-      const domainUrl = new URL(url).hostname;
       return tx.bookmark.create({
         data: {
           title,
           url,
-          favicon: `https://www.google.com/s2/favicons?sz=64&domain=${domainUrl}`,
+          favicon,
           userId,
           categoryId: category.id,
           position: (_max.position ?? -1) + 1,
@@ -77,33 +96,19 @@ export async function createBookmarkAction(input: CreateBookmarkInput) {
       });
     });
 
-    revalidatePath("/bookmarks");
-    return { success: true, bookmark: newBookmark };
+    return { success: true as const, bookmark: newBookmark, categoryId: category.id };
   } catch (error) {
     console.error("Database Save Action Error:", error);
-    return { success: false, error: "Internal Server Error" };
+    return { success: false as const, error: "Internal Server Error" };
   }
 }
 
-export async function updateBookmarkMetadataInBackground(
-  bookmarkId: number,
-  title: string,
-  categoryName: string,
-  userId: string,
-) {
+export async function deleteBookmarkAction(bookmarkId: number) {
   try {
-    const category = await findOrCreateCategory(categoryName, userId);
-
-    await db.bookmark.update({
-      where: { id: bookmarkId },
-      data: {
-        title: title || undefined,
-        categoryId: category.id,
-      },
-    });
-
-    revalidatePath("/bookmarks");
+    await db.bookmark.delete({ where: { id: bookmarkId } });
+    return { success: true as const };
   } catch (error) {
-    console.error("Background Metadata Update Error:", error);
+    console.error("Delete Bookmark Error:", error);
+    return { success: false as const, error: "Failed to delete bookmark" };
   }
 }
