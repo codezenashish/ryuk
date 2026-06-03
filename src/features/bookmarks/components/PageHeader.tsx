@@ -13,10 +13,10 @@ export default function PageHeader({ title }: PageHeaderProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 w-full border-b border-white/[0.06] pb-6 bg-black">
+    <div className="flex w-full flex-col justify-between gap-4 border-b border-white/6 bg-black pb-6 sm:flex-row sm:items-center">
       <div>
-        <h1 className="text-xl md:text-2xl font-bold tracking-tight text-white flex items-center gap-2  select-none">
-          <span className="w-1.5 h-5 bg-indigo-500 rounded-full inline-block shadow-[0_0_15px_rgba(99,102,241,0.4)]" />
+        <h1 className="flex items-center gap-2 text-xl font-bold tracking-tight text-white select-none md:text-2xl">
+          <span className="inline-block h-5 w-1.5 rounded-full bg-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.4)]" />
           {title}
         </h1>
       </div>
@@ -30,9 +30,9 @@ export default function PageHeader({ title }: PageHeaderProps) {
             color: "#ffffff",
           }}
           whileTap={{ scale: 0.98 }}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-white/[0.02] border border-white/[0.06] text-zinc-400 text-xs font-medium rounded-xl transition-colors cursor-pointer"
+          className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-white/6 bg-white/2 px-3 py-1.5 text-xs font-medium text-zinc-400 transition-colors"
         >
-          <Upload className="w-3.5 h-3.5" />
+          <Upload className="h-3.5 w-3.5" />
           <span>Import</span>
         </motion.button>
 
@@ -44,9 +44,9 @@ export default function PageHeader({ title }: PageHeaderProps) {
             color: "#ffffff",
           }}
           whileTap={{ scale: 0.98 }}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-white/[0.02] border border-white/[0.06] text-zinc-400 text-xs font-medium rounded-xl transition-colors cursor-pointer"
+          className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-white/6 bg-white/2 px-3 py-1.5 text-xs font-medium text-zinc-400 transition-colors"
         >
-          <Download className="w-3.5 h-3.5" />
+          <Download className="h-3.5 w-3.5" />
           <span>Export</span>
         </motion.button>
 
@@ -54,16 +54,16 @@ export default function PageHeader({ title }: PageHeaderProps) {
           whileHover={{ scale: 1.02, backgroundColor: "#ffffff" }}
           whileTap={{ scale: 0.98 }}
           onClick={() => setIsDialogOpen(true)}
-          className="flex items-center gap-1.5 px-4 py-2 bg-zinc-100 text-black text-xs font-bold rounded-xl transition-colors shadow-[0_4px_12px_rgba(255,255,255,0.05)] cursor-pointer"
+          className="flex cursor-pointer items-center gap-1.5 rounded-xl bg-zinc-100 px-4 py-2 text-xs font-bold text-black shadow-[0_4px_12px_rgba(255,255,255,0.05)] transition-colors"
         >
-          <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+          <Plus className="h-3.5 w-3.5 stroke-[2.5]" />
           <span>Add Bookmark</span>
         </motion.button>
       </div>
 
       <AddBookmarkDialog
-        isOpen={isDialogOpen}
-        onClose={() => setIsDialogOpen(false)}
+        isDialogOpen={isDialogOpen}
+        onDialogClose={() => setIsDialogOpen(false)}
       />
     </div>
   );

@@ -1,19 +1,19 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback, useId } from "react";
+import { useState, useRef, useEffect, useCallback, useId, useMemo } from "react";
 
-interface CategoryItem {
+interface ComboboxSelectableItem {
   label: string;
   icon: React.ComponentType<any>;
 }
 
 export function useCombobox(
-  initialCategories: CategoryItem[],
-  initialValue = "",
+  availableComboboxItems: ComboboxSelectableItem[],
+  initialSelectionValue = "",
 ) {
-  const [category, setCategory] = useState(initialValue);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(-1);
+  const [inputValue, setInputValue] = useState(initialSelectionValue);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [activeHighlightedIndex, setActiveHighlightedIndex] = useState(-1);
 
   const comboboxId = useId();
   const listboxId = `${comboboxId}-listbox`;
@@ -22,140 +22,118 @@ export function useCombobox(
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
-  const filteredCategories = initialCategories.filter((c) =>
-    c.label.toLowerCase().includes(category.toLowerCase()),
+  // ✅ Pre-lowercase once — not on every render or filter call
+  const lowercasedItems = useMemo(
+    () => availableComboboxItems.map((item) => ({
+      ...item,
+      _lowerLabel: item.label.toLowerCase(),
+    })),
+    [availableComboboxItems],
   );
 
-  const isNewCategory =
-    category.trim().length > 0 &&
-    !initialCategories.some(
-      (c) => c.label.toLowerCase() === category.trim().toLowerCase(),
+  // ✅ useMemo — only recomputes when inputValue changes
+  const { filteredItems, isNewValueTyped } = useMemo(() => {
+    const lowerInput = inputValue.toLowerCase();
+    const trimmedInput = inputValue.trim().toLowerCase();
+
+    const filtered = lowercasedItems.filter((item) =>
+      item._lowerLabel.includes(lowerInput)
     );
 
-  const optionCount = filteredCategories.length + (isNewCategory ? 1 : 0);
+    const isNew =
+      trimmedInput.length > 0 &&
+      !lowercasedItems.some((item) => item._lowerLabel === trimmedInput);
 
-  const openDropdown = useCallback(() => setDropdownOpen(true), []);
+    return { filteredItems: filtered, isNewValueTyped: isNew };
+  }, [inputValue, lowercasedItems]);
 
+  const totalVisibleOptionsCount = filteredItems.length + (isNewValueTyped ? 1 : 0);
+
+  const openDropdown = useCallback(() => setIsDropdownOpen(true), []);
   const closeDropdown = useCallback(() => {
-    setDropdownOpen(false);
-    setActiveIndex(-1);
+    setIsDropdownOpen(false);
+    setActiveHighlightedIndex(-1);
   }, []);
 
-  const selectCategory = useCallback((value: string) => {
-    setCategory(value);
-    setDropdownOpen(false);
-    setActiveIndex(-1);
+  const selectValue = useCallback((value: string) => {
+    setInputValue(value);
+    setIsDropdownOpen(false);
+    setActiveHighlightedIndex(-1);
     inputRef.current?.focus();
   }, []);
 
-  const handleClickOutside = useCallback(
-    (e: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(e.target as Node)
-      ) {
-        closeDropdown();
-      }
-    },
-    [closeDropdown],
-  );
-
-  useEffect(() => {
-    if (dropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
+  const handleClickOutside = useCallback((event: MouseEvent) => {
+    if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      closeDropdown();
     }
+  }, [closeDropdown]);
+
+  useEffect(() => {
+    if (isDropdownOpen) document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [dropdownOpen, handleClickOutside]);
+  }, [isDropdownOpen, handleClickOutside]);
+
+  useEffect(() => { setActiveHighlightedIndex(-1); }, [inputValue]);
 
   useEffect(() => {
-    setActiveIndex(-1);
-  }, [category]);
+    if (activeHighlightedIndex < 0 || !listRef.current) return;
+    listRef.current
+      .querySelector<HTMLElement>(`[data-index="${activeHighlightedIndex}"]`)
+      ?.scrollIntoView({ block: "nearest" });
+  }, [activeHighlightedIndex]);
 
-  useEffect(() => {
-    if (activeIndex < 0 || !listRef.current) return;
-    const item = listRef.current.querySelector<HTMLElement>(
-      `[data-index="${activeIndex}"]`,
-    );
-    item?.scrollIntoView({ block: "nearest" });
-  }, [activeIndex]);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCategory(e.target.value);
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value);
     openDropdown();
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!dropdownOpen) {
-      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-        openDropdown();
-        return;
-      }
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!isDropdownOpen) {
+      if (event.key === "ArrowDown" || event.key === "ArrowUp") { openDropdown(); return; }
     }
-
-    switch (e.key) {
+    switch (event.key) {
       case "ArrowDown":
-        e.preventDefault();
-        setActiveIndex((i) => (i + 1) % optionCount);
+        event.preventDefault();
+        setActiveHighlightedIndex((prev) => (prev + 1) % totalVisibleOptionsCount);
         break;
       case "ArrowUp":
-        e.preventDefault();
-        setActiveIndex((i) => (i - 1 + optionCount) % optionCount);
+        event.preventDefault();
+        setActiveHighlightedIndex((prev) => (prev - 1 + totalVisibleOptionsCount) % totalVisibleOptionsCount);
         break;
       case "Enter":
-        e.preventDefault();
-        if (!dropdownOpen) break;
-        if (activeIndex >= 0 && activeIndex < filteredCategories.length) {
-          selectCategory(filteredCategories[activeIndex].label);
-        } else if (activeIndex === filteredCategories.length && isNewCategory) {
-          selectCategory(category.trim());
-        } else if (filteredCategories.length === 1) {
-          selectCategory(filteredCategories[0].label);
-        } else if (category.trim()) {
-          selectCategory(category.trim());
+        event.preventDefault();
+        if (!isDropdownOpen) break;
+        if (activeHighlightedIndex >= 0 && activeHighlightedIndex < filteredItems.length) {
+          selectValue(filteredItems[activeHighlightedIndex].label);
+        } else if (activeHighlightedIndex === filteredItems.length && isNewValueTyped) {
+          selectValue(inputValue.trim());
+        } else if (filteredItems.length === 1) {
+          selectValue(filteredItems[0].label);
+        } else if (inputValue.trim()) {
+          selectValue(inputValue.trim());
         } else {
           closeDropdown();
         }
         break;
-      case "Escape":
-        closeDropdown();
-        break;
+      case "Escape": closeDropdown(); break;
     }
   };
 
   const handleChevronClick = () => {
-    if (dropdownOpen) {
-      closeDropdown();
-    } else {
-      openDropdown();
-      inputRef.current?.focus();
-    }
+    if (isDropdownOpen) { closeDropdown(); }
+    else { openDropdown(); inputRef.current?.focus(); }
   };
 
-  const reset = useCallback(() => {
-    setCategory("");
-    setDropdownOpen(false);
-    setActiveIndex(-1);
+  const resetCombobox = useCallback(() => {
+    setInputValue("");
+    setIsDropdownOpen(false);
+    setActiveHighlightedIndex(-1);
   }, []);
 
   return {
-    category,
-    setCategory,
-    dropdownOpen,
-    activeIndex,
-    setActiveIndex,
-    comboboxId,
-    listboxId,
-    containerRef,
-    inputRef,
-    listRef,
-    filteredCategories,
-    isNewCategory,
-    openDropdown,
-    closeDropdown,
-    selectCategory,
-    handleInputChange,
-    handleKeyDown,
-    handleChevronClick,
-    reset,
+    inputValue, setInputValue, isDropdownOpen, activeHighlightedIndex,
+    setActiveHighlightedIndex, comboboxId, listboxId, containerRef, inputRef,
+    listRef, filteredItems, isNewValueTyped, openDropdown, closeDropdown,
+    selectValue, handleInputChange, handleKeyDown, handleChevronClick, resetCombobox,
   };
 }

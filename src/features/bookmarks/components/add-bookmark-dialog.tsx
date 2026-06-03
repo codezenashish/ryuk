@@ -1,4 +1,6 @@
 "use client";
+import { createBookmarkAction } from "../actions/db-operations";
+import { processBookmarkAIInBackground } from "../actions/ai-operations";
 
 import {
   X,
@@ -17,11 +19,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useCombobox } from "../hooks/use-combobox";
 
 interface AddBookmarkDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isDialogOpen: boolean;
+  onDialogClose: () => void;
 }
 
-const CATEGORIES = [
+const CATEGORY_CONFIGURATIONS = [
   { label: "Social Accounts", icon: Users },
   { label: "Dev Tools", icon: Terminal },
   { label: "Documentation", icon: FileText },
@@ -29,301 +31,373 @@ const CATEGORIES = [
 ];
 
 export default function AddBookmarkDialog({
-  isOpen,
-  onClose,
+  isDialogOpen,
+  onDialogClose,
 }: AddBookmarkDialogProps) {
-  const [url, setUrl] = useState("");
-  const [title, setTitle] = useState("");
+  const [bookmarkUrl, setBookmarkUrl] = useState("");
+  const [bookmarkTitle, setBookmarkTitle] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
-  const combo = useCombobox(CATEGORIES);
+  const {
+    inputValue: selectedCategory,
+    isDropdownOpen,
+    activeHighlightedIndex,
+    setActiveHighlightedIndex,
+    comboboxId,
+    listboxId,
+    containerRef,
+    inputRef,
+    listRef,
+    filteredItems: filteredCategories,
+    isNewValueTyped: isNewCategoryTyped,
+    openDropdown,
+    closeDropdown,
+    selectValue: selectCategory,
+    handleInputChange,
+    handleKeyDown,
+    handleChevronClick,
+    resetCombobox: resetCategoryCombobox,
+  } = useCombobox(CATEGORY_CONFIGURATIONS);
 
   useEffect(() => {
-    if (isOpen) {
-      setUrl("");
-      setTitle("");
-      combo.reset();
+    if (isDialogOpen) {
+      setBookmarkUrl("");
+      setBookmarkTitle("");
+      resetCategoryCombobox();
     }
-  }, [isOpen]);
+  }, [isDialogOpen, resetCategoryCombobox]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log({ url, title, category: combo.category.trim() });
-    setUrl("");
-    setTitle("");
-    combo.reset();
-    onClose();
+  const totalVisibleDropdownOptions =
+    filteredCategories.length + (isNewCategoryTyped ? 1 : 0);
+
+  // ⚡ Instant Save + Background AI Enrichment pattern
+  // Step 1: URL hostname ya user-typed title ko temporary fallback ke roop mein use karo
+  // Step 2: DB mein turant save karo
+  // Step 3: Dialog instantly band karo — zero wait time for user
+  // Step 4: AI background mein title+category enrich karta hai silently
+  const handleFormSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    if (!bookmarkUrl) return;
+
+    // Auto-fallback: agar user ne title ya category nahi daali
+    let hostname = bookmarkUrl;
+    try {
+      hostname = new URL(bookmarkUrl).hostname;
+    } catch {
+      // Invalid URL — hostname as-is
+    }
+    const finalTitle = bookmarkTitle.trim() || hostname;
+    const finalCategory = selectedCategory.trim() || "General";
+
+    setIsSaving(true);
+
+    const response = await createBookmarkAction({
+      url: bookmarkUrl,
+      title: finalTitle,
+      categoryName: finalCategory,
+      userId: "mock-user-id-123",
+    });
+
+    setIsSaving(false);
+
+    if (response.success) {
+      // Reset form state
+      setBookmarkUrl("");
+      setBookmarkTitle("");
+      resetCategoryCombobox();
+
+      // ⚡ Dialog instantly close — user ko 0ms wait
+      onDialogClose();
+
+      // 🔥 Fire-and-forget AI enrichment — NO await
+      // Ye background mein chal kar DB row silently update karega
+      processBookmarkAIInBackground(
+        bookmarkUrl,
+        response.bookmark.id,
+        "mock-user-id-123",
+      );
+    } else {
+      alert(`Error saving bookmark: ${response.error}`);
+    }
   };
 
-  const handleClose = () => {
-    combo.closeDropdown();
-    onClose();
+  const handleModalDismissal = () => {
+    if (isSaving) return; // Only block while initial save is in flight
+    closeDropdown();
+    onDialogClose();
   };
 
   return (
     <AnimatePresence>
-      {isOpen && (
+      {isDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="absolute inset-0 bg-black/50"
-            onClick={handleClose}
+            className="absolute inset-0 bg-black/60 backdrop-blur-md"
+            onClick={handleModalDismissal}
           />
 
           <motion.div
-            initial={{ opacity: 0, scale: 0.96, y: 10 }}
+            initial={{ opacity: 0, scale: 0.96, y: 8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96, y: 10 }}
+            exit={{ opacity: 0, scale: 0.96, y: 8 }}
             transition={{ type: "spring", stiffness: 380, damping: 26 }}
-            className="relative w-full max-w-md z-10 rounded-2xl p-6"
+            className="relative z-10 w-full max-w-md rounded-2xl border border-white/[0.06] bg-zinc-950/40 p-6 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] backdrop-blur-xl"
             style={{
-              background: "rgba(14, 14, 17, 0.98)",
-              border: "0.5px solid rgba(255,255,255,0.08)",
               boxShadow:
-                "0 0 0 0.5px rgba(255,255,255,0.04) inset, 0 24px 64px rgba(0,0,0,0.7)",
+                "inset 0 1px 0 0 rgba(255, 255, 255, 0.05), 0 24px 64px rgba(0,0,0,0.7)",
             }}
           >
-            <div
-              className="flex items-center justify-between pb-4 mb-5"
-              style={{ borderBottom: "0.5px solid rgba(255,255,255,0.05)" }}
-            >
-              <h2 className="text-[11px] font-semibold uppercase tracking-widest text-white/80 font-mono">
+            <div className="mb-5 flex items-center justify-between border-b border-white/[0.04] pb-4">
+              <h2 className="font-mono text-[11px] font-bold tracking-widest text-zinc-400 uppercase">
                 Add New Bookmark
               </h2>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={handleClose}
-                className="flex items-center justify-center w-7 h-7 rounded-lg cursor-pointer border border-white/[0.07] bg-white/3 text-white/35 hover:text-white/85 transition-colors"
+                disabled={isSaving}
+                onClick={handleModalDismissal}
+                className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border border-white/[0.04] bg-white/[0.02] text-zinc-500 transition-colors hover:border-white/[0.1] hover:text-white disabled:opacity-40"
               >
-                <X className="w-3.5 h-3.5" />
+                <X className="h-3.5 w-3.5" />
               </motion.button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-3.5">
+            <form onSubmit={handleFormSubmit} className="space-y-4">
               <div className="space-y-1.5">
-                <label className="block text-[10px] font-medium uppercase tracking-widest text-white/3 font-mono">
+                <label className="block font-mono text-[10px] font-medium tracking-widest text-zinc-500 uppercase">
                   URL / Link
                 </label>
                 <div className="relative">
-                  <Link className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/20 pointer-events-none" />
+                  <Link className="pointer-events-none absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 text-zinc-600" />
                   <input
                     type="url"
                     required
-                    value={url}
-                    onChange={(e) => setUrl(e.target.value)}
+                    value={bookmarkUrl}
+                    onChange={(event) => setBookmarkUrl(event.target.value)}
+                    disabled={isSaving}
                     placeholder="https://github.com/..."
-                    className="h-9 w-full rounded-xl pl-9 pr-3 text-xs outline-none bg-white/[0.03] border border-white/[0.07] text-white/85 focus:border-white/14 focus:bg-white/[0.05] transition-all"
+                    className="h-9 w-full rounded-xl border border-white/[0.04] bg-zinc-900/20 pr-3 pl-9 text-xs text-zinc-200 transition-all outline-none placeholder:text-zinc-700 focus:border-white/[0.1] focus:bg-zinc-900/40 disabled:opacity-50"
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="block text-[10px] font-medium uppercase tracking-widest text-white/3 font-mono">
+                <label className="block font-mono text-[10px] font-medium tracking-widest text-zinc-500 uppercase">
                   Title
                 </label>
                 <div className="relative">
-                  <Bookmark className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/20 pointer-events-none" />
+                  <Bookmark className="pointer-events-none absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 text-zinc-600" />
                   <input
                     type="text"
-                    required
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Repository or Website Name"
-                    className="h-9 w-full rounded-xl pl-9 pr-3 text-xs outline-none bg-white/[0.03] border border-white/[0.07] text-white/85 focus:border-white/14 focus:bg-white/[0.05] transition-all"
+                    value={bookmarkTitle}
+                    onChange={(event) => setBookmarkTitle(event.target.value)}
+                    disabled={isSaving}
+                    placeholder="Repository or Website Name (optional — AI will fill)"
+                    className="h-9 w-full rounded-xl border border-white/[0.04] bg-zinc-900/20 pr-3 pl-9 text-xs text-zinc-200 transition-all outline-none placeholder:text-zinc-700 focus:border-white/[0.1] focus:bg-zinc-900/40 disabled:opacity-50"
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
                 <label
-                  htmlFor={combo.comboboxId}
-                  className="block text-[10px] font-medium uppercase tracking-widest text-white/3 font-mono"
+                  htmlFor={comboboxId}
+                  className="block font-mono text-[10px] font-medium tracking-widest text-zinc-500 uppercase"
                 >
                   Category
                 </label>
-                <div className="relative" ref={combo.containerRef}>
-                  <Folder className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/20 pointer-events-none z-10" />
+                <div className="relative" ref={containerRef}>
+                  <Folder className="pointer-events-none absolute top-1/2 left-3 z-10 h-3.5 w-3.5 -translate-y-1/2 text-zinc-600" />
                   <input
-                    ref={combo.inputRef}
-                    id={combo.comboboxId}
+                    ref={inputRef}
+                    id={comboboxId}
                     type="text"
                     role="combobox"
                     aria-autocomplete="list"
-                    aria-expanded={combo.dropdownOpen}
-                    aria-controls={combo.listboxId}
+                    aria-expanded={isDropdownOpen}
+                    aria-controls={listboxId}
                     aria-activedescendant={
-                      combo.activeIndex >= 0
-                        ? `${combo.comboboxId}-option-${combo.activeIndex}`
+                      activeHighlightedIndex >= 0
+                        ? `${comboboxId}-option-${activeHighlightedIndex}`
                         : undefined
                     }
                     autoComplete="off"
-                    value={combo.category}
-                    onChange={combo.handleInputChange}
-                    onFocus={combo.openDropdown}
-                    onKeyDown={combo.handleKeyDown}
-                    placeholder="Select or type a category…"
-                    className="h-9 w-full rounded-xl pl-9 pr-9 text-xs outline-none transition-all text-white/85"
+                    value={selectedCategory}
+                    onChange={handleInputChange}
+                    onFocus={openDropdown}
+                    onKeyDown={handleKeyDown}
+                    disabled={isSaving}
+                    placeholder="Select or type a category… (optional)"
+                    className="h-9 w-full rounded-xl border border-white/[0.04] pr-9 pl-9 text-xs text-zinc-200 transition-all outline-none placeholder:text-zinc-700 disabled:opacity-50"
                     style={{
-                      background: combo.dropdownOpen
-                        ? "rgba(255,255,255,0.05)"
-                        : "rgba(255,255,255,0.03)",
-                      border: `0.5px solid ${combo.dropdownOpen ? "rgba(255,255,255,0.14)" : "rgba(255,255,255,0.07)"}`,
+                      background: isDropdownOpen
+                        ? "rgba(255,255,255,0.04)"
+                        : "rgba(255,255,255,0.01)",
                     }}
                   />
 
                   <button
                     type="button"
                     tabIndex={-1}
-                    onClick={combo.handleChevronClick}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center cursor-pointer"
+                    aria-label="Toggle category list"
+                    disabled={isSaving}
+                    onClick={handleChevronClick}
+                    className="absolute top-1/2 right-3 flex -translate-y-1/2 cursor-pointer items-center justify-center disabled:opacity-50"
                   >
                     <motion.div
-                      animate={{ rotate: combo.dropdownOpen ? 180 : 0 }}
+                      animate={{ rotate: isDropdownOpen ? 180 : 0 }}
                       transition={{ duration: 0.18 }}
                     >
-                      <ChevronDown className="w-3.5 h-3.5 text-white/30" />
+                      <ChevronDown className="h-3.5 w-3.5 text-zinc-500" />
                     </motion.div>
                   </button>
 
                   <AnimatePresence>
-                    {combo.dropdownOpen &&
-                      (combo.filteredCategories.length > 0 ||
-                        combo.isNewCategory) && (
-                        <motion.div
-                          ref={combo.listRef}
-                          id={combo.listboxId}
-                          role="listbox"
-                          initial={{ opacity: 0, y: -6, scale: 0.98 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, y: -6, scale: 0.98 }}
-                          transition={{
-                            type: "spring",
-                            stiffness: 500,
-                            damping: 30,
-                          }}
-                          className="absolute left-0 right-0 top-[calc(100%+6px)] rounded-xl overflow-hidden z-50 max-h-52 overflow-y-auto bg-[#16161a] border border-white/10 shadow-2xl"
-                          style={{ scrollbarWidth: "none" }}
-                        >
-                          {combo.filteredCategories.map(
-                            ({ label, icon: Icon }, idx) => {
-                              const isActive = idx === combo.activeIndex;
-                              return (
-                                <div
-                                  key={label}
-                                  id={`${combo.comboboxId}-option-${idx}`}
-                                  role="option"
-                                  aria-selected={combo.category === label}
-                                  data-index={idx}
-                                  onMouseDown={(e) => {
-                                    e.preventDefault();
-                                    combo.selectCategory(label);
-                                  }}
-                                  onMouseEnter={() => combo.setActiveIndex(idx)}
-                                  onMouseLeave={() => combo.setActiveIndex(-1)}
-                                  className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs cursor-pointer select-none transition-colors"
-                                  style={{
-                                    color: isActive
-                                      ? "rgba(255,255,255,0.92)"
-                                      : "rgba(255,255,255,0.6)",
-                                    background: isActive
-                                      ? "rgba(255,255,255,0.06)"
-                                      : "transparent",
-                                  }}
-                                >
-                                  <Icon
-                                    className="w-3.5 h-3.5 shrink-0"
-                                    style={{
-                                      color: isActive
-                                        ? "rgba(255,255,255,0.5)"
-                                        : "rgba(255,255,255,0.25)",
-                                    }}
-                                  />
-                                  <span className="flex-1 truncate">
-                                    {label}
-                                  </span>
-                                  {combo.category === label && (
-                                    <span className="text-[9px] font-medium uppercase tracking-wider text-indigo-400/70">
-                                      selected
-                                    </span>
-                                  )}
-                                </div>
-                              );
-                            },
-                          )}
+                    {isDropdownOpen && totalVisibleDropdownOptions > 0 && (
+                      <motion.div
+                        ref={listRef}
+                        id={listboxId}
+                        role="listbox"
+                        aria-label="Categories"
+                        initial={{ opacity: 0, y: -4, scale: 0.98 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -4, scale: 0.98 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 500,
+                          damping: 30,
+                        }}
+                        className="absolute top-[calc(100%+6px)] right-0 left-0 z-50 max-h-52 overflow-hidden overflow-y-auto rounded-xl border border-white/[0.08] bg-[#121215] shadow-2xl"
+                        style={{ scrollbarWidth: "none" }}
+                      >
+                        {filteredCategories.map(
+                          ({ label, icon: Icon }, itemIndex) => {
+                            const isOptionActive =
+                              itemIndex === activeHighlightedIndex;
+                            const isOptionSelected =
+                              label.toLowerCase() ===
+                              selectedCategory.trim().toLowerCase();
+                            const RenderIcon = Icon || Folder;
 
-                          {combo.isNewCategory && (
-                            <>
-                              {combo.filteredCategories.length > 0 && (
-                                <div className="border-t border-white/[0.06]" />
-                              )}
+                            return (
                               <div
-                                id={`${combo.comboboxId}-option-${combo.filteredCategories.length}`}
+                                key={label}
+                                id={`${comboboxId}-option-${itemIndex}`}
                                 role="option"
-                                data-index={combo.filteredCategories.length}
-                                onMouseDown={(e) => {
-                                  e.preventDefault();
-                                  combo.closeDropdown();
-                                  combo.inputRef.current?.focus();
+                                aria-selected={isOptionSelected}
+                                data-index={itemIndex}
+                                onMouseDown={(event) => {
+                                  event.preventDefault();
+                                  selectCategory(label);
                                 }}
                                 onMouseEnter={() =>
-                                  combo.setActiveIndex(
-                                    combo.filteredCategories.length,
-                                  )
+                                  setActiveHighlightedIndex(itemIndex)
                                 }
-                                onMouseLeave={() => combo.setActiveIndex(-1)}
-                                className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs cursor-pointer select-none transition-colors"
+                                onMouseLeave={() =>
+                                  setActiveHighlightedIndex(-1)
+                                }
+                                className="flex w-full cursor-pointer items-center gap-2.5 px-3.5 py-2.5 text-xs transition-colors select-none"
                                 style={{
-                                  color:
-                                    combo.activeIndex ===
-                                    combo.filteredCategories.length
-                                      ? "#a5b4fc"
-                                      : "#818cf8",
-                                  background:
-                                    combo.activeIndex ===
-                                    combo.filteredCategories.length
-                                      ? "rgba(129,140,248,0.09)"
-                                      : "transparent",
+                                  color: isOptionActive
+                                    ? "rgba(255,255,255,0.9)"
+                                    : "rgba(255,255,255,0.5)",
+                                  background: isOptionActive
+                                    ? "rgba(255,255,255,0.04)"
+                                    : "transparent",
                                 }}
                               >
-                                <Plus className="w-3.5 h-3.5 shrink-0" />
-                                <span>
-                                  Create{" "}
-                                  <span className="font-semibold">
-                                    &ldquo;{combo.category.trim()}&rdquo;
+                                <RenderIcon
+                                  className="h-3.5 w-3.5 shrink-0"
+                                  style={{
+                                    color: isOptionActive
+                                      ? "rgba(255,255,255,0.5)"
+                                      : "rgba(255,255,255,0.2)",
+                                  }}
+                                />
+                                <span className="flex-1 truncate">{label}</span>
+                                {isOptionSelected && (
+                                  <span className="font-mono text-[9px] font-bold tracking-wider text-indigo-400/80 uppercase">
+                                    selected
                                   </span>
-                                </span>
+                                )}
                               </div>
-                            </>
-                          )}
-                        </motion.div>
-                      )}
+                            );
+                          },
+                        )}
+
+                        {isNewCategoryTyped && (
+                          <>
+                            {filteredCategories.length > 0 && (
+                              <div className="border-t border-white/[0.04]" />
+                            )}
+                            <div
+                              id={`${comboboxId}-option-${filteredCategories.length}`}
+                              role="option"
+                              aria-selected={false}
+                              data-index={filteredCategories.length}
+                              onMouseDown={(event) => {
+                                event.preventDefault();
+                                selectCategory(selectedCategory.trim());
+                              }}
+                              onMouseEnter={() =>
+                                setActiveHighlightedIndex(
+                                  filteredCategories.length,
+                                )
+                              }
+                              onMouseLeave={() => setActiveHighlightedIndex(-1)}
+                              className="flex w-full cursor-pointer items-center gap-2.5 px-3.5 py-2.5 text-xs transition-colors select-none"
+                              style={{
+                                color:
+                                  activeHighlightedIndex ===
+                                  filteredCategories.length
+                                    ? "#a5b4fc"
+                                    : "#818cf8",
+                                background:
+                                  activeHighlightedIndex ===
+                                  filteredCategories.length
+                                    ? "rgba(129,140,248,0.06)"
+                                    : "transparent",
+                              }}
+                            >
+                              <Plus className="h-3.5 w-3.5 shrink-0" />
+                              <span>
+                                Create{" "}
+                                <span className="font-semibold">
+                                  &ldquo;{selectedCategory.trim()}&rdquo;
+                                </span>
+                              </span>
+                            </div>
+                          </>
+                        )}
+                      </motion.div>
+                    )}
                   </AnimatePresence>
                 </div>
               </div>
 
-              <div
-                className="flex items-center justify-end gap-2 pt-4 mt-2"
-                style={{ borderTop: "0.5px solid rgba(255,255,255,0.05)" }}
-              >
+              <div className="mt-2 flex items-center justify-end gap-2 border-t border-white/[0.04] pt-4">
                 <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.97 }}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.98 }}
                   type="button"
-                  onClick={handleClose}
-                  className="px-4 py-2 rounded-xl text-xs font-medium border border-white/[0.07] bg-white/[0.02] text-white/40 hover:text-white/85 hover:bg-white/[0.05] transition-colors cursor-pointer"
+                  disabled={isSaving}
+                  onClick={handleModalDismissal}
+                  className="cursor-pointer rounded-xl border border-white/[0.04] bg-white/[0.01] px-4 py-2 text-xs font-semibold text-zinc-500 transition-colors hover:bg-white/[0.03] hover:text-zinc-300 disabled:opacity-40"
                 >
                   Cancel
                 </motion.button>
                 <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.97 }}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.98 }}
                   type="submit"
-                  className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-50 hover:bg-white text-[#0f0f12] cursor-pointer transition-colors"
+                  disabled={isSaving}
+                  className="cursor-pointer rounded-xl bg-zinc-100 px-4 py-2 text-xs font-bold text-black shadow-[0_4px_12px_rgba(255,255,255,0.05)] transition-all hover:bg-white disabled:opacity-50"
                 >
-                  Save Bookmark
+                  <span>{isSaving ? "Saving..." : "Save Bookmark"}</span>
                 </motion.button>
               </div>
             </form>
