@@ -7,7 +7,7 @@ import {
   fetchBookmarksAction,
   createBookmarkAction,
   deleteBookmarkAction,
-} from "../actions/db-operations";
+} from "../actions/bookmark-actions";
 
 // ── Types ──────────────────────────────────────────────────────────────
 

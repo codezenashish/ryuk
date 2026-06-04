@@ -1,6 +1,6 @@
 "use server";
 
-import { getBookmarkMeta } from "../utils/metadata-parser";
+import { getBookmarkMeta } from "../utils/bookmark-metadata-scraper";
 
 /**
  * Server action wrapper around the Cheerio-based metadata parser.

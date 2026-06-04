@@ -15,7 +15,7 @@ import {
   RiUserLine,
 } from "react-icons/ri";
 
-import { NavItem, NavSection } from "./types";
+import { NavItem, NavSection } from "./sidebar-nav-types";
 
 export const sections: NavSection[] = [
   {

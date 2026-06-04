@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import NavLinks from "./Navlinks";
+import NavLinks from "./NavbarLinks";
 import Link from "next/link";
 import { Button } from "@/src/components/ui/button";
 import { Poppins } from "next/font/google";

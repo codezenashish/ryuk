@@ -1,5 +1,5 @@
-import { NavSection as NavSectionType } from "./types";
-import { NavItem } from "./NavItem";
+import { NavSection as NavSectionType } from "./sidebar-nav-types";
+import { NavItem } from "./SidebarNavItem";
 
 interface Props {
   section: NavSectionType;
@@ -8,7 +8,7 @@ interface Props {
 export function NavSection({ section }: Props) {
   return (
     <div>
-      <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-widest text-zinc-600">
+      <p className="mb-1.5 px-3 text-[10px] font-semibold tracking-widest text-zinc-600 uppercase">
         {section.title}
       </p>
 

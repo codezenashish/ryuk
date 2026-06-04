@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/src/lib/utils";
-import { NavItem as NavItemType } from "./types";
+import { cn } from "@/src/lib/classname-merge";
+import { NavItem as NavItemType } from "./sidebar-nav-types";
 
 interface Props {
   item: NavItemType;
@@ -11,7 +11,8 @@ interface Props {
 
 export function NavItem({ item }: Props) {
   const pathname = usePathname();
-  const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+  const isActive =
+    pathname === item.href || pathname.startsWith(item.href + "/");
 
   return (
     <Link

@@ -1,8 +1,8 @@
 "use client";
 
 import PageHeader from "@/src/features/bookmarks/components/PageHeader";
-import CategoryGridSection from "@/src/features/bookmarks/components/social-category-section";
-import { useBookmarksQuery } from "@/src/features/bookmarks/hooks/use-bookmarks";
+import CategoryGridSection from "@/src/features/bookmarks/components/BookmarkCategoryGrid";
+import { useBookmarksQuery } from "@/src/features/bookmarks/hooks/use-bookmark-queries";
 
 const MOCK_USER_ID = "mock-user-id-123";
 
@@ -18,7 +18,7 @@ export default function BookmarksPage() {
             {[1, 2].map((i) => (
               <div key={i} className="w-full max-w-7xl animate-pulse">
                 <div className="mb-4 h-4 w-32 rounded bg-zinc-800" />
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-2">
+                <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-12">
                   {Array.from({ length: 6 }).map((_, j) => (
                     <div
                       key={j}
@@ -47,7 +47,7 @@ export default function BookmarksPage() {
         ))}
 
         {!isLoading && (!categories || categories.length === 0) && (
-          <p className="text-center text-xs text-zinc-600 font-mono mt-16">
+          <p className="mt-16 text-center font-mono text-xs text-zinc-600">
             No bookmarks yet — add your first one above ↑
           </p>
         )}

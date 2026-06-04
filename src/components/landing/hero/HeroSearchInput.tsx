@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
-import { tabs } from "./data";
+import { tabs } from "./search-tab-config";
 import AnimatedPlaceholder from "./AnimatedPlaceholder";
 
 export default function HeroSearchInput() {

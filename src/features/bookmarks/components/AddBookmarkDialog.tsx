@@ -1,6 +1,6 @@
 "use client";
-import { fetchBookmarkMetadata } from "../actions/fetch-metadata";
-import { useCreateBookmarkMutation } from "../hooks/use-bookmarks";
+import { fetchBookmarkMetadata } from "../actions/scrape-metadata-action";
+import { useCreateBookmarkMutation } from "../hooks/use-bookmark-queries";
 
 import {
   X,
@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useCombobox } from "../hooks/use-combobox";
+import { useCombobox } from "../hooks/use-category-combobox";
 
 interface AddBookmarkDialogProps {
   isDialogOpen: boolean;
@@ -43,8 +43,6 @@ export default function AddBookmarkDialog({
   const createMutation = useCreateBookmarkMutation();
   const isSaving = createMutation.isPending;
 
-  // Track whether the title was manually edited by the user so we don't
-  // overwrite their custom title when metadata comes back.
   const titleManuallyEdited = useRef(false);
 
   const {
@@ -82,12 +80,10 @@ export default function AddBookmarkDialog({
   const totalVisibleDropdownOptions =
     filteredCategories.length + (isNewCategoryTyped ? 1 : 0);
 
-  // ── Metadata pre-fetch ──────────────────────────────────────────────
   const handleUrlBlur = useCallback(async () => {
     const url = bookmarkUrl.trim();
     if (!url) return;
 
-    // Quick sanity check — don't fetch for obviously incomplete input
     try {
       new URL(url);
     } catch {
@@ -98,7 +94,6 @@ export default function AddBookmarkDialog({
     try {
       const meta = await fetchBookmarkMetadata(url);
       if (meta.success) {
-        // Only pre-fill title if the user hasn't manually typed one
         if (!titleManuallyEdited.current && meta.title) {
           setBookmarkTitle(meta.title);
         }
@@ -107,7 +102,6 @@ export default function AddBookmarkDialog({
         }
       }
     } catch {
-      // Silently fail — the user can still type a title manually
     } finally {
       setIsFetchingMeta(false);
     }
@@ -118,7 +112,6 @@ export default function AddBookmarkDialog({
     titleManuallyEdited.current = true;
   };
 
-  // ── Form submission ─────────────────────────────────────────────────
   const handleFormSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
@@ -131,8 +124,6 @@ export default function AddBookmarkDialog({
     const finalTitle = bookmarkTitle.trim() || hostname;
     const finalCategory = selectedCategory.trim() || "General";
 
-    // If no favicon was resolved yet (e.g. user submitted before blur
-    // finished), fall back to Google S2
     const finalFavicon =
       bookmarkFavicon ||
       `https://www.google.com/s2/favicons?sz=64&domain=${hostname}`;
@@ -166,7 +157,7 @@ export default function AddBookmarkDialog({
   };
 
   const handleModalDismissal = () => {
-    if (isSaving) return; // Only block while initial save is in flight
+    if (isSaving) return;
     closeDropdown();
     onDialogClose();
   };
