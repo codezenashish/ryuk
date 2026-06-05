@@ -34,7 +34,7 @@ export function OverflowMenu({ items }: OverflowMenuProps) {
         aria-haspopup="menu"
         aria-expanded={isMenuOpen}
         onClick={toggleMenu}
-        className="flex cursor-pointer items-center justify-center size-9 rounded-[0.625rem] border border-white/[0.08] bg-white/[0.03] text-zinc-400 outline-none transition-[background,border-color,color] duration-[180ms] ease-linear hover:border-white/[0.14] hover:bg-white/[0.07] hover:text-zinc-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500/70"
+        className="flex size-9 cursor-pointer items-center justify-center rounded-[0.625rem] border border-white/8 bg-white/3 text-zinc-400 transition-[background,border-color,color] duration-180 ease-linear outline-none hover:border-white/14 hover:bg-white/7 hover:text-zinc-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500/70"
       >
         <MoreHorizontal className="h-4 w-4" />
       </motion.button>
@@ -48,7 +48,7 @@ export function OverflowMenu({ items }: OverflowMenuProps) {
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="absolute top-[calc(100%+0.5rem)] right-0 z-50 min-w-[10rem] overflow-hidden rounded-xl border border-white/[0.09] bg-zinc-950/90 p-1.5 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.4),0_16px_32px_-4px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-2xl"
+            className="absolute top-[calc(100%+0.5rem)] right-0 z-50 min-w-40 overflow-hidden rounded-xl border border-white/9 bg-zinc-950/90 p-1.5 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.4),0_16px_32px_-4px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-2xl"
           >
             {items.map(({ label, icon, onClick }, i) => (
               <motion.button
@@ -63,7 +63,7 @@ export function OverflowMenu({ items }: OverflowMenuProps) {
                   onClick();
                   closeMenu();
                 }}
-                className="flex w-full cursor-pointer items-center gap-2.5 whitespace-nowrap rounded-lg border-none bg-transparent px-2.5 py-2 text-left text-[0.8rem] font-medium text-zinc-400 outline-none transition-[background,color] duration-150 hover:bg-white/[0.06] hover:text-zinc-200 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-indigo-500/70"
+                className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg border-none bg-transparent px-2.5 py-2 text-left text-[0.8rem] font-medium whitespace-nowrap text-zinc-400 transition-[background,color] duration-150 outline-none hover:bg-white/6 hover:text-zinc-200 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-indigo-500/70"
               >
                 <span className="flex items-center justify-center opacity-75">
                   {icon}
