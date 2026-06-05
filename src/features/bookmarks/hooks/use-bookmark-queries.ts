@@ -1,12 +1,9 @@
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   fetchBookmarksAction,
   createBookmarkAction,
   deleteBookmarkAction,
+  bulkUpdateBookmarksAction,
 } from "../actions/bookmark-actions";
 
 // ── Types ──────────────────────────────────────────────────────────────
@@ -57,59 +54,56 @@ export function useCreateBookmarkMutation() {
     onMutate: async (newBookmark) => {
       const queryKey = [...BOOKMARKS_KEY, newBookmark.userId];
 
-      // Cancel in-flight fetches so they don't overwrite our optimistic update
       await queryClient.cancelQueries({ queryKey });
 
       const previousData =
         queryClient.getQueryData<CategoryWithBookmarks[]>(queryKey);
 
-      queryClient.setQueryData<CategoryWithBookmarks[]>(queryKey, (old) => {
-        if (!old) return old;
+      queryClient.setQueryData<CategoryWithBookmarks[]>(
+        queryKey,
+        (old: any) => {
+          if (!old) return old;
 
-        const categoryName = newBookmark.categoryName.trim() || "General";
-        const existingIndex = old.findIndex(
-          (c) => c.name.toLowerCase() === categoryName.toLowerCase(),
-        );
+          const categoryName = newBookmark.categoryName.trim() || "General";
+          const existingIndex = old.findIndex(
+            (c: any) => c.name.toLowerCase() === categoryName.toLowerCase(),
+          );
 
-        // Temporary optimistic bookmark with a negative ID to avoid
-        // collisions with real DB IDs.
-        const optimisticBookmark: BookmarkItem = {
-          id: -Date.now(),
-          title: newBookmark.title,
-          url: newBookmark.url,
-          favicon: newBookmark.favicon,
-        };
-
-        if (existingIndex >= 0) {
-          // Category exists — append bookmark
-          const updated = [...old];
-          updated[existingIndex] = {
-            ...updated[existingIndex],
-            bookmarks: [
-              ...updated[existingIndex].bookmarks,
-              optimisticBookmark,
-            ],
+          const optimisticBookmark: BookmarkItem = {
+            id: -Date.now(),
+            title: newBookmark.title,
+            url: newBookmark.url,
+            favicon: newBookmark.favicon,
           };
-          return updated;
-        }
 
-        // Category doesn't exist yet — create optimistic category
-        const optimisticCategory: CategoryWithBookmarks = {
-          id: `optimistic-${Date.now()}`,
-          name: categoryName,
-          icon: "RiFolder5Line",
-          color: "#6366F1",
-          position: old.length,
-          bookmarks: [optimisticBookmark],
-        };
-        return [...old, optimisticCategory];
-      });
+          if (existingIndex >= 0) {
+            const updated = [...old];
+            updated[existingIndex] = {
+              ...updated[existingIndex],
+              bookmarks: [
+                ...updated[existingIndex].bookmarks,
+                optimisticBookmark,
+              ],
+            };
+            return updated;
+          }
+
+          const optimisticCategory: CategoryWithBookmarks = {
+            id: `optimistic-${Date.now()}`,
+            name: categoryName,
+            icon: "RiFolder5Line",
+            color: "#6366F1",
+            position: old.length,
+            bookmarks: [optimisticBookmark],
+          };
+          return [...old, optimisticCategory];
+        },
+      );
 
       return { previousData };
     },
 
     onError: (_error, vars, context) => {
-      // Roll back to the snapshot
       if (context?.previousData) {
         queryClient.setQueryData(
           [...BOOKMARKS_KEY, vars.userId],
@@ -119,7 +113,6 @@ export function useCreateBookmarkMutation() {
     },
 
     onSettled: (_data, _error, vars) => {
-      // Always re-sync with the server
       queryClient.invalidateQueries({
         queryKey: [...BOOKMARKS_KEY, vars.userId],
       });
@@ -149,15 +142,18 @@ export function useDeleteBookmarkMutation() {
       const previousData =
         queryClient.getQueryData<CategoryWithBookmarks[]>(queryKey);
 
-      queryClient.setQueryData<CategoryWithBookmarks[]>(queryKey, (old) => {
-        if (!old) return old;
-        return old.map((category) => ({
-          ...category,
-          bookmarks: category.bookmarks.filter(
-            (b) => b.id !== vars.bookmarkId,
-          ),
-        }));
-      });
+      queryClient.setQueryData<CategoryWithBookmarks[]>(
+        queryKey,
+        (old: any) => {
+          if (!old) return old;
+          return old.map((category: any) => ({
+            ...category,
+            bookmarks: category.bookmarks.filter(
+              (b: any) => b.id !== vars.bookmarkId,
+            ),
+          }));
+        },
+      );
 
       return { previousData };
     },
@@ -175,6 +171,51 @@ export function useDeleteBookmarkMutation() {
       queryClient.invalidateQueries({
         queryKey: [...BOOKMARKS_KEY, vars.userId],
       });
+    },
+  });
+}
+
+// ── Bulk Update Mutation ───────────────────────────────────────────────
+
+interface BulkUpdateVars {
+  userId: string;
+  bookmarks: {
+    id: number;
+    title: string;
+    url: string;
+    categoryId: string;
+  }[];
+}
+
+export function useBulkUpdateBookmarksMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (vars: BulkUpdateVars) => {
+      const result = await bulkUpdateBookmarksAction(vars);
+      // FIX: Surface server-side logical failures as thrown errors so TanStack
+      // Query routes them to `onError` instead of `onSuccess`. Previously the
+      // mutation resolved successfully even when the server returned
+      // `{ success: false }`, causing the dialog to close with no data saved
+      // and no error surfaced to the user.
+      if (!result.success) {
+        throw new Error(result.error || "Bulk update failed");
+      }
+      return result;
+    },
+
+    // FIX: Use `onSettled` (runs on both success AND error) instead of
+    // separate `onSuccess`/`onError` handlers that both called
+    // `invalidateQueries`. This guarantees the cache is always refreshed
+    // exactly once after the mutation settles, regardless of outcome.
+    onSettled: (_data, _error, vars) => {
+      queryClient.invalidateQueries({
+        queryKey: [...BOOKMARKS_KEY, vars.userId],
+      });
+    },
+
+    onError: (error) => {
+      console.error("Bulk update mutation error:", error);
     },
   });
 }
