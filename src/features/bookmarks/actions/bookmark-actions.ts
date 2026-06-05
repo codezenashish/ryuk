@@ -2,14 +2,24 @@
 
 import { db } from "@/src/lib/prisma-client";
 
-// ── Helpers ────────────────────────────────────────────────────────────
-
 function getCategoryIconName(categoryName: string): string {
   const name = categoryName.toLowerCase().trim();
-  if (name.includes("social") || name.includes("account")) return "RiGithubFill";
-  if (name.includes("tool") || name.includes("dev") || name.includes("terminal")) return "RiTerminalBoxLine";
-  if (name.includes("doc") || name.includes("book") || name.includes("api")) return "RiBookOpenLine";
-  if (name.includes("design") || name.includes("palette") || name.includes("ui")) return "RiPaletteLine";
+  if (name.includes("social") || name.includes("account"))
+    return "RiGithubFill";
+  if (
+    name.includes("tool") ||
+    name.includes("dev") ||
+    name.includes("terminal")
+  )
+    return "RiTerminalBoxLine";
+  if (name.includes("doc") || name.includes("book") || name.includes("api"))
+    return "RiBookOpenLine";
+  if (
+    name.includes("design") ||
+    name.includes("palette") ||
+    name.includes("ui")
+  )
+    return "RiPaletteLine";
   return "RiFolder5Line";
 }
 
@@ -39,8 +49,6 @@ async function findOrCreateCategory(categoryName: string, userId: string) {
   });
 }
 
-// ── Queries ────────────────────────────────────────────────────────────
-
 export async function fetchBookmarksAction(userId: string) {
   const categories = await db.category.findMany({
     where: { userId },
@@ -61,8 +69,6 @@ export async function fetchBookmarksAction(userId: string) {
   return categories;
 }
 
-// ── Mutations ──────────────────────────────────────────────────────────
-
 interface CreateBookmarkInput {
   url: string;
   title: string;
@@ -74,7 +80,8 @@ interface CreateBookmarkInput {
 export async function createBookmarkAction(input: CreateBookmarkInput) {
   try {
     const { url, title, favicon, categoryName, userId } = input;
-    if (!url || !title) return { success: false as const, error: "URL and title are required" };
+    if (!url || !title)
+      return { success: false as const, error: "URL and title are required" };
 
     const category = await findOrCreateCategory(categoryName, userId);
 
@@ -96,7 +103,11 @@ export async function createBookmarkAction(input: CreateBookmarkInput) {
       });
     });
 
-    return { success: true as const, bookmark: newBookmark, categoryId: category.id };
+    return {
+      success: true as const,
+      bookmark: newBookmark,
+      categoryId: category.id,
+    };
   } catch (error) {
     console.error("Database Save Action Error:", error);
     return { success: false as const, error: "Internal Server Error" };
@@ -110,5 +121,71 @@ export async function deleteBookmarkAction(bookmarkId: number) {
   } catch (error) {
     console.error("Delete Bookmark Error:", error);
     return { success: false as const, error: "Failed to delete bookmark" };
+  }
+}
+
+interface BulkUpdateInput {
+  userId: string;
+  bookmarks: {
+    id: number;
+    title: string;
+    url: string;
+    categoryId: string;
+  }[];
+}
+
+export async function bulkUpdateBookmarksAction(input: BulkUpdateInput) {
+  try {
+    const { userId, bookmarks } = input;
+
+    if (!bookmarks || bookmarks.length === 0) {
+      return { success: false as const, error: "No bookmarks to update" };
+    }
+
+    // FIX: Verify all bookmark IDs belong to this user before updating,
+
+    const bookmarkIds = bookmarks.map((b) => b.id);
+    const ownedBookmarks = await db.bookmark.findMany({
+      where: { id: { in: bookmarkIds }, userId },
+      select: { id: true },
+    });
+
+    const ownedIds = new Set(ownedBookmarks.map((b) => b.id));
+    const unauthorizedIds = bookmarkIds.filter((id) => !ownedIds.has(id));
+
+    if (unauthorizedIds.length > 0) {
+      console.error(
+        `Bulk update: ${unauthorizedIds.length} bookmark(s) not found for userId=${userId}. IDs: ${unauthorizedIds.join(", ")}`,
+      );
+      return {
+        success: false as const,
+        error: `${unauthorizedIds.length} bookmark(s) not found or unauthorized`,
+      };
+    }
+
+    // FIX: Use a single $transaction to guarantee atomicity. All updates
+
+    const results = await db.$transaction(
+      bookmarks.map((b) =>
+        db.bookmark.update({
+          where: {
+            // FIX: Only filter by `id` (the unique PK) inside the where clause.
+
+            id: b.id,
+          },
+          data: {
+            title: b.title,
+            url: b.url || null,
+            categoryId: b.categoryId,
+          },
+        }),
+      ),
+    );
+
+    console.log(`Successfully updated ${results.length} bookmarks`);
+    return { success: true as const, updatedCount: results.length };
+  } catch (error) {
+    console.error("Bulk Update Error:", error);
+    return { success: false as const, error: String(error) };
   }
 }
