@@ -5,29 +5,35 @@ import { motion } from "framer-motion";
 import AddBookmarkDialog from "./AddBookmarkDialog";
 import { OverflowMenu } from "./OverflowMenu";
 import type { OverflowMenuItem } from "./OverflowMenu";
-
-const secondaryActions: OverflowMenuItem[] = [
-  {
-    label: "Edit All",
-    icon: <Pencil className="h-3.5 w-3.5" />,
-    onClick: () => {},
-  },
-  {
-    label: "Import",
-    icon: <Upload className="h-3.5 w-3.5" />,
-    onClick: () => {},
-  },
-  {
-    label: "Export",
-    icon: <Download className="h-3.5 w-3.5" />,
-    onClick: () => {},
-  },
-];
+import EditAllDialog from "./EditAllDialog";
+import ImportDialog from "./ImportDialog";
+import ExportDialog from "./ExportDialog";
 
 export default function PageHeader() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isEditAllDialogOpen, setIsEditAllDialogOpen] = useState(false);
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+  const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const headerRef = useRef<HTMLDivElement>(null);
+
+  const secondaryActions: OverflowMenuItem[] = [
+    {
+      label: "Edit All",
+      icon: <Pencil className="h-3.5 w-3.5" />,
+      onClick: () => setIsEditAllDialogOpen(true),
+    },
+    {
+      label: "Import",
+      icon: <Upload className="h-3.5 w-3.5" />,
+      onClick: () => setIsImportDialogOpen(true),
+    },
+    {
+      label: "Export",
+      icon: <Download className="h-3.5 w-3.5" />,
+      onClick: () => setIsExportDialogOpen(true),
+    },
+  ];
 
   useEffect(() => {
     const scrollParent =
@@ -55,7 +61,6 @@ export default function PageHeader() {
         style={{ isolation: "isolate" }}
       >
         <header className="relative flex w-full items-center justify-between bg-black px-4 py-1">
-          {/* ── Left: breadcrumb + title ── */}
           <div className="flex min-w-0 flex-col gap-0.5">
             <div className="flex items-center gap-1.5">
               <span className="text-[0.68rem] font-medium tracking-widest text-zinc-600 uppercase select-none">
@@ -64,10 +69,8 @@ export default function PageHeader() {
             </div>
           </div>
 
-          {/* ── Right: actions ── */}
           <div className="flex shrink-0 items-center gap-2">
             <OverflowMenu items={secondaryActions} />
-
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.96 }}
@@ -86,7 +89,6 @@ export default function PageHeader() {
           </div>
         </header>
 
-        {/* ── Scroll-fade: pure black → transparent ── */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 bottom-0 translate-y-full"
@@ -97,7 +99,18 @@ export default function PageHeader() {
           }}
         />
       </div>
-
+      <EditAllDialog
+        isDialogOpen={isEditAllDialogOpen}
+        onDialogClose={() => setIsEditAllDialogOpen(false)}
+      />
+      <ImportDialog
+        isDialogOpen={isImportDialogOpen}
+        onDialogClose={() => setIsImportDialogOpen(false)}
+      />
+      <ExportDialog
+        isDialogOpen={isExportDialogOpen}
+        onDialogClose={() => setIsExportDialogOpen(false)}
+      />
       <AddBookmarkDialog
         isDialogOpen={isDialogOpen}
         onDialogClose={() => setIsDialogOpen(false)}
