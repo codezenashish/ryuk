@@ -180,13 +180,13 @@ export default function AddBookmarkDialog({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 8 }}
             transition={{ type: "spring", stiffness: 380, damping: 26 }}
-            className="relative z-10 w-full max-w-md rounded-2xl border border-white/[0.06] bg-zinc-950/40 p-6 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] backdrop-blur-xl"
+            className="relative z-10 w-full max-w-md rounded-2xl border border-white/6 bg-zinc-950/40 p-6 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] backdrop-blur-xl"
             style={{
               boxShadow:
                 "inset 0 1px 0 0 rgba(255, 255, 255, 0.05), 0 24px 64px rgba(0,0,0,0.7)",
             }}
           >
-            <div className="mb-5 flex items-center justify-between border-b border-white/[0.04] pb-4">
+            <div className="mb-5 flex items-center justify-between border-b border-white/4 pb-4">
               <h2 className="font-mono text-[11px] font-bold tracking-widest text-zinc-400 uppercase">
                 Add New Bookmark
               </h2>
@@ -195,7 +195,7 @@ export default function AddBookmarkDialog({
                 whileTap={{ scale: 0.95 }}
                 disabled={isSaving}
                 onClick={handleModalDismissal}
-                className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border border-white/[0.04] bg-white/[0.02] text-zinc-500 transition-colors hover:border-white/[0.1] hover:text-white disabled:opacity-40"
+                className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border border-white/4 bg-white/2 text-zinc-500 transition-colors hover:border-white/1 hover:text-white disabled:opacity-40"
               >
                 <X className="h-3.5 w-3.5" />
               </motion.button>
@@ -216,7 +216,7 @@ export default function AddBookmarkDialog({
                     onBlur={handleUrlBlur}
                     disabled={isSaving}
                     placeholder="https://github.com/..."
-                    className="h-9 w-full rounded-xl border border-white/[0.04] bg-zinc-900/20 pr-3 pl-9 text-xs text-zinc-200 transition-all outline-none placeholder:text-zinc-700 focus:border-white/[0.1] focus:bg-zinc-900/40 disabled:opacity-50"
+                    className="h-9 w-full rounded-xl border border-white/4 bg-zinc-900/20 pr-3 pl-9 text-xs text-zinc-200 transition-all outline-none placeholder:text-zinc-700 focus:border-white/1 focus:bg-zinc-900/40 disabled:opacity-50"
                   />
                 </div>
               </div>
@@ -248,7 +248,7 @@ export default function AddBookmarkDialog({
                         ? "Extracting title…"
                         : "Website title (auto-filled from URL)"
                     }
-                    className="h-9 w-full rounded-xl border border-white/[0.04] bg-zinc-900/20 pr-3 pl-9 text-xs text-zinc-200 transition-all outline-none placeholder:text-zinc-700 focus:border-white/[0.1] focus:bg-zinc-900/40 disabled:opacity-50"
+                    className="h-9 w-full rounded-xl border border-white/4 bg-zinc-900/20 pr-3 pl-9 text-xs text-zinc-200 transition-all outline-none placeholder:text-zinc-700 focus:border-white/1 focus:bg-zinc-900/40 disabled:opacity-50"
                   />
                 </div>
               </div>
@@ -282,7 +282,7 @@ export default function AddBookmarkDialog({
                     onKeyDown={handleKeyDown}
                     disabled={isSaving}
                     placeholder="Select or type a category… (optional)"
-                    className="h-9 w-full rounded-xl border border-white/[0.04] pr-9 pl-9 text-xs text-zinc-200 transition-all outline-none placeholder:text-zinc-700 disabled:opacity-50"
+                    className="h-9 w-full rounded-xl border border-white/4 pr-9 pl-9 text-xs text-zinc-200 transition-all outline-none placeholder:text-zinc-700 disabled:opacity-50"
                     style={{
                       background: isDropdownOpen
                         ? "rgba(255,255,255,0.04)"
@@ -321,7 +321,7 @@ export default function AddBookmarkDialog({
                           stiffness: 500,
                           damping: 30,
                         }}
-                        className="absolute top-[calc(100%+6px)] right-0 left-0 z-50 max-h-52 overflow-hidden overflow-y-auto rounded-xl border border-white/[0.08] bg-[#121215] shadow-2xl"
+                        className="absolute top-[calc(100%+6px)] right-0 left-0 z-50 max-h-52 overflow-hidden overflow-y-auto rounded-xl border border-white/8 bg-[#121215] shadow-2xl"
                         style={{ scrollbarWidth: "none" }}
                       >
                         {filteredCategories.map(
@@ -382,7 +382,7 @@ export default function AddBookmarkDialog({
                         {isNewCategoryTyped && (
                           <>
                             {filteredCategories.length > 0 && (
-                              <div className="border-t border-white/[0.04]" />
+                              <div className="border-t border-white/4" />
                             )}
                             <div
                               id={`${comboboxId}-option-${filteredCategories.length}`}
@@ -429,14 +429,14 @@ export default function AddBookmarkDialog({
                 </div>
               </div>
 
-              <div className="mt-2 flex items-center justify-end gap-2 border-t border-white/[0.04] pt-4">
+              <div className="mt-2 flex items-center justify-end gap-2 border-t border-white/4 pt-4">
                 <motion.button
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.98 }}
                   type="button"
                   disabled={isSaving}
                   onClick={handleModalDismissal}
-                  className="cursor-pointer rounded-xl border border-white/[0.04] bg-white/[0.01] px-4 py-2 text-xs font-semibold text-zinc-500 transition-colors hover:bg-white/[0.03] hover:text-zinc-300 disabled:opacity-40"
+                  className="cursor-pointer rounded-xl border border-white/4 bg-white/1 px-4 py-2 text-xs font-semibold text-zinc-500 transition-colors hover:bg-white/3 hover:text-zinc-300 disabled:opacity-40"
                 >
                   Cancel
                 </motion.button>
