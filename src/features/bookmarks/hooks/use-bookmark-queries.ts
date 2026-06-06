@@ -13,6 +13,7 @@ export interface BookmarkItem {
   title: string;
   url: string | null;
   favicon: string;
+  createdAt: Date;
 }
 
 export interface CategoryWithBookmarks {
@@ -74,6 +75,7 @@ export function useCreateBookmarkMutation() {
             title: newBookmark.title,
             url: newBookmark.url,
             favicon: newBookmark.favicon,
+            createdAt: new Date(),
           };
 
           if (existingIndex >= 0) {
@@ -193,29 +195,94 @@ export function useBulkUpdateBookmarksMutation() {
   return useMutation({
     mutationFn: async (vars: BulkUpdateVars) => {
       const result = await bulkUpdateBookmarksAction(vars);
-      // FIX: Surface server-side logical failures as thrown errors so TanStack
-      // Query routes them to `onError` instead of `onSuccess`. Previously the
-      // mutation resolved successfully even when the server returned
-      // `{ success: false }`, causing the dialog to close with no data saved
-      // and no error surfaced to the user.
       if (!result.success) {
         throw new Error(result.error || "Bulk update failed");
       }
       return result;
     },
 
-    // FIX: Use `onSettled` (runs on both success AND error) instead of
-    // separate `onSuccess`/`onError` handlers that both called
-    // `invalidateQueries`. This guarantees the cache is always refreshed
-    // exactly once after the mutation settles, regardless of outcome.
+    onMutate: async (vars) => {
+      const queryKey = [...BOOKMARKS_KEY, vars.userId];
+
+      await queryClient.cancelQueries({ queryKey });
+
+      const previousData =
+        queryClient.getQueryData<CategoryWithBookmarks[]>(queryKey);
+
+      queryClient.setQueryData<CategoryWithBookmarks[]>(queryKey, (old:any) => {
+        if (!old) return old;
+
+        const updatedBookmarksMap = new Map<
+          number,
+          (typeof vars.bookmarks)[0]
+        >();
+        for (const b of vars.bookmarks) {
+          updatedBookmarksMap.set(b.id, b);
+        }
+
+        const finalBookmarks = new Map<
+          number,
+          BookmarkItem & { categoryId: string }
+        >();
+        for (const cat of old) {
+          for (const b of cat.bookmarks) {
+            const update = updatedBookmarksMap.get(b.id);
+            if (update) {
+              finalBookmarks.set(b.id, {
+                ...b,
+                title: update.title,
+                url: update.url || null,
+                categoryId: update.categoryId,
+              });
+            } else {
+              finalBookmarks.set(b.id, {
+                ...b,
+                categoryId: cat.id,
+              });
+            }
+          }
+        }
+
+        return old.map((cat: any) => {
+          const retained = cat.bookmarks
+            .map((b: any) => finalBookmarks.get(b.id))
+            .filter(
+              (b: any): b is NonNullable<typeof b> =>
+                !!b && b.categoryId === cat.id,
+            );
+
+          const movedIn = Array.from(finalBookmarks.values()).filter(
+            (b: any) =>
+              b.categoryId === cat.id &&
+              !cat.bookmarks.some((orig: any) => orig.id === b.id),
+          );
+
+          return {
+            ...cat,
+            bookmarks: [...retained, ...movedIn].map(
+              ({ categoryId, ...item }: any) => item,
+            ),
+          };
+        });
+      });
+
+      return { previousData };
+    },
+
+    onError: (error, vars, context) => {
+      console.error("Bulk update mutation error:", error);
+      if (context?.previousData) {
+        queryClient.setQueryData(
+          [...BOOKMARKS_KEY, vars.userId],
+          context.previousData,
+        );
+      }
+    },
+
     onSettled: (_data, _error, vars) => {
       queryClient.invalidateQueries({
         queryKey: [...BOOKMARKS_KEY, vars.userId],
       });
-    },
-
-    onError: (error) => {
-      console.error("Bulk update mutation error:", error);
     },
   });
 }
