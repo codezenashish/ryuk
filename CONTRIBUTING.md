@@ -1,46 +1,63 @@
-# Contributing to DevNest 🚀
+# Contributing to DevNest
 
-Welcome to DevNest! We are thrilled that you are interested in contributing to this open-source developer workspace app. Whether you are fixing a minor bug, improving documentation, or building a brand-new feature, your help is highly appreciated!
+First, thank you for considering contributing to DevNest. We value community input and collaboration to improve this application.
 
-By participating in this project, you agree to abide by our code of conduct and maintain a respectful environment for everyone.
+The following is a set of guidelines for contributing to DevNest. These are guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull request.
 
----
+## How Can I Contribute?
 
-## 🛠️ Tech Stack Recap
+### Reporting Bugs
 
-Before diving in, make sure you are comfortable with our core stack:
+This section guides you through submitting a bug report. Following these guidelines helps maintainers understand your report, reproduce the behavior, and find related reports.
 
-- **Frontend/Backend:** Next.js 14 (App Router), TypeScript, Tailwind CSS
-- **Database:** PostgreSQL with Prisma ORM
-- **Real-time:** Pusher API
+- Use the GitHub issue search to check if the bug has already been reported.
+- If no issue exists, create a new issue using the provided Bug Report template.
+- Explain the problem clearly and include additional details to help maintainers reproduce the problem.
+- Provide step-by-step instructions to reproduce the behavior.
+- Provide specific examples to demonstrate the steps.
+- Describe the behavior you observed after following the steps and point out what exactly is the problem with that behavior.
+- Explain which behavior you expected to see instead and why.
 
----
+### Suggesting Enhancements
 
-## 🗺️ How Can You Contribute?
+This section guides you through submitting an enhancement suggestion, including completely new features and minor improvements to existing functionality.
 
-### 1. Reporting Bugs & Requesting Features
+- Use the GitHub issue search to check if the enhancement has already been suggested.
+- If no issue exists, create a new issue using the provided Feature Request template.
+- Provide a clear and descriptive title for the issue.
+- Provide a step-by-step description of the suggested enhancement in as many details as possible.
+- Explain why this enhancement would be useful to most users.
 
-If you find a bug or have an awesome idea, please open a GitHub Issue:
+### Pull Requests
 
-- Check existing issues to see if it has already been reported.
-- Use a clear title and provide a detailed description (including steps to reproduce for bugs).
+The process described here has several goals:
+- Maintain quality standards.
+- Fix problems that are important to users.
+- Engage the community in working toward the best solutions.
 
-### 2. Working on Issues
+Please follow these steps to have your contribution considered by the maintainers:
 
-- Look for issues with the **`good first issue`** or **`help wanted`** labels if you are a first-time contributor.
-- Leave a comment on the issue saying _"I would like to work on this"_ so we can assign it to you and avoid duplicate work.
+1. Fork the repository and create your branch from `main`.
+2. Ensure you have installed the required dependencies via Bun.
+3. Write clear and concise commit messages.
+4. If you have added code that should be tested, add tests.
+5. Ensure the test suite passes before submitting your pull request.
+6. Make sure your code conforms to the styling and linting configurations.
+7. Issue that pull request against the `main` branch.
 
----
+## Style Guides
 
-## 💻 Local Setup Guide
+### Git Commit Messages
 
-Follow these steps to set up DevNest on your local machine:
+- Use the present tense ("Add feature" not "Added feature").
+- Use the imperative mood ("Move cursor to..." not "Moves cursor to...").
+- Limit the first line to 72 characters or less.
+- Reference issues and pull requests liberally after the first line.
 
-### 1. Fork and Clone the Repository
+### Code Conventions
 
-Fork this repo on GitHub, then clone your fork locally:
+- Follow the established directory structures in the Next.js App Router paradigm.
+- Maintain typing definitions explicitly where inference falls short.
+- Use the established utility functions (e.g., classname-merge) instead of implementing duplicates.
 
-```bash
-git clone https://github.com/codezenashish/devnext.git
-cd DevNest
-```
+Thank you for your contributions.
