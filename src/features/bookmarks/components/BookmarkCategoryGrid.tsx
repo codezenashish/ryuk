@@ -5,25 +5,20 @@ import {
   RiEditLine,
   RiPushpinLine,
   RiPushpinFill,
-  RiCloseLine,
   RiCheckLine,
 } from "react-icons/ri";
 
 import { getIconComponent } from "../utils/category-icon-registry";
 import { useDeleteBookmarkMutation } from "../hooks/use-bookmark-queries";
-
-interface BookmarkItem {
-  id: number;
-  title: string;
-  url: string;
-  favicon?: string | null;
-}
+import BookmarkCard from "./BookmarkCard";
+import type { BookmarkItem } from "../hooks/use-bookmark-queries";
 
 interface CategoryGridSectionProps {
   id: string;
   initialName: string;
   initialIcon: string;
   bookmarks: BookmarkItem[];
+  viewMode: "grid" | "list";
 }
 
 export default function CategoryGridSection({
@@ -31,6 +26,7 @@ export default function CategoryGridSection({
   initialName,
   initialIcon,
   bookmarks,
+  viewMode,
 }: CategoryGridSectionProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
@@ -43,42 +39,46 @@ export default function CategoryGridSection({
   const handleDelete = (bookmarkId: number) => {
     deleteMutation.mutate({
       bookmarkId,
-      userId: "mock-user-id-123",
+      userId: "mock-user-id-123", // TODO: Replace with actual user ID from auth context
     });
   };
 
+  if (bookmarks.length === 0) return null;
+
   return (
-    <div className="mt-6 w-full max-w-7xl select-none">
+    <div className="mt-8 w-full select-none">
       <div className="mb-4 flex items-center justify-between px-1">
         <div className="flex items-center gap-3">
-          <CategoryHeaderIcon className="h-4 w-4 shrink-0 text-zinc-400" />
+          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-white/5 border border-white/10">
+            <CategoryHeaderIcon className="h-3.5 w-3.5 text-zinc-400" />
+          </div>
 
           {isEditing ? (
             <input
               type="text"
               value={categoryName}
               onChange={(e) => setCategoryName(e.target.value)}
-              className="rounded border-dashed border-white/1 bg-white/4 px-2 py-0.5 font-mono text-xs font-bold tracking-widest text-white outline-none focus:border-indigo-500"
+              className="rounded border-dashed border-white/20 bg-white/5 px-2 py-0.5 text-sm font-semibold tracking-wide text-white outline-none focus:border-zinc-500"
               autoFocus
             />
           ) : (
-            <h2 className="font-mono text-xs font-bold tracking-widest text-zinc-400">
+            <h2 className="text-sm font-semibold tracking-wide text-zinc-200">
               {categoryName}
             </h2>
           )}
 
-          <span className="rounded-md border border-white/6 bg-white/2 px-2 py-0.5 font-mono text-[10px] font-bold text-zinc-500">
-            {bookmarks.length} Total
+          <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-medium text-zinc-500">
+            {bookmarks.length}
           </span>
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 opacity-0 transition-opacity group-hover:opacity-100 md:opacity-100">
           <button
             onClick={() => setIsPinned(!isPinned)}
             className={`cursor-pointer rounded-lg border p-1.5 transition-colors active:scale-95 ${
               isPinned
-                ? "border-indigo-500/30 bg-indigo-500/10 text-indigo-400"
-                : "border-white/6 bg-white/2 text-zinc-500 hover:text-white"
+                ? "border-zinc-500/30 bg-zinc-500/10 text-zinc-300"
+                : "border-transparent bg-transparent text-zinc-500 hover:bg-white/5 hover:text-zinc-300"
             }`}
           >
             {isPinned ? (
@@ -93,7 +93,7 @@ export default function CategoryGridSection({
             className={`cursor-pointer rounded-lg border p-1.5 transition-colors active:scale-95 ${
               isEditing
                 ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
-                : "border-white/6 bg-white/2 text-zinc-500 hover:border-white/12 hover:text-white"
+                : "border-transparent bg-transparent text-zinc-500 hover:bg-white/5 hover:text-zinc-300"
             }`}
           >
             {isEditing ? <RiCheckLine size={14} /> : <RiEditLine size={14} />}
@@ -102,64 +102,37 @@ export default function CategoryGridSection({
       </div>
 
       <div
-        className={`w-full rounded-2xl p-4 transition-all duration-300 ${
+        className={`w-full transition-all duration-300 ${
           isEditing
-            ? "border border-dashed border-indigo-500/50"
-            : "border border-transparent bg-transparent"
+            ? "rounded-2xl border border-dashed border-zinc-500/50 p-4"
+            : ""
         }`}
       >
-        <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-12">
-          {bookmarks.map((bookmark) => {
-            return (
-              <div
+        {viewMode === "grid" ? (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            {bookmarks.map((bookmark) => (
+              <BookmarkCard
                 key={bookmark.id}
-                className="group relative flex h-20 w-full flex-col items-center justify-center overflow-visible rounded-xl border border-white/4 bg-white/1 text-zinc-500 transition-all duration-200 hover:border-white/8 hover:bg-white/3"
-              >
-                {isEditing && (
-                  <button
-                    onClick={() => handleDelete(bookmark.id)}
-                    className="animate-in fade-in zoom-in-75 absolute -top-1 -right-1 z-30 cursor-pointer rounded-md border border-white/10 bg-zinc-900 p-0.5 text-zinc-400 transition-colors duration-150 hover:border-red-500/30 hover:text-red-400"
-                  >
-                    <RiCloseLine size={12} />
-                  </button>
-                )}
-
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href={isEditing ? undefined : bookmark.url}
-                  className={`flex h-full w-full flex-col items-center justify-center rounded-xl p-2 ${
-                    isEditing
-                      ? "pointer-events-none opacity-40"
-                      : "cursor-pointer"
-                  }`}
-                >
-                  {bookmark.favicon ? (
-                    <img
-                      src={bookmark.favicon}
-                      alt={bookmark.title}
-                      className="h-6 w-6 rounded object-contain transition-transform group-hover:scale-105"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src =
-                          `https://avatar.vercel.sh/${new URL(bookmark.url).hostname}`;
-                      }}
-                    />
-                  ) : (
-                    <div className="flex h-6 w-6 items-center justify-center rounded bg-zinc-800 text-[10px] font-bold text-zinc-400">
-                      {bookmark.title.slice(0, 2).toUpperCase()}
-                    </div>
-                  )}
-                </a>
-
-                {!isEditing && (
-                  <div className="pointer-events-none absolute -bottom-8 left-1/2 z-20 -translate-x-1/2 scale-95 rounded-md border border-white/8 bg-zinc-950 px-2 py-1 font-mono text-[10px] font-medium whitespace-nowrap text-zinc-300 opacity-0 shadow-xl transition-all duration-200 group-hover:-bottom-10 group-hover:scale-100 group-hover:opacity-100">
-                    {bookmark.title}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+                bookmark={bookmark}
+                categoryName={categoryName}
+                viewMode="grid"
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2">
+            {bookmarks.map((bookmark) => (
+              <BookmarkCard
+                key={bookmark.id}
+                bookmark={bookmark}
+                categoryName={categoryName}
+                viewMode="list"
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
