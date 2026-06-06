@@ -1,24 +1,77 @@
 "use client";
 
+import { motion, AnimatePresence } from "framer-motion";
+import { Download, X } from "lucide-react";
+
 interface DialogProps {
   isDialogOpen: boolean;
   onDialogClose: () => void;
 }
 
 export default function ExportDialog({ isDialogOpen, onDialogClose }: DialogProps) {
-  if (!isDialogOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-xl border border-white/8 bg-zinc-950 p-6 shadow-2xl">
-        <h2 className="text-lg font-semibold text-white">Export Bookmarks</h2>
-        <button 
-          onClick={onDialogClose}
-          className="mt-4 rounded-lg bg-white/10 px-4 py-2 text-xs font-medium text-zinc-300 hover:bg-white/20"
-        >
-          Close
-        </button>
-      </div>
-    </div>
+    <AnimatePresence>
+      {isDialogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="absolute inset-0 bg-black/60 backdrop-blur-md"
+            onClick={onDialogClose}
+          />
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96, y: 8 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96, y: 8 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            className="relative z-10 w-full max-w-sm overflow-hidden rounded-2xl border border-white/5 bg-[#09090b]/95 p-6 shadow-2xl backdrop-blur-xl"
+          >
+            <div className="mb-6 flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex size-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 shadow-inner">
+                  <Download className="size-5 text-zinc-300" />
+                </div>
+                <div>
+                  <h2 className="font-semibold tracking-tight text-white">Export Data</h2>
+                  <p className="text-[11px] text-zinc-500 uppercase tracking-widest mt-0.5">Bookmarks & Tags</p>
+                </div>
+              </div>
+              <motion.button 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={onDialogClose}
+                className="flex size-7 items-center justify-center rounded-lg border border-transparent text-zinc-500 transition-colors hover:border-white/10 hover:bg-white/5 hover:text-white"
+              >
+                <X className="size-4" />
+              </motion.button>
+            </div>
+            
+            <div className="mb-6 rounded-xl border border-white/5 bg-white/[0.02] p-4">
+              <p className="text-xs leading-relaxed text-zinc-400">
+                This will export all your bookmarks, categories, and metadata into a standard JSON file that you can safely store or import later.
+              </p>
+            </div>
+
+            <div className="flex gap-2 justify-end">
+              <button 
+                onClick={onDialogClose}
+                className="rounded-xl border border-white/5 bg-transparent px-4 py-2 text-xs font-semibold text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={onDialogClose}
+                className="rounded-xl bg-white px-4 py-2 text-xs font-bold text-black shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all hover:scale-105 hover:bg-zinc-200 active:scale-95"
+              >
+                Download JSON
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
   );
 }
