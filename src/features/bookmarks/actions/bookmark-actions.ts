@@ -61,6 +61,7 @@ export async function fetchBookmarksAction(userId: string) {
           title: true,
           url: true,
           favicon: true,
+          createdAt: true,
         },
       },
     },
@@ -166,20 +167,25 @@ export async function bulkUpdateBookmarksAction(input: BulkUpdateInput) {
     // FIX: Use a single $transaction to guarantee atomicity. All updates
 
     const results = await db.$transaction(
-      bookmarks.map((b) =>
-        db.bookmark.update({
-          where: {
-            // FIX: Only filter by `id` (the unique PK) inside the where clause.
-
-            id: b.id,
-          },
-          data: {
-            title: b.title,
-            url: b.url || null,
-            categoryId: b.categoryId,
-          },
-        }),
-      ),
+      async (tx) => {
+        return Promise.all(
+          bookmarks.map((b) =>
+            tx.bookmark.update({
+              where: {
+                id: b.id,
+              },
+              data: {
+                title: b.title,
+                url: b.url || null,
+                categoryId: b.categoryId,
+              },
+            })
+          )
+        );
+      },
+      {
+        timeout: 15000,
+      }
     );
 
     console.log(`Successfully updated ${results.length} bookmarks`);
