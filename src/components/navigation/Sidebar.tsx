@@ -75,7 +75,7 @@ export default function Sidebar() {
             </nav>
 
             <div className="mt-auto pt-6">
-              <div className="mb-4 h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+              <div className="mb-4 h-px w-full bg-linear-to-r from-transparent via-white/10 to-transparent" />
               <div className="flex flex-col gap-0.5">
                 {bottomItems.map((item) => (
                   <NavItem key={item.label} item={item} />
@@ -92,7 +92,7 @@ export default function Sidebar() {
                 )}
                 aria-label="Upgrade to Pro"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-pink-500/20 opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100" />
+                <div className="absolute inset-0 bg-linear-to-r from-indigo-500/20 via-purple-500/20 to-pink-500/20 opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100" />
                 
                 <span className="relative z-10 flex h-full w-full items-center justify-center gap-2">
                   {isCollapsed ? (
