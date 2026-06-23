@@ -84,11 +84,7 @@ export const sections: NavSection[] = [
         href: "/snippets",
         icon: <RiCodeLine size={17} />,
       },
-      {
-        label: "API Tester",
-        href: "/api-tester",
-        icon: <RiTerminalLine size={17} />,
-      },
+      
     ],
   },
 ];
