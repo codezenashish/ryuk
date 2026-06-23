@@ -19,9 +19,9 @@ export function NavItem({ item }: Props) {
   const { isCollapsed } = useContext(SidebarContext);
 
   return (
-    <Link 
-      href={item.href} 
-      className="relative block outline-none" 
+    <Link
+      href={item.href}
+      className="relative block outline-none"
       title={isCollapsed ? item.label : undefined}
       aria-label={item.label}
     >
@@ -30,8 +30,10 @@ export function NavItem({ item }: Props) {
         whileTap={{ scale: 0.98 }}
         className={cn(
           "group relative flex items-center rounded-xl font-medium transition-colors duration-200",
-          isCollapsed ? "mx-auto h-11 w-11 justify-center p-2.5" : "gap-3 px-3 py-2.5 text-sm",
-          isActive ? "text-white" : "text-zinc-400 hover:text-zinc-200"
+          isCollapsed
+            ? "mx-auto h-11 w-11 justify-center p-2.5"
+            : "gap-3 px-3 py-2.5 text-sm",
+          isActive ? "text-white" : "text-zinc-400 hover:text-zinc-200",
         )}
       >
         {/* Active state sliding background */}
@@ -40,15 +42,15 @@ export function NavItem({ item }: Props) {
             layoutId="active-sidebar-bg"
             className="absolute inset-0 rounded-xl border border-white/5 bg-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
             initial={false}
-            transition={{ 
-              type: "spring", 
-              stiffness: 400, 
+            transition={{
+              type: "spring",
+              stiffness: 400,
               damping: 35,
-              mass: 0.8
+              mass: 0.8,
             }}
           />
         )}
-        
+
         {/* Subtle hover background for inactive items */}
         {!isActive && (
           <div className="absolute inset-0 rounded-xl bg-white/5 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
@@ -56,9 +58,9 @@ export function NavItem({ item }: Props) {
 
         {/* Left Accent border for active item (Linear style) */}
         {isActive && (
-          <motion.div 
+          <motion.div
             layoutId="active-sidebar-indicator"
-            className="absolute -left-1 top-1/2 h-1/2 w-0.5 -translate-y-1/2 rounded-r-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)]" 
+            className="absolute top-1/2 -left-1 h-1/2 w-0.5 -translate-y-1/2 rounded-r-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)]"
             initial={false}
             transition={{ type: "spring", stiffness: 400, damping: 35 }}
           />
@@ -67,8 +69,10 @@ export function NavItem({ item }: Props) {
         <span
           className={cn(
             "relative z-10 shrink-0 transition-all duration-200",
-            isActive ? "text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]" : "text-zinc-500 group-hover:text-zinc-300",
-            isCollapsed && !isActive ? "group-hover:scale-110" : ""
+            isActive
+              ? "text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"
+              : "text-zinc-500 group-hover:text-zinc-300",
+            isCollapsed && !isActive ? "group-hover:scale-110" : "",
           )}
         >
           {item.icon}
@@ -76,7 +80,7 @@ export function NavItem({ item }: Props) {
 
         <AnimatePresence mode="popLayout">
           {!isCollapsed && (
-            <motion.span 
+            <motion.span
               initial={{ opacity: 0, filter: "blur(4px)", x: -10 }}
               animate={{ opacity: 1, filter: "blur(0px)", x: 0 }}
               exit={{ opacity: 0, filter: "blur(4px)", x: -10 }}
@@ -95,10 +99,10 @@ export function NavItem({ item }: Props) {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
               className={cn(
-                 "relative z-10 rounded border px-1.5 py-0.5 font-mono text-[10px] shadow-sm tabular-nums transition-colors duration-200",
+                "relative z-10 rounded border px-1.5 py-0.5 font-mono text-[10px] tabular-nums shadow-sm transition-colors duration-200",
                 isActive
                   ? "border-white/10 bg-black/40 text-white"
-                  : "border-white/5 bg-black/20 text-zinc-500 group-hover:border-white/10 group-hover:text-zinc-300"
+                  : "border-white/5 bg-black/20 text-zinc-500 group-hover:border-white/10 group-hover:text-zinc-300",
               )}
             >
               {item.badge}
