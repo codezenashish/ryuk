@@ -17,24 +17,24 @@ export function NavSection({ section }: Props) {
     <div className="flex flex-col gap-2">
       <AnimatePresence mode="wait">
         {!isCollapsed ? (
-          <motion.h3 
+          <motion.h3
             key="title"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="px-3 text-[11px] font-bold uppercase tracking-widest text-zinc-500 select-none"
+            className="px-3 text-[11px] font-bold tracking-widest text-zinc-500 uppercase select-none"
           >
             {section.title}
           </motion.h3>
         ) : (
-          <motion.div 
+          <motion.div
             key="divider"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="mx-auto my-1.5 w-6 border-t border-white/10" 
+            className="mx-auto my-1.5 w-6 border-t border-white/10"
           />
         )}
       </AnimatePresence>
