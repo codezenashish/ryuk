@@ -5,11 +5,12 @@ import { Search } from "lucide-react";
 import PageHeader from "@/src/features/bookmarks/components/PageHeader";
 import CategoryGridSection from "@/src/features/bookmarks/components/BookmarkCategoryGrid";
 import { useBookmarksQuery } from "@/src/features/bookmarks/hooks/use-bookmark-queries";
-
-const MOCK_USER_ID = "mock-user-id-123";
+import { useAuth } from "@clerk/nextjs";
 
 export default function BookmarksPage() {
-  const { data: categories, isLoading } = useBookmarksQuery(MOCK_USER_ID);
+  const { userId } = useAuth();
+  const { data: categories, isLoading: isQueryLoading } = useBookmarksQuery(userId);
+  const isLoading = isQueryLoading || !userId;
   
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
