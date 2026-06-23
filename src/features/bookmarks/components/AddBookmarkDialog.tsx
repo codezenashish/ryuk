@@ -21,6 +21,7 @@ import { fetchBookmarkMetadata } from "../actions/scrape-metadata-action";
 import { useCombobox } from "../hooks/use-category-combobox";
 import { useCreateBookmarkMutation } from "../hooks/use-bookmark-queries";
 import { cn } from "@/src/lib/classname-merge";
+import { useAuth } from "@clerk/nextjs";
 
 interface AddBookmarkDialogProps {
   isDialogOpen: boolean;
@@ -33,8 +34,6 @@ const CATEGORY_CONFIGURATIONS = [
   { label: "Documentation", icon: FileText },
   { label: "Design Resources", icon: Palette },
 ];
-
-const MOCK_USER_ID = "mock-user-id-123";
 
 function normalizeUrl(value: string) {
   const trimmedUrl = value.trim();
@@ -70,6 +69,7 @@ export default function AddBookmarkDialog({
   isDialogOpen,
   onDialogClose,
 }: AddBookmarkDialogProps) {
+  const { userId } = useAuth();
   const [bookmarkUrl, setBookmarkUrl] = useState("");
   const [bookmarkTitle, setBookmarkTitle] = useState("");
   const [bookmarkFavicon, setBookmarkFavicon] = useState("");
@@ -197,13 +197,18 @@ export default function AddBookmarkDialog({
       bookmarkFavicon ||
       `https://www.google.com/s2/favicons?sz=64&domain=${hostname}`;
 
+    if (!userId) {
+      setFormError("You must be logged in to save a bookmark.");
+      return;
+    }
+
     createMutation.mutate(
       {
         url: normalizedUrl,
         title: finalTitle,
         favicon: finalFavicon,
         categoryName: finalCategory,
-        userId: MOCK_USER_ID,
+        userId: userId,
       },
       {
         onSuccess: (response) => {
