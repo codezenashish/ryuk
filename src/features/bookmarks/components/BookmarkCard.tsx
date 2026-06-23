@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  MoreHorizontal, 
-  ExternalLink, 
-  Trash2, 
-  Pencil, 
+import {
+  MoreHorizontal,
+  ExternalLink,
+  Trash2,
+  Pencil,
   Link as LinkIcon,
-  Calendar
+  Calendar,
 } from "lucide-react";
 import type { BookmarkItem } from "../hooks/use-bookmark-queries";
 
@@ -31,11 +31,14 @@ export default function BookmarkCard({
   const [isHovered, setIsHovered] = useState(false);
 
   const domain = bookmark.url ? new URL(bookmark.url).hostname : "No URL";
-  const formattedDate = new Date(bookmark.createdAt).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric"
-  });
+  const formattedDate = new Date(bookmark.createdAt).toLocaleDateString(
+    "en-US",
+    {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    },
+  );
 
   const handleCopy = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -82,13 +85,19 @@ export default function BookmarkCard({
           setIsHovered(false);
           setIsMenuOpen(false);
         }}
-        className="group relative flex items-center gap-4 rounded-xl border border-white/5 bg-white/[0.02] p-3 transition-colors hover:border-white/10 hover:bg-white/[0.04]"
+        className="group relative flex items-center gap-4 rounded-xl border border-white/5 bg-white/2 p-3 transition-colors hover:border-white/10 hover:bg-white/4"
       >
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-black/50 border border-white/5 overflow-hidden">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-white/5 bg-black/50">
           {bookmark.favicon ? (
-            <img src={bookmark.favicon} alt="" className="h-5 w-5 object-contain" onError={(e) => {
-              (e.target as HTMLImageElement).src = `https://avatar.vercel.sh/${domain}`;
-            }} />
+            <img
+              src={bookmark.favicon}
+              alt=""
+              className="h-5 w-5 object-contain"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src =
+                  `https://avatar.vercel.sh/${domain}`;
+              }}
+            />
           ) : (
             <div className="text-xs font-bold text-zinc-400">
               {bookmark.title.slice(0, 2).toUpperCase()}
@@ -97,11 +106,15 @@ export default function BookmarkCard({
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <h3 className="truncate text-sm font-medium text-zinc-200">{bookmark.title}</h3>
+          <h3 className="truncate text-sm font-medium text-zinc-200">
+            {bookmark.title}
+          </h3>
           <div className="flex items-center gap-2 text-xs text-zinc-500">
             <span className="truncate">{domain}</span>
             <span>•</span>
-            <span className="rounded bg-white/5 px-1.5 py-0.5 text-[10px] font-medium text-zinc-400">{categoryName}</span>
+            <span className="rounded bg-white/5 px-1.5 py-0.5 text-[10px] font-medium text-zinc-400">
+              {categoryName}
+            </span>
           </div>
         </div>
 
@@ -128,19 +141,33 @@ export default function BookmarkCard({
                 className="absolute right-0 z-50 mt-1 w-36 rounded-lg border border-white/10 bg-zinc-900 p-1 shadow-xl"
               >
                 <div className="flex flex-col">
-                  <a href={bookmark.url || "#"} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-zinc-300 hover:bg-white/5 hover:text-white">
+                  <a
+                    href={bookmark.url || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-zinc-300 hover:bg-white/5 hover:text-white"
+                  >
                     <ExternalLink className="h-3.5 w-3.5" /> Open
                   </a>
-                  <button onClick={handleCopy} className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs text-zinc-300 hover:bg-white/5 hover:text-white text-left">
+                  <button
+                    onClick={handleCopy}
+                    className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs text-zinc-300 hover:bg-white/5 hover:text-white"
+                  >
                     <LinkIcon className="h-3.5 w-3.5" /> Copy Link
                   </button>
                   <div className="my-1 h-px bg-white/5" />
                   {onEdit && (
-                    <button onClick={handleEdit} className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs text-zinc-300 hover:bg-white/5 hover:text-white text-left">
+                    <button
+                      onClick={handleEdit}
+                      className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs text-zinc-300 hover:bg-white/5 hover:text-white"
+                    >
                       <Pencil className="h-3.5 w-3.5" /> Edit
                     </button>
                   )}
-                  <button onClick={handleDelete} className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs text-red-400 hover:bg-red-500/10 hover:text-red-300 text-left">
+                  <button
+                    onClick={handleDelete}
+                    className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                  >
                     <Trash2 className="h-3.5 w-3.5" /> Remove
                   </button>
                 </div>
@@ -169,19 +196,25 @@ export default function BookmarkCard({
       }}
       className="group relative flex h-full min-h-[140px] flex-col overflow-hidden rounded-xl border border-white/5 bg-white/[0.02] p-4 transition-colors hover:border-white/10 hover:bg-white/[0.04]"
     >
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-black/50 border border-white/5 overflow-hidden">
+      <div className="mb-3 flex items-start justify-between">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-white/5 bg-black/50">
           {bookmark.favicon ? (
-            <img src={bookmark.favicon} alt="" className="h-5 w-5 object-contain" onError={(e) => {
-              (e.target as HTMLImageElement).src = `https://avatar.vercel.sh/${domain}`;
-            }} />
+            <img
+              src={bookmark.favicon}
+              alt=""
+              className="h-5 w-5 object-contain"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src =
+                  `https://avatar.vercel.sh/${domain}`;
+              }}
+            />
           ) : (
             <div className="text-xs font-bold text-zinc-400">
               {bookmark.title.slice(0, 2).toUpperCase()}
             </div>
           )}
         </div>
-        
+
         <div className="relative">
           <button
             onClick={toggleMenu}
@@ -200,19 +233,33 @@ export default function BookmarkCard({
                 className="absolute right-0 z-50 mt-1 w-36 rounded-lg border border-white/10 bg-zinc-900 p-1 shadow-xl"
               >
                 <div className="flex flex-col">
-                  <a href={bookmark.url || "#"} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-zinc-300 hover:bg-white/5 hover:text-white">
+                  <a
+                    href={bookmark.url || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-zinc-300 hover:bg-white/5 hover:text-white"
+                  >
                     <ExternalLink className="h-3.5 w-3.5" /> Open
                   </a>
-                  <button onClick={handleCopy} className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs text-zinc-300 hover:bg-white/5 hover:text-white text-left">
+                  <button
+                    onClick={handleCopy}
+                    className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs text-zinc-300 hover:bg-white/5 hover:text-white"
+                  >
                     <LinkIcon className="h-3.5 w-3.5" /> Copy Link
                   </button>
                   <div className="my-1 h-px bg-white/5" />
                   {onEdit && (
-                    <button onClick={handleEdit} className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs text-zinc-300 hover:bg-white/5 hover:text-white text-left">
+                    <button
+                      onClick={handleEdit}
+                      className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs text-zinc-300 hover:bg-white/5 hover:text-white"
+                    >
                       <Pencil className="h-3.5 w-3.5" /> Edit
                     </button>
                   )}
-                  <button onClick={handleDelete} className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs text-red-400 hover:bg-red-500/10 hover:text-red-300 text-left">
+                  <button
+                    onClick={handleDelete}
+                    className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                  >
                     <Trash2 className="h-3.5 w-3.5" /> Remove
                   </button>
                 </div>
@@ -222,12 +269,18 @@ export default function BookmarkCard({
         </div>
       </div>
 
-      <div className="flex flex-col flex-1">
-        <h3 className="line-clamp-2 text-sm font-medium text-zinc-200 mb-1 leading-snug">{bookmark.title}</h3>
-        <p className="truncate text-xs text-zinc-500 mb-auto mt-0.5">{domain}</p>
-        
+      <div className="flex flex-1 flex-col">
+        <h3 className="mb-1 line-clamp-2 text-sm leading-snug font-medium text-zinc-200">
+          {bookmark.title}
+        </h3>
+        <p className="mt-0.5 mb-auto truncate text-xs text-zinc-500">
+          {domain}
+        </p>
+
         <div className="mt-4 flex items-center justify-between text-[10px] font-medium text-zinc-500">
-          <span className="rounded bg-white/5 px-1.5 py-0.5">{categoryName}</span>
+          <span className="rounded bg-white/5 px-1.5 py-0.5">
+            {categoryName}
+          </span>
           <span>{formattedDate}</span>
         </div>
       </div>
