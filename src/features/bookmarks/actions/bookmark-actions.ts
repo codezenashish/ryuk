@@ -23,7 +23,7 @@ function getCategoryIconName(categoryName: string): string {
   return "RiFolder5Line";
 }
 
-async function findOrCreateCategory(categoryName: string, userId: string) {
+async function findOrCreateCategory(categoryName: string, userId: string, icon?: string) {
   const trimmed = categoryName.trim() || "General";
 
   const existing = await db.category.findFirst({
@@ -42,7 +42,7 @@ async function findOrCreateCategory(categoryName: string, userId: string) {
     data: {
       name: trimmed,
       userId,
-      icon: getCategoryIconName(trimmed),
+      icon: icon || getCategoryIconName(trimmed),
       position: nextPosition,
     },
     select: { id: true },
@@ -50,6 +50,10 @@ async function findOrCreateCategory(categoryName: string, userId: string) {
 }
 
 export async function fetchBookmarksAction(userId: string) {
+  if (!userId) {
+    throw new Error("Unauthorized: userId is required");
+  }
+
   const categories = await db.category.findMany({
     where: { userId },
     orderBy: { position: "asc" },
@@ -75,16 +79,17 @@ interface CreateBookmarkInput {
   title: string;
   favicon: string;
   categoryName: string;
+  categoryIcon?: string;
   userId: string;
 }
 
 export async function createBookmarkAction(input: CreateBookmarkInput) {
   try {
-    const { url, title, favicon, categoryName, userId } = input;
+    const { url, title, favicon, categoryName, categoryIcon, userId } = input;
     if (!url || !title)
       return { success: false as const, error: "URL and title are required" };
 
-    const category = await findOrCreateCategory(categoryName, userId);
+    const category = await findOrCreateCategory(categoryName, userId, categoryIcon);
 
     const newBookmark = await db.$transaction(async (tx) => {
       const { _max } = await tx.bookmark.aggregate({
