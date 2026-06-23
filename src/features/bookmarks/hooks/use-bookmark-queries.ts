@@ -29,10 +29,14 @@ const BOOKMARKS_KEY = ["bookmarks"] as const;
 
 // ── Query ──────────────────────────────────────────────────────────────
 
-export function useBookmarksQuery(userId: string) {
+export function useBookmarksQuery(userId: string | null | undefined) {
   return useQuery<CategoryWithBookmarks[]>({
-    queryKey: [...BOOKMARKS_KEY, userId],
-    queryFn: () => fetchBookmarksAction(userId),
+    queryKey: [...BOOKMARKS_KEY, userId ?? ""],
+    queryFn: () => {
+      if (!userId) return Promise.resolve([]);
+      return fetchBookmarksAction(userId);
+    },
+    enabled: !!userId,
   });
 }
 
