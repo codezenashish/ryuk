@@ -1,7 +1,5 @@
-import React from "react";
+import ComingSoonPlaceholder from "@/src/components/ui/ComingSoonPlaceholder";
 
-const Notes = () => {
-  return <div>Notes</div>;
-};
-
-export default Notes;
+export default function NotesPage() {
+  return <ComingSoonPlaceholder title="Notes Coming Soon" />;
+}
