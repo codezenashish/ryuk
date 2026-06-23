@@ -7,6 +7,7 @@ import {
   useBookmarksQuery,
   useBulkUpdateBookmarksMutation,
 } from "../hooks/use-bookmark-queries";
+import { useAuth } from "@clerk/nextjs";
 
 interface EditAllDialogProps {
   isDialogOpen: boolean;
@@ -24,7 +25,7 @@ export default function EditAllDialog({
   isDialogOpen,
   onDialogClose,
 }: EditAllDialogProps) {
-  const userId = "mock-user-id-123";
+  const { userId } = useAuth();
   const { data: categories = [], isLoading } = useBookmarksQuery(userId);
   const bulkUpdateMutation = useBulkUpdateBookmarksMutation();
 
@@ -69,7 +70,7 @@ export default function EditAllDialog({
   );
 
   const handleSaveAll = useCallback(async () => {
-    if (editedBookmarks.length === 0) return;
+    if (editedBookmarks.length === 0 || !userId) return;
 
     const bookmarksToUpdate = editedBookmarks.map((bookmark) => ({
       id: bookmark.id,
