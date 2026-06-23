@@ -47,6 +47,7 @@ interface CreateBookmarkVars {
   title: string;
   favicon: string;
   categoryName: string;
+  categoryIcon?: string;
   userId: string;
 }
 
@@ -97,7 +98,7 @@ export function useCreateBookmarkMutation() {
           const optimisticCategory: CategoryWithBookmarks = {
             id: `optimistic-${Date.now()}`,
             name: categoryName,
-            icon: "RiFolder5Line",
+            icon: newBookmark.categoryIcon || "RiFolder5Line",
             color: "#6366F1",
             position: old.length,
             bookmarks: [optimisticBookmark],
