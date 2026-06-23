@@ -11,6 +11,18 @@ import {
   RiPaletteLine,
   RiFolder5Line,
   RiGlobalLine,
+  // Popular Icons for IconPicker
+  RiCodeSLine,
+  RiShoppingCartLine,
+  RiFilmLine,
+  RiBriefcaseLine,
+  RiUserStarLine,
+  RiBuildingLine,
+  RiLayoutMasonryLine,
+  RiRocketLine,
+  RiDatabase2Line,
+  RiArticleLine,
+  RiStarLine,
 } from "react-icons/ri";
 
 export const iconRegistry: Record<string, React.ComponentType<any>> = {
@@ -25,6 +37,19 @@ export const iconRegistry: Record<string, React.ComponentType<any>> = {
   RiPaletteLine,
   RiFolder5Line,
   RiGlobalLine,
+  
+  // Popular Icons for IconPicker
+  RiCodeSLine,
+  RiShoppingCartLine,
+  RiFilmLine,
+  RiBriefcaseLine,
+  RiUserStarLine,
+  RiBuildingLine,
+  RiLayoutMasonryLine,
+  RiRocketLine,
+  RiDatabase2Line,
+  RiArticleLine,
+  RiStarLine,
 };
 
 export function getIconComponent(iconName: string) {
