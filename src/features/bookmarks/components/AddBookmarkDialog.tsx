@@ -22,18 +22,19 @@ import { useCombobox } from "../hooks/use-category-combobox";
 import { useCreateBookmarkMutation } from "../hooks/use-bookmark-queries";
 import { cn } from "@/src/lib/classname-merge";
 import { useAuth } from "@clerk/nextjs";
+import { DEFAULT_CATEGORIES } from "../constants/categories";
+import { getIconComponent } from "../utils/category-icon-registry";
+import IconPicker from "./IconPicker";
 
 interface AddBookmarkDialogProps {
   isDialogOpen: boolean;
   onDialogClose: () => void;
 }
 
-const CATEGORY_CONFIGURATIONS = [
-  { label: "Social Accounts", icon: Users },
-  { label: "Dev Tools", icon: Terminal },
-  { label: "Documentation", icon: FileText },
-  { label: "Design Resources", icon: Palette },
-];
+const mappedCategories = DEFAULT_CATEGORIES.map((c) => ({
+  label: c.label,
+  icon: getIconComponent(c.icon),
+}));
 
 function normalizeUrl(value: string) {
   const trimmedUrl = value.trim();
@@ -76,6 +77,7 @@ export default function AddBookmarkDialog({
   const [isFetchingMeta, setIsFetchingMeta] = useState(false);
   const [formError, setFormError] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
+  const [categoryIcon, setCategoryIcon] = useState<string>("RiFolder5Line");
 
   const createMutation = useCreateBookmarkMutation();
   const isSaving = createMutation.isPending;
@@ -102,7 +104,14 @@ export default function AddBookmarkDialog({
     handleKeyDown,
     handleChevronClick,
     resetCombobox: resetCategoryCombobox,
-  } = useCombobox(CATEGORY_CONFIGURATIONS);
+  } = useCombobox(mappedCategories);
+
+  const isCustomCategorySelected = useMemo(() => {
+    if (!selectedCategory) return false;
+    return !DEFAULT_CATEGORIES.some(
+      (c) => c.label.toLowerCase() === selectedCategory.trim().toLowerCase()
+    );
+  }, [selectedCategory]);
 
   const urlState = useMemo(() => getUrlParts(bookmarkUrl), [bookmarkUrl]);
   const canSubmit = Boolean(bookmarkUrl.trim()) && urlState.isValid && !isSaving && !isSuccess;
@@ -114,6 +123,7 @@ export default function AddBookmarkDialog({
     setIsFetchingMeta(false);
     setFormError("");
     setIsSuccess(false);
+    setCategoryIcon("RiFolder5Line");
     titleManuallyEdited.current = false;
     latestMetadataRequestRef.current += 1;
     resetCategoryCombobox();
@@ -208,6 +218,7 @@ export default function AddBookmarkDialog({
         title: finalTitle,
         favicon: finalFavicon,
         categoryName: finalCategory,
+        categoryIcon: isCustomCategorySelected ? categoryIcon : undefined,
         userId: userId,
       },
       {
@@ -519,6 +530,23 @@ export default function AddBookmarkDialog({
                         </div>
                       </div>
                     </div>
+
+                    <AnimatePresence>
+                      {isCustomCategorySelected && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="overflow-hidden pt-2"
+                        >
+                          <IconPicker
+                            value={categoryIcon}
+                            onChange={setCategoryIcon}
+                          />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </motion.div>
                 )}
               </AnimatePresence>
