@@ -12,7 +12,9 @@ interface IconPickerProps {
 export default function IconPicker({ value, onChange }: IconPickerProps) {
   return (
     <div className="rounded-xl border border-white/10 bg-white/5 p-3 backdrop-blur-md">
-      <p className="mb-2 px-1 text-xs font-medium text-zinc-400">Select an Icon</p>
+      <p className="mb-2 px-1 text-xs font-medium text-zinc-400">
+        Select an Icon
+      </p>
       <div className="grid grid-cols-8 gap-2 sm:grid-cols-8">
         {POPULAR_ICONS.map((iconString) => {
           const IconComponent = getIconComponent(iconString);

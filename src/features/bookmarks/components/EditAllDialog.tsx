@@ -118,11 +118,15 @@ export default function EditAllDialog({
                   <PencilLine className="size-4 text-zinc-300" />
                 </div>
                 <div>
-                  <h2 className="font-semibold text-white tracking-tight">Bulk Edit</h2>
-                  <p className="text-[10px] text-zinc-500 uppercase tracking-widest mt-0.5">Bookmarks Manager</p>
+                  <h2 className="font-semibold tracking-tight text-white">
+                    Bulk Edit
+                  </h2>
+                  <p className="mt-0.5 text-[10px] tracking-widest text-zinc-500 uppercase">
+                    Bookmarks Manager
+                  </p>
                 </div>
               </div>
-              <motion.button 
+              <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onDialogClose}
@@ -133,15 +137,15 @@ export default function EditAllDialog({
               </motion.button>
             </div>
 
-            <div className="max-h-[60vh] overflow-x-auto overflow-y-auto p-0 scrollbar-none">
+            <div className="max-h-[60vh] scrollbar-none overflow-x-auto overflow-y-auto p-0">
               {isLoading && editedBookmarks.length === 0 ? (
                 <div className="flex h-40 items-center justify-center">
                   <Loader2 className="h-6 w-6 animate-spin text-zinc-500" />
                 </div>
               ) : (
                 <table className="w-full min-w-[700px] text-left text-sm">
-                  <thead className="sticky top-0 z-10 bg-[#09090b]/90 backdrop-blur-md shadow-sm">
-                    <tr className="border-b border-white/5 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+                  <thead className="sticky top-0 z-10 bg-[#09090b]/90 shadow-sm backdrop-blur-md">
+                    <tr className="border-b border-white/5 text-[10px] font-bold tracking-widest text-zinc-500 uppercase">
                       <th className="w-1/3 px-5 py-3">Title</th>
                       <th className="w-1/3 px-5 py-3">URL</th>
                       <th className="w-1/3 px-5 py-3">Category</th>
@@ -165,10 +169,10 @@ export default function EditAllDialog({
                               )
                             }
                             disabled={isSaving}
-                            className="h-full w-full bg-transparent px-5 py-3.5 text-xs text-zinc-200 transition-all outline-none placeholder:text-zinc-600 focus:bg-white/5 focus:ring-2 focus:ring-inset focus:ring-indigo-500/30 disabled:opacity-50"
+                            className="h-full w-full bg-transparent px-5 py-3.5 text-xs text-zinc-200 transition-all outline-none placeholder:text-zinc-600 focus:bg-white/5 focus:ring-2 focus:ring-indigo-500/30 focus:ring-inset disabled:opacity-50"
                           />
                         </td>
-                        <td className="p-0 border-l border-white/5">
+                        <td className="border-l border-white/5 p-0">
                           <input
                             type="text"
                             value={bookmark.url}
@@ -180,11 +184,11 @@ export default function EditAllDialog({
                               )
                             }
                             disabled={isSaving}
-                            className="h-full w-full bg-transparent px-5 py-3.5 text-xs text-zinc-400 font-mono transition-all outline-none placeholder:text-zinc-600 focus:bg-white/5 focus:ring-2 focus:ring-inset focus:ring-indigo-500/30 disabled:opacity-50"
+                            className="h-full w-full bg-transparent px-5 py-3.5 font-mono text-xs text-zinc-400 transition-all outline-none placeholder:text-zinc-600 focus:bg-white/5 focus:ring-2 focus:ring-indigo-500/30 focus:ring-inset disabled:opacity-50"
                           />
                         </td>
-                        <td className="p-0 px-3 border-l border-white/5">
-                          <div className="relative group-focus-within:ring-2 group-focus-within:ring-indigo-500/30 rounded-md">
+                        <td className="border-l border-white/5 p-0 px-3">
+                          <div className="relative rounded-md group-focus-within:ring-2 group-focus-within:ring-indigo-500/30">
                             <select
                               value={bookmark.categoryId}
                               onChange={(e) =>
@@ -229,7 +233,7 @@ export default function EditAllDialog({
                 type="button"
                 onClick={handleSaveAll}
                 disabled={isSaving || isLoading || editedBookmarks.length === 0}
-                className="relative flex items-center justify-center rounded-xl bg-white px-5 py-2 text-xs font-bold text-black transition-all hover:scale-105 hover:bg-zinc-200 active:scale-95 disabled:opacity-50 shadow-[0_0_15px_rgba(255,255,255,0.1)]"
+                className="relative flex items-center justify-center rounded-xl bg-white px-5 py-2 text-xs font-bold text-black shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all hover:scale-105 hover:bg-zinc-200 active:scale-95 disabled:opacity-50"
               >
                 {isSaving ? (
                   <>

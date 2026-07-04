@@ -8,7 +8,10 @@ interface DialogProps {
   onDialogClose: () => void;
 }
 
-export default function ExportDialog({ isDialogOpen, onDialogClose }: DialogProps) {
+export default function ExportDialog({
+  isDialogOpen,
+  onDialogClose,
+}: DialogProps) {
   return (
     <AnimatePresence>
       {isDialogOpen && (
@@ -35,11 +38,15 @@ export default function ExportDialog({ isDialogOpen, onDialogClose }: DialogProp
                   <Download className="size-5 text-zinc-300" />
                 </div>
                 <div>
-                  <h2 className="font-semibold tracking-tight text-white">Export Data</h2>
-                  <p className="text-[11px] text-zinc-500 uppercase tracking-widest mt-0.5">Bookmarks & Tags</p>
+                  <h2 className="font-semibold tracking-tight text-white">
+                    Export Data
+                  </h2>
+                  <p className="mt-0.5 text-[11px] tracking-widest text-zinc-500 uppercase">
+                    Bookmarks & Tags
+                  </p>
                 </div>
               </div>
-              <motion.button 
+              <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onDialogClose}
@@ -48,21 +55,23 @@ export default function ExportDialog({ isDialogOpen, onDialogClose }: DialogProp
                 <X className="size-4" />
               </motion.button>
             </div>
-            
+
             <div className="mb-6 rounded-xl border border-white/5 bg-white/[0.02] p-4">
               <p className="text-xs leading-relaxed text-zinc-400">
-                This will export all your bookmarks, categories, and metadata into a standard JSON file that you can safely store or import later.
+                This will export all your bookmarks, categories, and metadata
+                into a standard JSON file that you can safely store or import
+                later.
               </p>
             </div>
 
-            <div className="flex gap-2 justify-end">
-              <button 
+            <div className="flex justify-end gap-2">
+              <button
                 onClick={onDialogClose}
                 className="rounded-xl border border-white/5 bg-transparent px-4 py-2 text-xs font-semibold text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
               >
                 Cancel
               </button>
-              <button 
+              <button
                 onClick={onDialogClose}
                 className="rounded-xl bg-white px-4 py-2 text-xs font-bold text-black shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all hover:scale-105 hover:bg-zinc-200 active:scale-95"
               >

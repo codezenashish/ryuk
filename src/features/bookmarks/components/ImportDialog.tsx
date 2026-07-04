@@ -8,7 +8,10 @@ interface DialogProps {
   onDialogClose: () => void;
 }
 
-export default function ImportDialog({ isDialogOpen, onDialogClose }: DialogProps) {
+export default function ImportDialog({
+  isDialogOpen,
+  onDialogClose,
+}: DialogProps) {
   return (
     <AnimatePresence>
       {isDialogOpen && (
@@ -35,11 +38,15 @@ export default function ImportDialog({ isDialogOpen, onDialogClose }: DialogProp
                   <Upload className="size-5 text-zinc-300" />
                 </div>
                 <div>
-                  <h2 className="font-semibold tracking-tight text-white">Import Data</h2>
-                  <p className="text-[11px] text-zinc-500 uppercase tracking-widest mt-0.5">Restore Backup</p>
+                  <h2 className="font-semibold tracking-tight text-white">
+                    Import Data
+                  </h2>
+                  <p className="mt-0.5 text-[11px] tracking-widest text-zinc-500 uppercase">
+                    Restore Backup
+                  </p>
                 </div>
               </div>
-              <motion.button 
+              <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onDialogClose}
@@ -48,21 +55,25 @@ export default function ImportDialog({ isDialogOpen, onDialogClose }: DialogProp
                 <X className="size-4" />
               </motion.button>
             </div>
-            
-            <div className="mb-6 rounded-xl border border-white/5 bg-white/[0.02] p-4 text-center border-dashed cursor-pointer hover:bg-white/[0.04] hover:border-white/20 transition-all group">
-              <Upload className="size-6 text-zinc-500 mx-auto mb-2 group-hover:text-white transition-colors" />
-              <p className="text-xs font-medium text-zinc-300 mb-1">Click to select a JSON file</p>
-              <p className="text-[10px] text-zinc-500">or drag and drop it here</p>
+
+            <div className="group mb-6 cursor-pointer rounded-xl border border-dashed border-white/5 bg-white/[0.02] p-4 text-center transition-all hover:border-white/20 hover:bg-white/[0.04]">
+              <Upload className="mx-auto mb-2 size-6 text-zinc-500 transition-colors group-hover:text-white" />
+              <p className="mb-1 text-xs font-medium text-zinc-300">
+                Click to select a JSON file
+              </p>
+              <p className="text-[10px] text-zinc-500">
+                or drag and drop it here
+              </p>
             </div>
 
-            <div className="flex gap-2 justify-end">
-              <button 
+            <div className="flex justify-end gap-2">
+              <button
                 onClick={onDialogClose}
                 className="rounded-xl border border-white/5 bg-transparent px-4 py-2 text-xs font-semibold text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
               >
                 Cancel
               </button>
-              <button 
+              <button
                 onClick={onDialogClose}
                 className="rounded-xl bg-white px-4 py-2 text-xs font-bold text-black shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all hover:scale-105 hover:bg-zinc-200 active:scale-95"
               >
