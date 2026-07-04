@@ -92,15 +92,14 @@ export default function PageHeader({
           "sticky top-0 z-30 w-full transition-all duration-300",
           isScrolled
             ? "border-b border-white/5 bg-[#09090b]/80 shadow-2xl shadow-black/20 backdrop-blur-xl"
-            : "border-b border-transparent bg-[#09090b]"
+            : "border-b border-transparent bg-[#09090b]",
         )}
         style={{ isolation: "isolate" }}
       >
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 py-3 md:flex-row md:items-center md:justify-between lg:px-8">
-          
           {/* Left Side: Title & Mobile Add Button */}
           <div className="flex w-full items-center justify-between md:w-auto">
-            <div className="flex items-center gap-3 shrink-0">
+            <div className="flex shrink-0 items-center gap-3">
               <h1 className="text-lg font-bold tracking-tight text-white sm:text-xl">
                 {title}
               </h1>
@@ -122,16 +121,15 @@ export default function PageHeader({
 
           {/* Right Side: Toolbar (Search, View, Sort, Overflow, Desktop Add) */}
           <div className="flex w-full flex-wrap items-center gap-2 md:w-auto md:flex-nowrap">
-            
             {/* Search */}
             <div className="group relative flex-1 md:w-56 lg:w-64">
-              <Search className="absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-zinc-500 transition-colors group-focus-within:text-zinc-300" />
+              <Search className="absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-zinc-500 transition-colors group-focus-within:text-zinc-300" />
               <input
                 type="text"
                 placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-lg border border-white/5 bg-white/5 py-1.5 pl-8 pr-3 text-xs font-medium text-zinc-200 placeholder-zinc-500 shadow-sm transition-all focus:border-white/20 focus:bg-white/10 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                className="w-full rounded-lg border border-white/5 bg-white/5 py-1.5 pr-3 pl-8 text-xs font-medium text-zinc-200 placeholder-zinc-500 shadow-sm transition-all focus:border-white/20 focus:bg-white/10 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none"
               />
             </div>
 
@@ -141,7 +139,9 @@ export default function PageHeader({
                 onClick={() => setViewMode("grid")}
                 className={cn(
                   "rounded-md p-1 transition-all duration-200",
-                  viewMode === "grid" ? "bg-white/10 text-white shadow" : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
+                  viewMode === "grid"
+                    ? "bg-white/10 text-white shadow"
+                    : "text-zinc-500 hover:bg-white/5 hover:text-zinc-300",
                 )}
                 aria-label="Grid View"
               >
@@ -151,7 +151,9 @@ export default function PageHeader({
                 onClick={() => setViewMode("list")}
                 className={cn(
                   "rounded-md p-1 transition-all duration-200",
-                  viewMode === "list" ? "bg-white/10 text-white shadow" : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
+                  viewMode === "list"
+                    ? "bg-white/10 text-white shadow"
+                    : "text-zinc-500 hover:bg-white/5 hover:text-zinc-300",
                 )}
                 aria-label="List View"
               >
@@ -159,18 +161,17 @@ export default function PageHeader({
               </button>
             </div>
 
-            {/* Sort Dropdown */}
             <div className="relative shrink-0">
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
-                className="w-[90px] cursor-pointer appearance-none rounded-lg border border-white/5 bg-white/5 py-1.5 pl-2.5 pr-7 text-xs font-medium text-zinc-300 shadow-sm transition-all focus:border-white/20 focus:bg-white/10 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 sm:w-[100px]"
+                className="w-22.5 cursor-pointer appearance-none rounded-lg border border-white/5 bg-white/5 py-1.5 pr-7 pl-2.5 text-xs font-medium text-zinc-300 shadow-sm transition-all focus:border-white/20 focus:bg-white/10 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none sm:w-[100px]"
               >
                 <option value="newest">Newest</option>
                 <option value="oldest">Oldest</option>
                 <option value="alphabetical">A-Z</option>
               </select>
-              <ArrowDownUp className="pointer-events-none absolute right-2 top-1/2 size-3 -translate-y-1/2 text-zinc-500" />
+              <ArrowDownUp className="pointer-events-none absolute top-1/2 right-2 size-3 -translate-y-1/2 text-zinc-500" />
             </div>
 
             {/* Secondary Actions Menu */}

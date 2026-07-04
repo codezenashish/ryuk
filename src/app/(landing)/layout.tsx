@@ -1,6 +1,4 @@
 import React from "react";
-import Navbar from "@/src/components/navbar/Navbar";
-import Footer from "@/src/components/Footer";
 
 export default function MarketingLayout({
   children,
@@ -8,10 +6,8 @@ export default function MarketingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col min-h-screen w-full">
-      <Navbar />
-      <main className="grow w-full">{children}</main>
-      <Footer />
+    <div className="flex flex-col bg-neutral-950 min-h-screen w-full">
+      <main className="grow w-full flex">{children}</main>
     </div>
   );
 }
