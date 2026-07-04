@@ -37,6 +37,10 @@ export function useBookmarksQuery(userId: string | null | undefined) {
       return fetchBookmarksAction(userId);
     },
     enabled: !!userId,
+    // Poll every 3 seconds to keep multiple devices (mobile/desktop) in sync
+    refetchInterval: 3000,
+    // Keep syncing even if the tab is briefly out of focus (useful for mobile)
+    refetchIntervalInBackground: true,
   });
 }
 
@@ -220,62 +224,65 @@ export function useBulkUpdateBookmarksMutation() {
       const previousData =
         queryClient.getQueryData<CategoryWithBookmarks[]>(queryKey);
 
-      queryClient.setQueryData<CategoryWithBookmarks[]>(queryKey, (old:any) => {
-        if (!old) return old;
+      queryClient.setQueryData<CategoryWithBookmarks[]>(
+        queryKey,
+        (old: any) => {
+          if (!old) return old;
 
-        const updatedBookmarksMap = new Map<
-          number,
-          (typeof vars.bookmarks)[0]
-        >();
-        for (const b of vars.bookmarks) {
-          updatedBookmarksMap.set(b.id, b);
-        }
+          const updatedBookmarksMap = new Map<
+            number,
+            (typeof vars.bookmarks)[0]
+          >();
+          for (const b of vars.bookmarks) {
+            updatedBookmarksMap.set(b.id, b);
+          }
 
-        const finalBookmarks = new Map<
-          number,
-          BookmarkItem & { categoryId: string }
-        >();
-        for (const cat of old) {
-          for (const b of cat.bookmarks) {
-            const update = updatedBookmarksMap.get(b.id);
-            if (update) {
-              finalBookmarks.set(b.id, {
-                ...b,
-                title: update.title,
-                url: update.url || null,
-                categoryId: update.categoryId,
-              });
-            } else {
-              finalBookmarks.set(b.id, {
-                ...b,
-                categoryId: cat.id,
-              });
+          const finalBookmarks = new Map<
+            number,
+            BookmarkItem & { categoryId: string }
+          >();
+          for (const cat of old) {
+            for (const b of cat.bookmarks) {
+              const update = updatedBookmarksMap.get(b.id);
+              if (update) {
+                finalBookmarks.set(b.id, {
+                  ...b,
+                  title: update.title,
+                  url: update.url || null,
+                  categoryId: update.categoryId,
+                });
+              } else {
+                finalBookmarks.set(b.id, {
+                  ...b,
+                  categoryId: cat.id,
+                });
+              }
             }
           }
-        }
 
-        return old.map((cat: any) => {
-          const retained = cat.bookmarks
-            .map((b: any) => finalBookmarks.get(b.id))
-            .filter(
-              (b: any): b is NonNullable<typeof b> =>
-                !!b && b.categoryId === cat.id,
+          return old.map((cat: any) => {
+            const retained = cat.bookmarks
+              .map((b: any) => finalBookmarks.get(b.id))
+              .filter(
+                (b: any): b is NonNullable<typeof b> =>
+                  !!b && b.categoryId === cat.id,
+              );
+
+            const movedIn = Array.from(finalBookmarks.values()).filter(
+              (b: any) =>
+                b.categoryId === cat.id &&
+                !cat.bookmarks.some((orig: any) => orig.id === b.id),
             );
 
-          const movedIn = Array.from(finalBookmarks.values()).filter(
-            (b: any) =>
-              b.categoryId === cat.id &&
-              !cat.bookmarks.some((orig: any) => orig.id === b.id),
-          );
-
-          return {
-            ...cat,
-            bookmarks: [...retained, ...movedIn].map(
-              ({ categoryId, ...item }: any) => item,
-            ),
-          };
-        });
-      });
+            return {
+              ...cat,
+              bookmarks: [...retained, ...movedIn].map(
+                ({ categoryId, ...item }: any) => item,
+              ),
+            };
+          });
+        },
+      );
 
       return { previousData };
     },
