@@ -55,7 +55,13 @@ export function useCreateBookmarkMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (vars: CreateBookmarkVars) => createBookmarkAction(vars),
+    mutationFn: async (vars: CreateBookmarkVars) => {
+      const result = await createBookmarkAction(vars);
+      if (!result.success) {
+        throw new Error(result.error || "Failed to create bookmark");
+      }
+      return result;
+    },
 
     onMutate: async (newBookmark) => {
       const queryKey = [...BOOKMARKS_KEY, newBookmark.userId];

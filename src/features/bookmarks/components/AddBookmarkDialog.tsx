@@ -222,22 +222,18 @@ export default function AddBookmarkDialog({
         userId: userId,
       },
       {
-        onSuccess: (response) => {
-          if (response.success) {
-            setIsSuccess(true);
-            setTimeout(() => {
-              resetForm();
-              onDialogClose();
-            }, 800);
-            return;
-          }
-          setFormError(response.error || "Error saving bookmark.");
-        },
         onError: () => {
-          setFormError("Failed to save bookmark. Please try again.");
+          console.error("Failed to save bookmark in the background.");
+          setTimeout(() => {
+            alert("Failed to save bookmark. Your changes have been reverted.");
+          }, 100);
         },
-      },
+      }
     );
+    
+    // Close the dialog instantly for optimistic UI update
+    resetForm();
+    onDialogClose();
   };
 
   const handleModalDismissal = () => {

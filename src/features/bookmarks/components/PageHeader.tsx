@@ -96,103 +96,76 @@ export default function PageHeader({
         )}
         style={{ isolation: "isolate" }}
       >
-        <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 py-3 md:flex-row md:items-center md:justify-between lg:px-8">
-          {/* Left Side: Title & Mobile Add Button */}
-          <div className="flex w-full items-center justify-between md:w-auto">
-            <div className="flex shrink-0 items-center gap-3">
-              <h1 className="text-lg font-bold tracking-tight text-white sm:text-xl">
-                {title}
-              </h1>
-              <span className="flex items-center justify-center rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-xs font-semibold text-zinc-400 shadow-sm">
-                {totalBookmarks}
-              </span>
-            </div>
-
-            {/* Mobile-only Add Button */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setIsDialogOpen(true)}
-              className="flex shrink-0 items-center justify-center rounded-lg bg-white p-1.5 text-black shadow-sm md:hidden"
+        <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-center gap-3 px-4 py-3 sm:gap-4 lg:px-8">
+          {/* View Toggle */}
+          <div className="flex shrink-0 items-center rounded-lg border border-white/5 bg-white/5 p-0.5 shadow-sm">
+            <button
+              onClick={() => setViewMode("grid")}
+              className={cn(
+                "rounded-md p-1 transition-all duration-200",
+                viewMode === "grid"
+                  ? "bg-white/10 text-white shadow"
+                  : "text-zinc-500 hover:bg-white/5 hover:text-zinc-300",
+              )}
+              aria-label="Grid View"
             >
-              <Plus className="size-4" />
-            </motion.button>
+              <LayoutGrid className="size-3.5" />
+            </button>
+            <button
+              onClick={() => setViewMode("list")}
+              className={cn(
+                "rounded-md p-1 transition-all duration-200",
+                viewMode === "list"
+                  ? "bg-white/10 text-white shadow"
+                  : "text-zinc-500 hover:bg-white/5 hover:text-zinc-300",
+              )}
+              aria-label="List View"
+            >
+              <List className="size-3.5" />
+            </button>
           </div>
 
-          {/* Right Side: Toolbar (Search, View, Sort, Overflow, Desktop Add) */}
-          <div className="flex w-full flex-wrap items-center gap-2 md:w-auto md:flex-nowrap">
-            {/* Search */}
-            <div className="group relative flex-1 md:w-56 lg:w-64">
-              <Search className="absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-zinc-500 transition-colors group-focus-within:text-zinc-300" />
-              <input
-                type="text"
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-lg border border-white/5 bg-white/5 py-1.5 pr-3 pl-8 text-xs font-medium text-zinc-200 placeholder-zinc-500 shadow-sm transition-all focus:border-white/20 focus:bg-white/10 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none"
-              />
-            </div>
-
-            {/* View Toggle */}
-            <div className="flex shrink-0 items-center rounded-lg border border-white/5 bg-white/5 p-0.5 shadow-sm">
-              <button
-                onClick={() => setViewMode("grid")}
-                className={cn(
-                  "rounded-md p-1 transition-all duration-200",
-                  viewMode === "grid"
-                    ? "bg-white/10 text-white shadow"
-                    : "text-zinc-500 hover:bg-white/5 hover:text-zinc-300",
-                )}
-                aria-label="Grid View"
-              >
-                <LayoutGrid className="size-3.5" />
-              </button>
-              <button
-                onClick={() => setViewMode("list")}
-                className={cn(
-                  "rounded-md p-1 transition-all duration-200",
-                  viewMode === "list"
-                    ? "bg-white/10 text-white shadow"
-                    : "text-zinc-500 hover:bg-white/5 hover:text-zinc-300",
-                )}
-                aria-label="List View"
-              >
-                <List className="size-3.5" />
-              </button>
-            </div>
-
-            <div className="relative shrink-0">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
-                className="w-22.5 cursor-pointer appearance-none rounded-lg border border-white/5 bg-white/5 py-1.5 pr-7 pl-2.5 text-xs font-medium text-zinc-300 shadow-sm transition-all focus:border-white/20 focus:bg-white/10 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none sm:w-[100px]"
-              >
-                <option value="newest">Newest</option>
-                <option value="oldest">Oldest</option>
-                <option value="alphabetical">A-Z</option>
-              </select>
-              <ArrowDownUp className="pointer-events-none absolute top-1/2 right-2 size-3 -translate-y-1/2 text-zinc-500" />
-            </div>
-
-            {/* Secondary Actions Menu */}
-            <div className="shrink-0">
-              <OverflowMenu items={secondaryActions} />
-            </div>
-
-            {/* Desktop Divider */}
-            <div className="mx-1 hidden h-4 w-px bg-white/10 md:block" />
-
-            {/* Desktop Add Bookmark Button */}
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => setIsDialogOpen(true)}
-              className="group relative hidden shrink-0 cursor-pointer items-center gap-1.5 overflow-hidden rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-black shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all hover:bg-zinc-200 hover:shadow-[0_0_20px_rgba(255,255,255,0.2)] md:flex"
+          <div className="relative shrink-0">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+              className="w-22.5 cursor-pointer appearance-none rounded-lg border border-white/5 bg-white/5 py-1.5 pr-7 pl-2.5 text-xs font-medium text-zinc-300 shadow-sm transition-all focus:border-white/20 focus:bg-white/10 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none sm:w-[100px]"
             >
-              <Plus className="size-3.5 transition-transform group-hover:rotate-90" />
-              <span>Add Bookmark</span>
-            </motion.button>
+              <option value="newest">Newest</option>
+              <option value="oldest">Oldest</option>
+              <option value="alphabetical">A-Z</option>
+            </select>
+            <ArrowDownUp className="pointer-events-none absolute top-1/2 right-2 size-3 -translate-y-1/2 text-zinc-500" />
           </div>
+
+          {/* Secondary Actions Menu */}
+          <div className="shrink-0">
+            <OverflowMenu items={secondaryActions} />
+          </div>
+
+          {/* Desktop Divider */}
+          <div className="mx-1 hidden h-4 w-px bg-white/10 sm:block" />
+
+          {/* Add Bookmark Button (Desktop) */}
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setIsDialogOpen(true)}
+            className="group relative hidden shrink-0 cursor-pointer items-center gap-1.5 overflow-hidden rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-black shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all hover:bg-zinc-200 hover:shadow-[0_0_20px_rgba(255,255,255,0.2)] sm:flex"
+          >
+            <Plus className="size-3.5 transition-transform group-hover:rotate-90" />
+            <span>Add Bookmark</span>
+          </motion.button>
+
+          {/* Add Bookmark Button (Mobile) */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setIsDialogOpen(true)}
+            className="flex shrink-0 items-center justify-center rounded-lg bg-white p-1.5 text-black shadow-sm sm:hidden"
+          >
+            <Plus className="size-4" />
+          </motion.button>
         </div>
       </div>
 
