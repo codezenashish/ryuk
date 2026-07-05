@@ -1,7 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Download, X } from "lucide-react";
+import { Download, X, Loader2 } from "lucide-react";
+import { useAuth } from "@clerk/nextjs";
+import { fetchBookmarksAction } from "../actions/bookmark-actions";
 
 interface DialogProps {
   isDialogOpen: boolean;
@@ -12,6 +15,51 @@ export default function ExportDialog({
   isDialogOpen,
   onDialogClose,
 }: DialogProps) {
+  const { userId } = useAuth();
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExport = async () => {
+    if (!userId) return;
+    try {
+      setIsExporting(true);
+      const categories = await fetchBookmarksAction(userId);
+
+      const exportData = {
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        data: categories.map((cat) => ({
+          name: cat.name,
+          icon: cat.icon,
+          color: cat.color,
+          position: cat.position,
+          bookmarks: cat.bookmarks.map((b) => ({
+            title: b.title,
+            url: b.url,
+            favicon: b.favicon,
+          })),
+        })),
+      };
+
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `devnest_bookmarks_${new Date().toISOString().split("T")[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      onDialogClose();
+    } catch (error) {
+      console.error("Export failed:", error);
+      alert("Failed to export bookmarks.");
+    } finally {
+      setIsExporting(false);
+    }
+  };
   return (
     <AnimatePresence>
       {isDialogOpen && (
@@ -72,10 +120,12 @@ export default function ExportDialog({
                 Cancel
               </button>
               <button
-                onClick={onDialogClose}
-                className="rounded-xl bg-white px-4 py-2 text-xs font-bold text-black shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all hover:scale-105 hover:bg-zinc-200 active:scale-95"
+                onClick={handleExport}
+                disabled={isExporting}
+                className="flex items-center gap-2 rounded-xl bg-white px-4 py-2 text-xs font-bold text-black shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all hover:scale-105 hover:bg-zinc-200 active:scale-95 disabled:pointer-events-none disabled:opacity-50"
               >
-                Download JSON
+                {isExporting && <Loader2 className="size-3 animate-spin" />}
+                {isExporting ? "Exporting..." : "Download JSON"}
               </button>
             </div>
           </motion.div>

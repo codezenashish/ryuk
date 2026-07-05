@@ -36,7 +36,7 @@ export function NavItem({ item }: Props) {
           isActive ? "text-white" : "text-zinc-400 hover:text-zinc-200",
         )}
       >
-        {/* Active state sliding background */}
+       
         {isActive && (
           <motion.div
             layoutId="active-sidebar-bg"
@@ -99,7 +99,7 @@ export function NavItem({ item }: Props) {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
               className={cn(
-                "relative z-10 rounded border px-1.5 py-0.5 font-mono text-[10px] tabular-nums shadow-sm transition-colors duration-200",
+                "relative z-10 rounded border px-1.5 py-0.5  text-[10px] tabular-nums shadow-sm transition-colors duration-200",
                 isActive
                   ? "border-white/10 bg-black/40 text-white"
                   : "border-white/5 bg-black/20 text-zinc-500 group-hover:border-white/10 group-hover:text-zinc-300",

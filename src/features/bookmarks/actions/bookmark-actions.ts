@@ -200,3 +200,76 @@ export async function bulkUpdateBookmarksAction(input: BulkUpdateInput) {
     return { success: false as const, error: String(error) };
   }
 }
+
+export async function importBookmarksAction(userId: string, parsedData: any) {
+  try {
+    if (!parsedData || parsedData.version !== 1 || !Array.isArray(parsedData.data)) {
+      return { success: false as const, error: "Invalid backup file format" };
+    }
+
+    let importedBookmarksCount = 0;
+
+    await db.$transaction(
+      async (tx) => {
+        for (const catData of parsedData.data) {
+          // Find or create category
+          let category = await tx.category.findFirst({
+            where: { name: catData.name, userId },
+          });
+
+          if (!category) {
+            const { _max } = await tx.category.aggregate({
+              where: { userId },
+              _max: { position: true },
+            });
+            category = await tx.category.create({
+              data: {
+                name: catData.name,
+                userId,
+                icon: catData.icon || "RiFolder5Line",
+                color: catData.color || "#6366F1",
+                position: (_max.position ?? -1) + 1,
+              },
+            });
+          }
+
+          // Import bookmarks for this category
+          for (const bm of catData.bookmarks) {
+            // Check for duplicates by URL (if exists) or title within the same category
+            const existing = await tx.bookmark.findFirst({
+              where: {
+                userId,
+                categoryId: category.id,
+                ...(bm.url ? { url: bm.url } : { title: bm.title }),
+              },
+            });
+
+            if (!existing) {
+              const { _max } = await tx.bookmark.aggregate({
+                where: { userId, categoryId: category.id },
+                _max: { position: true },
+              });
+              await tx.bookmark.create({
+                data: {
+                  title: bm.title,
+                  url: bm.url || null,
+                  favicon: bm.favicon || "",
+                  userId,
+                  categoryId: category.id,
+                  position: (_max.position ?? -1) + 1,
+                },
+              });
+              importedBookmarksCount++;
+            }
+          }
+        }
+      },
+      { timeout: 30000 }
+    );
+
+    return { success: true as const, count: importedBookmarksCount };
+  } catch (error) {
+    console.error("Import Error:", error);
+    return { success: false as const, error: "Failed to import bookmarks" };
+  }
+}
