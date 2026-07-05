@@ -4,10 +4,11 @@ import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { HardHat } from "lucide-react";
+import CommunityStats from "./components/CommunityStats";
 
 export default function LandingPage() {
   return (
-    <div className="flex min-h-screen w-full flex-col items-center justify-center bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 text-neutral-100 p-4 sm:p-8">
+    <div className="flex min-h-screen w-full flex-col items-center justify-center bg-linear-to-br from-neutral-950 via-neutral-900 to-neutral-950 text-neutral-100 p-4 sm:p-8">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -54,8 +55,10 @@ export default function LandingPage() {
           </Link>
         </div>
 
+        <CommunityStats />
+
         {/* Footer Note */}
-        <div className="pt-12 text-sm text-neutral-500 max-w-md">
+        <div className="pt-8 text-sm text-neutral-500 max-w-md">
           The landing page is being redesigned and will be available in a future update. Thank you for your patience.
         </div>
       </motion.div>
