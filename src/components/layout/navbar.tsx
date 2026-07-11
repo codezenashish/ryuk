@@ -14,8 +14,8 @@ interface NavbarItem {
 const NAV_ITEMS: NavbarItem[] = [
   { label: "Features", href: "#features" },
   { label: "Open source", href: "#open-source" },
-  { label: "Quick guide", href: "#quick-guide" },
-  { label: "Quick craft", href: "#quick-craft" },
+  { label: "Quick docs", href: "quick-docs" },
+  { label: "Quick craft", href: "quick-craft" },
 ];
 
 export default function Navbar() {

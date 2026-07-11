@@ -16,9 +16,9 @@ export default function CtaSection() {
             <span>DevNest Hub</span>
           </div>
 
-          <h2 className="mx-auto mb-5 max-w-2xl font-sans text-3xl leading-tight font-bold tracking-tight text-zinc-100 sm:text-5xl">
+          <h2 className="mx-auto mb-5 max-w-2xl font-sans text-3xl leading-tight  tracking-tight text-zinc-100 sm:text-5xl">
             Start gathering it all <br />
-            <span className="text-zinc-500">in one unified space.</span>
+            <span className="text-zinc-500 font-serif">in one unified space.</span>
           </h2>
 
           <p className="mx-auto mb-10 max-w-sm text-sm leading-relaxed text-zinc-400 sm:text-base">

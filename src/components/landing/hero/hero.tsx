@@ -52,8 +52,15 @@ export default function Hero() {
                 variant="ghost"
                 className="h-12 gap-2 rounded-xl border border-white/10 bg-white/5 px-6 text-sm font-medium text-stone-300 transition-colors duration-300 hover:bg-white/10 hover:text-white dark:hover:bg-white/10"
               >
-                <FaGithub size={16} />
-                View source on GitHub
+                <a
+                  href="https://github.com/codezenashish/devnest.git"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2"
+                >
+                  <FaGithub size={16} />
+                  View source on GitHub
+                </a>
               </Button>
             </div>
 

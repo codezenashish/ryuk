@@ -24,7 +24,7 @@ const features = [
     preview: <BookmarkPreview />,
   },
   {
-    id: "notes",
+    
     title: "Notes",
     description:
       "Free-form writing with premium client-side AES-256 encryption layer. Your architecture blueprints remain fully private.",

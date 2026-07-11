@@ -49,20 +49,15 @@ export default function HeroMockup() {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-      className="relative overflow-hidden rounded-[28px] border border-white/[0.09] bg-[#09090b] p-3 ring-1 ring-white/[0.025] sm:p-5"
-      style={{
-        backgroundImage:
-          "linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px)",
-        backgroundSize: "36px 36px",
-      }}
+      className="relative overflow-hidden"
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(124,58,237,0.14),transparent_42%)]" />
+      <div className="pointer-events-none absolute inset-0" />
 
       <div className="relative space-y-3 sm:space-y-4">
-        <section className="group overflow-hidden rounded-2xl border border-white/[0.09] bg-[#0b0b0d] transition-colors hover:border-white/[0.14]">
+        <section className="group overflow-hidden rounded-2xl border border-white/9 bg-[#0b0b0d] transition-colors hover:border-white/[0.14]">
           <header className="flex h-11 items-center gap-4 border-b border-white/[0.07] px-4 sm:h-13 sm:px-5">
             {windowDots}
-            <div className="flex min-w-0 flex-1 items-center gap-2 rounded-md border border-white/[0.07] bg-white/[0.025] px-2.5 py-1.5 text-stone-500">
+            <div className="flex min-w-0 flex-1 items-center gap-2 rounded-md border border-white/7 bg-white/2.5 px-2.5 py-1.5 text-stone-500">
               <FiSearch className="shrink-0" size={12} />
               <span className="truncate text-[10px] sm:text-[11px]">
                 Search your bookmarks
