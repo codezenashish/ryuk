@@ -1,51 +1,36 @@
-# DevNest
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-DevNest is a secure, interactive dashboard application built for developers. It provides a centralized interface to organize bookmarks, manage interconnected code notes, visualize systems diagrams, and build habits. The application features a comprehensive, modern dark-mode aesthetic.
+## Getting Started
 
-## Tech Stack
+First, run the development server:
 
-- Framework: Next.js (App Router)
-- Language: TypeScript
-- Database ORM: Prisma
-- Database: PostgreSQL
-- Authentication: Clerk
-- Styling: Tailwind CSS
-- Animation: Framer Motion
-- Package Manager: Bun
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-## Key Features
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-- Bookmarks Manager: Save, organize, and categorize URLs.
-- Automated Metadata Parsing: Fetch website titles and favicons automatically upon entering a URL.
-- Advanced Filtering and Sorting: View bookmarks in list or grid layouts with complete sorting capabilities.
-- Bulk Edit Functionality: Modify multiple entries simultaneously with full database transaction safety.
-- Dark-mode First Design: Premium UI utilizing glassmorphism and Framer Motion transitions.
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-## Installation Steps
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-1. Clone the repository.
-2. Install dependencies using Bun:
-   ```bash
-   bun install
-   ```
-3. Set up environment variables. Create a `.env` file and configure your PostgreSQL connection string and Clerk authentication keys.
-4. Generate the Prisma client:
-   ```bash
-   bunx prisma generate
-   ```
-5. Apply database migrations:
-   ```bash
-   bunx prisma db push
-   ```
-6. Start the development server:
-   ```bash
-   bun dev
-   ```
+## Learn More
 
-## Usage Guide
+To learn more about Next.js, take a look at the following resources:
 
-Once the development server is running, navigate to `http://localhost:3000` in your web browser. Ensure you authenticate via Clerk to access the primary dashboard. Use the sidebar navigation to manage bookmarks, edit categories, and interact with the application. 
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-## License
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-This project is licensed under the MIT License. Please refer to the LICENSE.md file for the complete legal text.
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

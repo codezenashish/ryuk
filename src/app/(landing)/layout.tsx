@@ -1,13 +1,16 @@
-import React from "react";
+import Footer from "@/components/layout/footer";
+import Navbar from "@/components/layout/navbar";
 
-export default function MarketingLayout({
+export default function LandingLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col bg-neutral-950 min-h-screen w-full">
-      <main className="grow w-full flex">{children}</main>
+    <div className="flex min-h-screen flex-col bg-neutral-950">
+      <Navbar />
+      <main className="flex w-full grow flex-col">{children}</main>
+      <Footer />
     </div>
   );
 }
