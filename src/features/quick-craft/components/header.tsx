@@ -4,12 +4,9 @@ export default function Header() {
       {/* Glow effect */}
       {/*<div className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-linear-to-b from-amber-500/10 to-transparent blur-3xl" />*/}
 
-      <div className="relative mx-auto max-w-6xl ">
+      <div className="relative mx-auto max-w-6xl">
+        <div></div>
 
-        <div>
-          
-        </div>
-        
         <div className=" ">
           <h1 className="text-6xl tracking-tight text-white">
             The lab
