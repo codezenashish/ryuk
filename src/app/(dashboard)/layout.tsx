@@ -1,6 +1,5 @@
 import Sidebar from "@/components/dashboard/sidebar";
 
-
 export default function DashboardLayout({
   children,
 }: {
@@ -9,7 +8,7 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-screen bg-black">
       <Sidebar />
-      <main className="flex-1 overflow-y-auto">{children}</main>
+      <main className="flex-1 overflow-y-auto pl-16 md:pl-0">{children}</main>
     </div>
   );
 }

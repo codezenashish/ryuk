@@ -33,172 +33,186 @@ export default function Sidebar() {
 
     handleResize();
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    return () => window.removeEventListener("removeEventListener", handleResize);
   }, [setIsCollapsed]);
 
   const width = isCollapsed ? 64 : 256;
 
   return (
-    <motion.aside
-      animate={{ width }}
-      transition={{ type: "spring", stiffness: 350, damping: 35 }}
-      className="flex h-screen shrink-0 flex-col overflow-hidden border-r border-zinc-900 bg-black text-zinc-400 select-none"
-    >
-      <div
-        className={cn(
-          "flex h-16 shrink-0 items-center border-b border-zinc-900 px-4",
-          isCollapsed ? "justify-center" : "justify-between",
-        )}
+    <>
+      {/* Mobile Backdrop Overlay: Jab sidebar expand hoga tab peeche ka area dark hoga */}
+      {!isCollapsed && (
+        <div 
+          className="fixed inset-0 z-40 bg-black/40 md:hidden"
+          onClick={() => setIsCollapsed(true)}
+        />
+      )}
+
+      <motion.aside
+        animate={{ width }}
+        transition={{ type: "spring", stiffness: 350, damping: 35 }}
+        className="fixed top-0 left-0 z-50 flex h-screen shrink-0 flex-col overflow-hidden border-r border-zinc-900 bg-black text-zinc-400 select-none md:relative"
       >
-        {!isCollapsed && (
-          <motion.div
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -10 }}
-            className="flex items-center gap-2 px-1"
-          >
-            <div className="flex h-5 w-5 items-center justify-center rounded bg-violet-500 text-[10px] font-black text-black">
-              ⚡
-            </div>
-            <span className="font-mono text-xs font-bold tracking-wider text-zinc-200 uppercase">
-              DevSpace
-            </span>
-          </motion.div>
-        )}
-
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900/40 text-zinc-400 transition-colors hover:border-zinc-700 hover:text-zinc-200"
-        >
-          {isCollapsed ? (
-            <RiMenuUnfoldLine size={16} />
-          ) : (
-            <RiMenuFoldLine size={16} />
-          )}
-        </button>
-      </div>
-
-      <nav className="flex-1 scrollbar-none space-y-1.5 overflow-x-hidden overflow-y-auto px-3 py-4">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive =
-            pathname === item.href || (item.active && pathname === "/");
-
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setActiveTab(item.href)}
-              className={cn(
-                "group relative flex items-center gap-3 rounded-xl font-mono text-xs font-medium transition-all duration-300",
-                isCollapsed
-                  ? "mx-auto h-11 w-11 justify-center p-0"
-                  : "px-3 py-2.5",
-                isActive
-                  ? "bg-zinc-900/60 text-violet-200"
-                  : "hover:bg-zinc-900/40 hover:text-zinc-100",
-              )}
-              title={isCollapsed ? item.label : undefined}
-            >
-              {isActive && (
-                <motion.div
-                  layoutId="activeGlowPipeIndicator"
-                  className="absolute top-1/4 left-0 h-1/2 w-[3px] rounded-r-full bg-violet-400 shadow-[0_0_15px_4px_rgba(167,139,250,0.65)]"
-                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                />
-              )}
-
-              <div className="relative flex shrink-0 items-center justify-center">
-                <AnimatePresence>
-                  {isActive && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.7 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.7 }}
-                      transition={{ duration: 0.25 }}
-                      className="absolute -inset-4 -z-10 rounded-full opacity-40 mix-blend-screen blur-md group-hover:opacity-65"
-                      style={{
-                        background:
-                          "radial-gradient(circle at left, rgba(167,139,250,0.45) 0%, rgba(167,139,250,0) 70%)",
-                      }}
-                    />
-                  )}
-                </AnimatePresence>
-
-                {!isActive && (
-                  <div className="absolute inset-0 -z-10 -m-2 rounded-lg bg-white/5 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
-                )}
-
-                <Icon
-                  className={cn(
-                    "relative z-10 h-4.5 w-4.5 shrink-0 transition-all duration-300",
-                    isActive
-                      ? "scale-105 text-violet-300 drop-shadow-[0_0_8px_rgba(196,181,253,0.5)]"
-                      : "text-zinc-500 group-hover:text-zinc-300",
-                    isCollapsed && !isActive ? "group-hover:scale-110" : "",
-                  )}
-                />
-              </div>
-
-              <AnimatePresence mode="wait" initial={false}>
-                {!isCollapsed && (
-                  <motion.span
-                    initial={{
-                      opacity: 0,
-                      width: 0,
-                      filter: "blur(4px)",
-                      x: -6,
-                    }}
-                    animate={{
-                      opacity: 1,
-                      width: "auto",
-                      filter: "blur(0px)",
-                      x: 0,
-                    }}
-                    exit={{ opacity: 0, width: 0, filter: "blur(4px)", x: -6 }}
-                    transition={{ duration: 0.18 }}
-                    className="flex-1 overflow-hidden whitespace-nowrap"
-                  >
-                    {item.label}
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </Link>
-          );
-        })}
-      </nav>
-
-      <div className="shrink-0 border-t border-zinc-900 p-4">
         <div
           className={cn(
-            "flex cursor-pointer items-center gap-3 rounded-xl px-2 py-1.5 transition-colors hover:bg-zinc-900/30",
-            isCollapsed && "justify-center px-0",
+            "flex h-16 shrink-0 items-center border-b border-zinc-900 px-4",
+            isCollapsed ? "justify-center" : "justify-between",
           )}
         >
-          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-violet-500/20 bg-violet-500/10 text-xs font-bold text-violet-400 shadow-[0_0_10px_rgba(139,92,246,0.1)]">
-            A
-          </div>
+          {!isCollapsed && (
+            <motion.div
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              className="flex items-center gap-2 px-1"
+            >
+              <div className="flex h-5 w-5 items-center justify-center rounded bg-violet-500 text-[10px] font-black text-black">
+                ⚡
+              </div>
+              <span className="font-mono text-xs font-bold tracking-wider text-zinc-200 uppercase">
+                DevSpace
+              </span>
+            </motion.div>
+          )}
 
-          <AnimatePresence mode="wait" initial={false}>
-            {!isCollapsed && (
-              <motion.div
-                initial={{ opacity: 0, width: 0 }}
-                animate={{ opacity: 1, width: "auto" }}
-                exit={{ opacity: 0, width: 0 }}
-                transition={{ duration: 0.15 }}
-                className="flex min-w-0 flex-col overflow-hidden"
-              >
-                <span className="truncate text-xs font-semibold whitespace-nowrap text-zinc-200">
-                  Ashish
-                </span>
-                <span className="truncate text-[9px] whitespace-nowrap text-zinc-500">
-                  ashish@devnest.com
-                </span>
-              </motion.div>
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900/40 text-zinc-400 transition-colors hover:border-zinc-700 hover:text-zinc-200"
+          >
+            {isCollapsed ? (
+              <RiMenuUnfoldLine size={16} />
+            ) : (
+              <RiMenuFoldLine size={16} />
             )}
-          </AnimatePresence>
+          </button>
         </div>
-      </div>
-    </motion.aside>
+
+        <nav className="flex-1 scrollbar-none space-y-1.5 overflow-x-hidden overflow-y-auto px-3 py-4">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive =
+              pathname === item.href || (item.active && pathname === "/");
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => {
+                  setActiveTab(item.href);
+                  // Mobile par link click hote hi sidebar auto-collapse ho jaye
+                  if (window.innerWidth < 768) setIsCollapsed(true);
+                }}
+                className={cn(
+                  "group relative flex items-center gap-3 rounded-xl font-mono text-xs font-medium transition-all duration-300",
+                  isCollapsed
+                    ? "mx-auto h-11 w-11 justify-center p-0"
+                    : "px-3 py-2.5",
+                  isActive
+                    ? "bg-zinc-900/60 text-violet-200"
+                    : "hover:bg-zinc-900/40 hover:text-zinc-100",
+                )}
+                title={isCollapsed ? item.label : undefined}
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="activeGlowPipeIndicator"
+                    className="absolute top-1/4 left-0 h-1/2 w-0.75 rounded-r-full bg-violet-400 shadow-[0_0_15px_4px_rgba(167,139,250,0.65)]"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  />
+                )}
+
+                <div className="relative flex shrink-0 items-center justify-center">
+                  <AnimatePresence>
+                    {isActive && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.7 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.7 }}
+                        transition={{ duration: 0.25 }}
+                        className="absolute -inset-4 -z-10 rounded-full opacity-40 mix-blend-screen blur-md group-hover:opacity-65"
+                        style={{
+                          background:
+                            "radial-gradient(circle at left, rgba(167,139,250,0.45) 0%, rgba(167,139,250,0) 70%)",
+                        }}
+                      />
+                    )}
+                  </AnimatePresence>
+
+                  {!isActive && (
+                    <div className="absolute inset-0 -z-10 -m-2 rounded-lg bg-white/5 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+                  )}
+
+                  <Icon
+                    className={cn(
+                      "relative z-10 h-4.5 w-4.5 shrink-0 transition-all duration-300",
+                      isActive
+                        ? "scale-105 text-violet-300 drop-shadow-[0_0_8px_rgba(196,181,253,0.5)]"
+                        : "text-zinc-500 group-hover:text-zinc-300",
+                      isCollapsed && !isActive ? "group-hover:scale-110" : "",
+                    )}
+                  />
+                </div>
+
+                <AnimatePresence mode="wait" initial={false}>
+                  {!isCollapsed && (
+                    <motion.span
+                      initial={{
+                        opacity: 0,
+                        width: 0,
+                        filter: "blur(4px)",
+                        x: -6,
+                      }}
+                      animate={{
+                        opacity: 1,
+                        width: "auto",
+                        filter: "blur(0px)",
+                        x: 0,
+                      }}
+                      exit={{ opacity: 0, width: 0, filter: "blur(4px)", x: -6 }}
+                      transition={{ duration: 0.18 }}
+                      className="flex-1 overflow-hidden whitespace-nowrap"
+                    >
+                      {item.label}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="shrink-0 border-t border-zinc-900 p-4">
+          <div
+            className={cn(
+              "flex cursor-pointer items-center gap-3 rounded-xl px-2 py-1.5 transition-colors hover:bg-zinc-900/30",
+              isCollapsed && "justify-center px-0",
+            )}
+          >
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-violet-500/20 bg-violet-500/10 text-xs font-bold text-violet-400 shadow-[0_0_10px_rgba(139,92,246,0.1)]">
+              A
+            </div>
+
+            <AnimatePresence mode="wait" initial={false}>
+              {!isCollapsed && (
+                <motion.div
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: "auto" }}
+                  exit={{ opacity: 0, width: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="flex min-w-0 flex-col overflow-hidden"
+                >
+                  <span className="truncate text-xs font-semibold whitespace-nowrap text-zinc-200">
+                    Ashish
+                  </span>
+                  <span className="truncate text-[9px] whitespace-nowrap text-zinc-500">
+                    ashish@devnest.com
+                  </span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+      </motion.aside>
+    </>
   );
 }
