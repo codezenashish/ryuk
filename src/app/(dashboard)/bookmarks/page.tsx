@@ -1,3 +1,7 @@
+import BookmarksToolbar from "@/features/bookmarks/components/bookmark-toolbar";
+
 export default function BookmarksPage() {
-  return <div></div>;
+  return <div>
+    <BookmarksToolbar />
+  </div>;
 }
