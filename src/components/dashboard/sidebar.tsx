@@ -70,10 +70,10 @@ export default function Sidebar() {
               exit={{ opacity: 0, x: -10 }}
               className="flex items-center gap-2 px-1"
             >
-              <div className="flex h-5 w-5 items-center justify-center rounded bg-violet-500 text-[10px] font-black text-black">
+              {/* <div className="flex h-5 w-5 items-center justify-center rounded bg-violet-500 text-[10px] font-black text-black">
                 ⚡
-              </div>
-              <span className="font-mono text-xs font-bold tracking-wider text-zinc-200 uppercase">
+              </div> */}
+              <span className="font-sans-system text-sm  tracking-wider text-zinc-200 ">
                 DevSpace
               </span>
             </motion.div>
