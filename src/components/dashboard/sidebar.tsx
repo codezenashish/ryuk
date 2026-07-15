@@ -5,7 +5,11 @@ import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { RiMenuFoldLine, RiMenuUnfoldLine } from "react-icons/ri";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  ViewSidebarLeftIcon,
+  ViewSidebarRightIcon,
+} from "@hugeicons/core-free-icons";
 import { navItems } from "./sidebarConfig";
 import { cn } from "@/lib/utils";
 
@@ -80,16 +84,15 @@ export default function Sidebar() {
             className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900/40 text-zinc-400 transition-colors hover:border-zinc-700 hover:text-zinc-200"
           >
             {isCollapsed ? (
-              <RiMenuUnfoldLine size={16} />
+              <HugeiconsIcon icon={ViewSidebarRightIcon} size={16} />
             ) : (
-              <RiMenuFoldLine size={16} />
+              <HugeiconsIcon icon={ViewSidebarLeftIcon} size={16} />
             )}
           </button>
         </div>
 
         <nav className="flex-1 scrollbar-none space-y-1.5 overflow-x-hidden overflow-y-auto px-3 py-4">
           {navItems.map((item) => {
-            const Icon = item.icon;
             const isActive =
               pathname === item.href || (item.active && pathname === "/");
 
@@ -142,7 +145,8 @@ export default function Sidebar() {
                     <div className="absolute inset-0 -z-10 -m-2 rounded-lg bg-white/5 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
                   )}
 
-                  <Icon
+                  <HugeiconsIcon
+                    icon={item.icon}
                     className={cn(
                       "relative z-10 h-4.5 w-4.5 shrink-0 transition-all duration-300",
                       isActive

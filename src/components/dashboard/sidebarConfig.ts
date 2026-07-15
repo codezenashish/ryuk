@@ -1,22 +1,22 @@
-import { IconType } from "react-icons";
+import type { IconSvgElement } from "@hugeicons/react";
 import {
-  RiArrowDownCircleLine,
-  RiArrowUpCircleLine,
-  RiBookmarkLine,
-  RiCalendarCheckLine,
-  RiCodeLine,
-  RiFileTextLine,
-  RiLayoutGridLine,
-  RiPenNibLine,
-  RiSearchLine,
-  RiTerminalLine,
-  RiUserLine,
-} from "react-icons/ri";
+  Bookmark01Icon,
+  CalendarCheckIcon,
+  CircleArrowDown01Icon,
+  CircleArrowUp01Icon,
+  CodeIcon,
+  ComputerTerminal01Icon,
+  DashboardSquare01Icon,
+  File01Icon,
+  PenTool01Icon,
+  Search01Icon,
+  UserIcon,
+} from "@hugeicons/core-free-icons";
 
 export interface NavItem {
   label: string;
   href: string;
-  icon: IconType;
+  icon: IconSvgElement;
   active?: boolean;
 }
 
@@ -24,57 +24,57 @@ export const navItems: NavItem[] = [
   {
     label: "Dashboard",
     href: "/dashboard",
-    icon: RiLayoutGridLine,
+    icon: DashboardSquare01Icon,
     active: true,
   },
   {
     label: "Bookmarks",
     href: "/bookmarks",
-    icon: RiBookmarkLine,
+    icon: Bookmark01Icon,
   },
   {
     label: "Notes",
     href: "/notes",
-    icon: RiFileTextLine,
+    icon: File01Icon,
   },
   {
     label: "Habits",
     href: "/habits",
-    icon: RiCalendarCheckLine,
+    icon: CalendarCheckIcon,
   },
   {
     label: "Dev Search",
     href: "/search",
-    icon: RiSearchLine,
+    icon: Search01Icon,
   },
   {
     label: "Friends",
     href: "/friends",
-    icon: RiUserLine,
+    icon: UserIcon,
   },
   {
     label: "Received",
     href: "/received",
-    icon: RiArrowDownCircleLine,
+    icon: CircleArrowDown01Icon,
   },
   {
     label: "Sent",
     href: "/sent",
-    icon: RiArrowUpCircleLine,
+    icon: CircleArrowUp01Icon,
   },
   {
     label: "Excalidraw",
     href: "/excalidraw",
-    icon: RiPenNibLine,
+    icon: PenTool01Icon,
   },
   {
     label: "Snippets",
     href: "/snippets",
-    icon: RiCodeLine,
+    icon: CodeIcon,
   },
   {
     label: "API Tester",
     href: "/api-tester",
-    icon: RiTerminalLine,
+    icon: ComputerTerminal01Icon,
   },
 ];
