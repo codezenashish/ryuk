@@ -103,7 +103,7 @@ export default function Sidebar() {
                   if (window.innerWidth < 768) setIsCollapsed(true);
                 }}
                 className={cn(
-                  "group relative flex items-center gap-3 rounded-xl font-mono text-xs font-medium transition-all duration-300",
+                  "group relative flex items-center gap-3 rounded-xl  text-sm tracking-tighter font-sans-system  transition-all duration-300",
                   isCollapsed
                     ? "mx-auto h-11 w-11 justify-center p-0"
                     : "px-3 py-2.5",
