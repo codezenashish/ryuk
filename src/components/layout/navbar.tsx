@@ -78,7 +78,7 @@ export default function Navbar() {
               <circle cx="14" cy="14" r="2" fill="#A78BFA" />
             </svg>
 
-            <span className="text-lg font-sans-system tracking-tight text-white capitalize">
+            <span className="font-sans-system text-lg tracking-tight text-white capitalize">
               devnest
             </span>
           </Link>
@@ -88,7 +88,7 @@ export default function Navbar() {
               <Link
                 key={item.label}
                 href={item.href}
-                className="text-sm font-sans-system text-stone-400 transition-colors duration-200 hover:text-white"
+                className="font-sans-system text-sm text-stone-400 transition-colors duration-200 hover:text-white"
               >
                 {item.label}
               </Link>
@@ -96,12 +96,20 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              className="h-10 rounded-xl border border-white/10 bg-white/5 px-5 text-sm font-medium text-white transition-all duration-200 hover:bg-white/10"
-            >
-              Sign in
-            </Button>
+            <Link href="/login">
+              <Button
+                variant="ghost"
+                className="h-10 rounded-xl px-4 text-sm font-medium text-white transition-all duration-200 hover:bg-white/10"
+              >
+                Sign in
+              </Button>
+            </Link>
+
+            <Link href="/signup" className="hidden sm:block">
+              <Button className="h-10 rounded-xl bg-violet-600 px-5 text-sm font-medium text-white hover:bg-violet-500">
+                Sign up
+              </Button>
+            </Link>
 
             <Button
               variant="ghost"
