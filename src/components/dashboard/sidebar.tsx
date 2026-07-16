@@ -12,6 +12,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { navItems } from "./sidebarConfig";
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "../ui/theme-toggle";
 
 export default function Sidebar() {
   const isCollapsed = useDashboardStore((state) => state.isCollapsed);
@@ -188,6 +189,11 @@ export default function Sidebar() {
         </nav>
 
         <div className="shrink-0 border-t border-zinc-900 p-4">
+          <div
+            className={cn("mb-3 flex", isCollapsed ? "justify-center" : "justify-start")}
+          >
+            <ThemeToggle />
+          </div>
           <div
             className={cn(
               "flex cursor-pointer items-center gap-3 rounded-xl px-2 py-1.5 transition-colors hover:bg-zinc-900/30",
