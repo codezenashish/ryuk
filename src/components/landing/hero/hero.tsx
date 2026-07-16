@@ -25,7 +25,7 @@ export default function Hero() {
               </span>
             </div>
 
-            <h1 className="mb-6 text-4xl text-white sm:text-5xl md:text-6xl">
+            <h1 className="mb-6 text-4xl font-inter text-white sm:text-5xl md:text-6xl">
               One place for
               <br />
               <span className="bg-linear-to-r from-white via-violet-200 to-violet-400 bg-clip-text font-serif text-transparent">
@@ -34,7 +34,7 @@ export default function Hero() {
               you build
             </h1>
 
-            <p className="mx-auto mb-8 max-w-110 text-sm text-zinc-400 normal-case max-lg:max-w-full md:text-lg lg:mx-0">
+            <p className="mx-auto  mb-8 max-w-110 text-sm text-zinc-400 normal-case max-lg:max-w-full md:text-lg lg:mx-0">
               Stop switching between 12 tabs. DevNest brings your bookmarks,
               notes, code snippets, and habits into a single calm workspace —
               open source and fully private.
