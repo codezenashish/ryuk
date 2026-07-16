@@ -37,16 +37,17 @@ export default function Sidebar() {
 
     handleResize();
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("removeEventListener", handleResize);
+    return () =>
+      window.removeEventListener("removeEventListener", handleResize);
   }, [setIsCollapsed]);
 
   const width = isCollapsed ? 64 : 256;
 
   return (
     <>
-      {/* Mobile Backdrop Overlay: Jab sidebar expand hoga tab peeche ka area dark hoga */}
+      {/* Mobile Backdrop Overlay black background */}
       {!isCollapsed && (
-        <div 
+        <div
           className="fixed inset-0 z-40 bg-black/40 md:hidden"
           onClick={() => setIsCollapsed(true)}
         />
@@ -71,9 +72,9 @@ export default function Sidebar() {
               className="flex items-center gap-2 px-1"
             >
               {/* <div className="flex h-5 w-5 items-center justify-center rounded bg-violet-500 text-[10px] font-black text-black">
-                ⚡
+                
               </div> */}
-              <span className="font-sans-system text-sm  tracking-wider text-zinc-200 ">
+              <span className="font-sans-system text-sm tracking-wider text-zinc-200">
                 DevSpace
               </span>
             </motion.div>
@@ -106,7 +107,7 @@ export default function Sidebar() {
                   if (window.innerWidth < 768) setIsCollapsed(true);
                 }}
                 className={cn(
-                  "group relative flex items-center gap-3 rounded-xl  text-sm tracking-tighter font-sans-system  transition-all duration-300",
+                  "group font-sans-system relative flex items-center gap-3 rounded-xl text-sm tracking-tighter transition-all duration-300",
                   isCollapsed
                     ? "mx-auto h-11 w-11 justify-center p-0"
                     : "px-3 py-2.5",
@@ -119,7 +120,7 @@ export default function Sidebar() {
                 {isActive && (
                   <motion.div
                     layoutId="activeGlowPipeIndicator"
-                    className="absolute top-1/4 left-0 h-1/2 w-0.75 rounded-r-full bg-violet-400 shadow-[0_0_15px_4px_rgba(167,139,250,0.65)]"
+                    className="absolute top-1/4 -left-3 h-1/2 w-0.75 rounded-r-full bg-violet-400 shadow-[0_0_15px_4px_rgba(167,139,250,0.65)]"
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   />
                 )}
@@ -133,10 +134,6 @@ export default function Sidebar() {
                         exit={{ opacity: 0, scale: 0.7 }}
                         transition={{ duration: 0.25 }}
                         className="absolute -inset-4 -z-10 rounded-full opacity-40 mix-blend-screen blur-md group-hover:opacity-65"
-                        style={{
-                          background:
-                            "radial-gradient(circle at left, rgba(167,139,250,0.45) 0%, rgba(167,139,250,0) 70%)",
-                        }}
                       />
                     )}
                   </AnimatePresence>
@@ -172,7 +169,12 @@ export default function Sidebar() {
                         filter: "blur(0px)",
                         x: 0,
                       }}
-                      exit={{ opacity: 0, width: 0, filter: "blur(4px)", x: -6 }}
+                      exit={{
+                        opacity: 0,
+                        width: 0,
+                        filter: "blur(4px)",
+                        x: -6,
+                      }}
                       transition={{ duration: 0.18 }}
                       className="flex-1 overflow-hidden whitespace-nowrap"
                     >
