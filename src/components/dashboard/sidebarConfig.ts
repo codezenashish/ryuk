@@ -1,17 +1,15 @@
 import type { IconSvgElement } from "@hugeicons/react";
-import {
-  Bookmark01Icon,
-  CalendarCheckIcon,
-  CircleArrowDown01Icon,
-  CircleArrowUp01Icon,
-  CodeIcon,
-  ComputerTerminal01Icon,
-  DashboardSquare01Icon,
-  File01Icon,
-  PenTool01Icon,
-  Search01Icon,
-  UserIcon,
-} from "@hugeicons/core-free-icons";
+import { Bookmark01Icon } from "@hugeicons/core-free-icons/Bookmark01Icon";
+import { CalendarCheckIcon } from "@hugeicons/core-free-icons/CalendarCheckIcon";
+import { CircleArrowDown01Icon } from "@hugeicons/core-free-icons/CircleArrowDown01Icon";
+import { CircleArrowUp01Icon } from "@hugeicons/core-free-icons/CircleArrowUp01Icon";
+import { CodeIcon } from "@hugeicons/core-free-icons/CodeIcon";
+import { ComputerTerminal01Icon } from "@hugeicons/core-free-icons/ComputerTerminal01Icon";
+import { DashboardSquare01Icon } from "@hugeicons/core-free-icons/DashboardSquare01Icon";
+import { File01Icon } from "@hugeicons/core-free-icons/File01Icon";
+import { PenTool01Icon } from "@hugeicons/core-free-icons/PenTool01Icon";
+import { Search01Icon } from "@hugeicons/core-free-icons/Search01Icon";
+import { UserIcon } from "@hugeicons/core-free-icons/UserIcon";
 
 export interface NavItem {
   label: string;
