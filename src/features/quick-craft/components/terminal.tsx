@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { Copy, Check } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -11,20 +11,12 @@ interface TerminalProps {
 
 export default function Terminal({ command, selectedStack }: TerminalProps) {
   const [copied, setCopied] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-    };
-  }, []);
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(command);
       setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error("Failed to copy command:", err);
     }

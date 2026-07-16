@@ -3,15 +3,15 @@
 import { useDashboardStore } from "@/store/useDashboard";
 import { useEffect, useRef } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation"; // useRouter add kiya
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ViewSidebarLeftIcon } from "@hugeicons/core-free-icons/ViewSidebarLeftIcon";
-import { ViewSidebarRightIcon } from "@hugeicons/core-free-icons/ViewSidebarRightIcon";
+import {
+  ViewSidebarLeftIcon,
+  ViewSidebarRightIcon,
+} from "@hugeicons/core-free-icons";
 import { navItems } from "./sidebarConfig";
 import { cn } from "@/lib/utils";
-import { authClient } from "@/lib/auth-client"; // Better Auth client import kiya
-import Image from "next/image";
 
 export default function Sidebar() {
   const isCollapsed = useDashboardStore((state) => state.isCollapsed);
@@ -19,25 +19,7 @@ export default function Sidebar() {
   const setActiveTab = useDashboardStore((state) => state.setActiveTab);
 
   const pathname = usePathname();
-  const router = useRouter(); // Router initialize kiya
   const wasMobile = useRef<boolean | null>(null);
-
-  // Better Auth se user data fetch kar rahe hain
-  const { data: session, isPending } = authClient.useSession();
-
-  // Logout Function
-  const handleLogout = async () => {
-    const confirmLogout = window.confirm("Are you sure you want to log out?");
-    if (!confirmLogout) return;
-
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          router.push("/login");
-        },
-      },
-    });
-  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -55,7 +37,8 @@ export default function Sidebar() {
 
     handleResize();
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize); // Typo fix kiya yahan (removeEventListener)
+    return () =>
+      window.removeEventListener("removeEventListener", handleResize);
   }, [setIsCollapsed]);
 
   const width = isCollapsed ? 64 : 256;
@@ -88,6 +71,9 @@ export default function Sidebar() {
               exit={{ opacity: 0, x: -10 }}
               className="flex items-center gap-2 px-1"
             >
+              {/* <div className="flex h-5 w-5 items-center justify-center rounded bg-violet-500 text-[10px] font-black text-black">
+                
+              </div> */}
               <span className="font-sans-system text-sm tracking-wider text-zinc-200">
                 DevSpace
               </span>
@@ -117,6 +103,7 @@ export default function Sidebar() {
                 href={item.href}
                 onClick={() => {
                   setActiveTab(item.href);
+                  // Mobile par link click hote hi sidebar auto-collapse ho jaye
                   if (window.innerWidth < 768) setIsCollapsed(true);
                 }}
                 className={cn(
@@ -200,66 +187,36 @@ export default function Sidebar() {
           })}
         </nav>
 
-        {/* 👇 YAHAN SE CHANGES HAIN: Dynamic Profile & Logout Section 👇 */}
         <div className="shrink-0 border-t border-zinc-900 p-4">
-          {isPending ? (
-            // Loading skeleton tab tak dikhayega jab tak data aa raha hai
-            <div
-              className={cn(
-                "flex items-center gap-3",
-                isCollapsed && "justify-center",
-              )}
-            >
-              <div className="h-7 w-7 animate-pulse rounded-full bg-zinc-800" />
-              {!isCollapsed && (
-                <div className="flex flex-col gap-1">
-                  <div className="h-3 w-16 animate-pulse rounded bg-zinc-800" />
-                  <div className="h-2 w-24 animate-pulse rounded bg-zinc-800" />
-                </div>
-              )}
+          <div
+            className={cn(
+              "flex cursor-pointer items-center gap-3 rounded-xl px-2 py-1.5 transition-colors hover:bg-zinc-900/30",
+              isCollapsed && "justify-center px-0",
+            )}
+          >
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-violet-500/20 bg-violet-500/10 text-xs font-bold text-violet-400 shadow-[0_0_10px_rgba(139,92,246,0.1)]">
+              A
             </div>
-          ) : session ? (
-            // Actual User Data
-            <div
-              onClick={handleLogout}
-              title="Click to Log Out"
-              className={cn(
-                "group flex cursor-pointer items-center gap-3 rounded-xl px-2 py-1.5 transition-colors hover:bg-red-500/10",
-                isCollapsed && "justify-center px-0",
-              )}
-            >
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full border border-violet-500/20 bg-violet-500/10 text-xs font-bold text-violet-400 shadow-[0_0_10px_rgba(139,92,246,0.1)] transition-colors group-hover:border-red-500/30 group-hover:bg-red-500/20 group-hover:text-red-400">
-                {session.user.image ? (
-                  <Image
-                    src={session.user.image}
-                    alt="Profile"
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  session.user.name?.charAt(0).toUpperCase() || "U"
-                )}
-              </div>
 
-              <AnimatePresence mode="wait" initial={false}>
-                {!isCollapsed && (
-                  <motion.div
-                    initial={{ opacity: 0, width: 0 }}
-                    animate={{ opacity: 1, width: "auto" }}
-                    exit={{ opacity: 0, width: 0 }}
-                    transition={{ duration: 0.15 }}
-                    className="flex min-w-0 flex-col overflow-hidden"
-                  >
-                    <span className="truncate text-xs font-semibold whitespace-nowrap text-zinc-200 transition-colors group-hover:text-red-400">
-                      {session.user.name}
-                    </span>
-                    <span className="truncate text-[9px] whitespace-nowrap text-zinc-500 transition-colors group-hover:text-red-500/70">
-                      {session.user.email}
-                    </span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          ) : null}
+            <AnimatePresence mode="wait" initial={false}>
+              {!isCollapsed && (
+                <motion.div
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: "auto" }}
+                  exit={{ opacity: 0, width: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="flex min-w-0 flex-col overflow-hidden"
+                >
+                  <span className="truncate text-xs font-semibold whitespace-nowrap text-zinc-200">
+                    Ashish
+                  </span>
+                  <span className="truncate text-[9px] whitespace-nowrap text-zinc-500">
+                    ashish@devnest.com
+                  </span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </motion.aside>
     </>
