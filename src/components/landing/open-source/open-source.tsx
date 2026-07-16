@@ -23,7 +23,7 @@ export default function OpenSourceSection() {
             <div className="text-[10px] font-bold tracking-widest text-zinc-500 uppercase">
               Open Source &amp; Auditable
             </div>
-            <h2 className="font-sans text-3xl leading-tight  tracking-tight text-zinc-100 sm:text-5xl">
+            <h2 className="font-inter text-3xl leading-tight  tracking-tight text-zinc-100 sm:text-5xl">
               Privacy by design, <br />
               <span className="text-zinc-500 font-serif">not by promise.</span>
             </h2>
