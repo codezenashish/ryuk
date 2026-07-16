@@ -24,7 +24,6 @@ const features = [
     preview: <BookmarkPreview />,
   },
   {
-    
     title: "Notes",
     description:
       "Free-form writing with premium client-side AES-256 encryption layer. Your architecture blueprints remain fully private.",
@@ -63,11 +62,11 @@ export default function FeaturesSection() {
       <div className="mx-auto flex w-full max-w-6xl flex-col items-center">
         <div className="mb-10 flex max-w-2xl flex-col items-center gap-y-3 text-center">
           <div className="mb-3 max-w-fit rounded-full border border-violet-400/25 bg-violet-400/10 px-4 py-1 backdrop-blur-sm">
-            <span className="text-sm font-medium tracking-wide text-violet-200">
-              No sign-up needed
+            <span className="text-sm  tracking-wide text-violet-200">
+              Core features
             </span>
           </div>
-          <h2 className="text-4xl text-white sm:text-5xl md:text-6xl">
+          <h2 className="text-4xl text-white font-inter sm:text-5xl md:text-6xl">
             Your full{" "}
             <span className="bg-linear-to-r from-white via-violet-200 to-violet-400 bg-clip-text font-serif text-transparent">
               developer workspace
