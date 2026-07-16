@@ -78,7 +78,7 @@ export default function Navbar() {
               <circle cx="14" cy="14" r="2" fill="#A78BFA" />
             </svg>
 
-            <span className="text-lg font-semibold tracking-tight text-white capitalize">
+            <span className="text-lg font-sans-system tracking-tight text-white capitalize">
               devnest
             </span>
           </Link>
@@ -88,7 +88,7 @@ export default function Navbar() {
               <Link
                 key={item.label}
                 href={item.href}
-                className="text-sm font-medium text-stone-400 transition-colors duration-200 hover:text-white"
+                className="text-sm font-sans-system text-stone-400 transition-colors duration-200 hover:text-white"
               >
                 {item.label}
               </Link>
