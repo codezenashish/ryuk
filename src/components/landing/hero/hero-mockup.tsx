@@ -153,7 +153,7 @@ export default function HeroMockup() {
                     </span>
                   ))}
                 </div>
-                <code className="whitespace-pre text-zinc-400">
+                <code className="whitespace-pre font-mono text-zinc-400">
                   <span className="block">
                     <span className="text-violet-300">export const</span>{" "}
                     bookmark = <span className="text-cyan-200">&#123;</span>
