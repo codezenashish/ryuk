@@ -15,8 +15,8 @@ export default function Footer() {
           <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900/30 text-zinc-400">
             <LuHouse size={13} />
           </div>
-          <span className="font-sans text-sm font-semibold tracking-tight text-zinc-200">
-            devnest
+          <span className=" text-sm font-semibold tracking-tight text-zinc-200">
+            DevSpace
           </span>
           <span className="rounded-md border border-zinc-800/80 bg-zinc-900 px-2 py-0.5 font-mono text-[10px] text-zinc-600">
             MIT License
