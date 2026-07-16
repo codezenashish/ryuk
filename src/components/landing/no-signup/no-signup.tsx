@@ -7,11 +7,11 @@ export default function NoSignup() {
       <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-10">
         <div className="flex max-w-2xl flex-col items-center gap-y-3 text-center">
           <div className="mb-3 max-w-fit rounded-full border border-violet-400/25 bg-violet-400/10 px-4 py-1 backdrop-blur-sm">
-            <span className="text-sm font-medium tracking-wide text-violet-200">
+            <span className="text-sm  tracking-wide text-violet-200">
               No sign-up needed
             </span>
           </div>
-          <h2 className="text-4xl text-white sm:text-5xl md:text-6xl">
+          <h2 className="text-4xl font-inter text-white sm:text-5xl md:text-6xl">
             Try it{" "}
             <span className="bg-linear-to-r from-white via-violet-200 to-violet-400 bg-clip-text font-serif text-transparent">
               right here
