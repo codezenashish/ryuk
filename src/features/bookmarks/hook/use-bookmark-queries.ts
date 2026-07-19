@@ -5,8 +5,6 @@ import {
   deleteBookmarkAction,
 } from "../actions/bookmark-action";
 
-// ── Types ──────────────────────────────────────────────────────────────
-
 export interface BookmarkItem {
   id: number;
   title: string;
@@ -20,14 +18,10 @@ export interface CategoryWithBookmarks {
   name: string;
   icon: string;
   color: string;
-  position: number;
   bookmarks: BookmarkItem[];
 }
 
 const BOOKMARKS_KEY = ["bookmarks"] as const;
-
-// ── 1. FETCH QUERY (Bookmarks Load Karne Ke Liye) ──────────────────────
-
 export function useBookmarksQuery(userId: string | null | undefined) {
   return useQuery<CategoryWithBookmarks[]>({
     queryKey: [...BOOKMARKS_KEY, userId ?? ""],
@@ -36,7 +30,7 @@ export function useBookmarksQuery(userId: string | null | undefined) {
       return fetchBookmarksAction(userId);
     },
     enabled: !!userId,
-    refetchInterval: 5000, // Har 5 seconds me background me sync karega
+    refetchInterval: 5000,
     refetchIntervalInBackground: true,
   });
 }
@@ -64,67 +58,52 @@ export function useCreateBookmarkMutation() {
       return result;
     },
 
-    // Jaise hi user save dabayega, ye function turant chalega (Bina server response ka wait kiye)
     onMutate: async (newBookmark) => {
       const queryKey = [...BOOKMARKS_KEY, newBookmark.userId];
-
-      // Pehle chal rahe fetches ko cancel karein taaki data overwrite na ho
       await queryClient.cancelQueries({ queryKey });
-
-      // Purana data store karein cache se (agar error aaya toh rollback karne ke liye)
       const previousData =
         queryClient.getQueryData<CategoryWithBookmarks[]>(queryKey);
+      queryClient.setQueryData<CategoryWithBookmarks[]>(queryKey, (old) => {
+        if (!old) return old;
 
-      // Cache ko instantly update karein naye bookmark ke sath
-      queryClient.setQueryData<CategoryWithBookmarks[]>(
-        queryKey,
-        (old: any) => {
-          if (!old) return old;
+        const categoryName = newBookmark.categoryName.trim() || "General";
+        const existingIndex = old.findIndex(
+          (category) =>
+            category.name.toLowerCase() === categoryName.toLowerCase(),
+        );
 
-          const categoryName = newBookmark.categoryName.trim() || "General";
-          const existingIndex = old.findIndex(
-            (c: any) => c.name.toLowerCase() === categoryName.toLowerCase(),
-          );
+        const optimisticBookmark: BookmarkItem = {
+          id: -Date.now(),
+          title: newBookmark.title,
+          url: newBookmark.url,
+          favicon: newBookmark.favicon,
+          createdAt: new Date(),
+        };
 
-          // Fake temporary ID (Bina database ke UI me dikhane ke liye)
-          const optimisticBookmark: BookmarkItem = {
-            id: -Date.now(),
-            title: newBookmark.title,
-            url: newBookmark.url,
-            favicon: newBookmark.favicon,
-            createdAt: new Date(),
+        if (existingIndex >= 0) {
+          const updated = [...old];
+          updated[existingIndex] = {
+            ...updated[existingIndex],
+            bookmarks: [
+              ...updated[existingIndex].bookmarks,
+              optimisticBookmark,
+            ],
           };
-
-          // Agar category pehle se frontend par hai
-          if (existingIndex >= 0) {
-            const updated = [...old];
-            updated[existingIndex] = {
-              ...updated[existingIndex],
-              bookmarks: [
-                ...updated[existingIndex].bookmarks,
-                optimisticBookmark,
-              ],
-            };
-            return updated;
-          }
-
-          // Agar user ne nayi category banayi hai toh use bhi instantly add karein
-          const optimisticCategory: CategoryWithBookmarks = {
-            id: `optimistic-${Date.now()}`,
-            name: categoryName,
-            icon: newBookmark.categoryIcon || "Folder01Icon", // Default to Hugeicons name
-            color: "#6366F1",
-            position: old.length,
-            bookmarks: [optimisticBookmark],
-          };
-          return [...old, optimisticCategory];
-        },
-      );
+          return updated;
+        }
+        const optimisticCategory: CategoryWithBookmarks = {
+          id: `optimistic-${Date.now()}`,
+          name: categoryName,
+          icon: newBookmark.categoryIcon || "Folder01Icon", // Default to Hugeicons name
+          color: "#6366F1",
+          bookmarks: [optimisticBookmark],
+        };
+        return [...old, optimisticCategory];
+      });
 
       return { previousData };
     },
 
-    // Agar server par save fail ho jata hai toh UI ko wapas purani state me le aayein
     onError: (_error, vars, context) => {
       if (context?.previousData) {
         queryClient.setQueryData(
@@ -134,7 +113,6 @@ export function useCreateBookmarkMutation() {
       }
     },
 
-    // Jab sab complete ho jaye (Success ho ya Error), database se fresh data fetch karein
     onSettled: (_data, _error, vars) => {
       queryClient.invalidateQueries({
         queryKey: [...BOOKMARKS_KEY, vars.userId],
@@ -142,8 +120,6 @@ export function useCreateBookmarkMutation() {
     },
   });
 }
-
-// ── 3. DELETE MUTATION (Bookmark Delete Karne Ke Liye) ──────────────────
 
 interface DeleteBookmarkVars {
   bookmarkId: number;
@@ -154,8 +130,13 @@ export function useDeleteBookmarkMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (vars: DeleteBookmarkVars) =>
-      deleteBookmarkAction(vars.bookmarkId),
+    mutationFn: async (vars: DeleteBookmarkVars) => {
+      const result = await deleteBookmarkAction(vars.bookmarkId);
+      if (!result.success) {
+        throw new Error(result.error || "Failed to delete bookmark");
+      }
+      return result;
+    },
 
     onMutate: async (vars) => {
       const queryKey = [...BOOKMARKS_KEY, vars.userId];
@@ -165,18 +146,15 @@ export function useDeleteBookmarkMutation() {
         queryClient.getQueryData<CategoryWithBookmarks[]>(queryKey);
 
       // UI se instantly hata dein bookmark ko
-      queryClient.setQueryData<CategoryWithBookmarks[]>(
-        queryKey,
-        (old: any) => {
-          if (!old) return old;
-          return old.map((category: any) => ({
-            ...category,
-            bookmarks: category.bookmarks.filter(
-              (b: any) => b.id !== vars.bookmarkId,
-            ),
-          }));
-        },
-      );
+      queryClient.setQueryData<CategoryWithBookmarks[]>(queryKey, (old) => {
+        if (!old) return old;
+        return old.map((category) => ({
+          ...category,
+          bookmarks: category.bookmarks.filter(
+            (bookmark) => bookmark.id !== vars.bookmarkId,
+          ),
+        }));
+      });
 
       return { previousData };
     },
