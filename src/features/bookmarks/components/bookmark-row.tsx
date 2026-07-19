@@ -7,14 +7,14 @@ interface BookmarkRowProps {
   isDeleting?: boolean;
 }
 
-/** The compact row view: two columns on desktop, one column on small screens. */
+/** The compact row view within one category. */
 export default function BookmarkRow({
   bookmarks,
   onDelete,
   isDeleting,
 }: BookmarkRowProps) {
   return (
-    <div className="grid gap-2 md:grid-cols-2">
+    <div className="space-y-2">
       {bookmarks.map((bookmark) => (
         <BookmarkCard
           key={bookmark.id}
