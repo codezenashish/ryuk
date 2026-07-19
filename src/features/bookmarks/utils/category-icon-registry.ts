@@ -1,4 +1,4 @@
-import React from "react";
+import type { IconSvgElement } from "@hugeicons/react";
 import {
   GithubIcon,
   TwitterIcon,
@@ -8,9 +8,9 @@ import {
   DiscordIcon,
   TerminalIcon,
   BookOpen01Icon,
-  PaletteIcon,
+  PaintBoardIcon,
   Folder01Icon,
-  Globe01Icon,
+  GlobeIcon,
   CodeIcon,
   ShoppingCart01Icon,
   Film01Icon,
@@ -20,11 +20,11 @@ import {
   Layout01Icon,
   Rocket01Icon,
   Database01Icon,
-  DocumentTextIcon,
+  DocumentCodeIcon,
   StarIcon,
-} from "hugeicons-react";
+} from "@hugeicons/core-free-icons";
 
-export const iconRegistry: Record<string, React.ComponentType<any>> = {
+export const iconRegistry: Record<string, IconSvgElement> = {
   GithubIcon,
   TwitterIcon,
   Linkedin01Icon,
@@ -33,10 +33,10 @@ export const iconRegistry: Record<string, React.ComponentType<any>> = {
   DiscordIcon,
   TerminalIcon,
   BookOpen01Icon,
-  PaletteIcon,
+  PaintBoardIcon,
   Folder01Icon,
-  Globe01Icon,
-  
+  GlobeIcon,
+
   // Popular Icons for IconPicker
   CodeIcon,
   ShoppingCart01Icon,
@@ -47,7 +47,7 @@ export const iconRegistry: Record<string, React.ComponentType<any>> = {
   Layout01Icon,
   Rocket01Icon,
   Database01Icon,
-  DocumentTextIcon,
+  DocumentCodeIcon,
   StarIcon,
 };
 
