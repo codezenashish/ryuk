@@ -1,8 +1,17 @@
 "use server";
 
 import { db } from "@/lib/db";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
+async function getAuthenticatedUserId() {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
 
+  return session.user.id;
+}
 function getCategoryIconName(categoryName: string): string {
   const name = categoryName.toLowerCase().trim();
   if (name.includes("social") || name.includes("account"))
@@ -26,7 +35,7 @@ function getCategoryIconName(categoryName: string): string {
 
 /**
  * Check karega ki kya category pehle se bani hui hai.
- * Agar nahi bani hai, toh naya create karega automatic position tracking ke sath.
+ * Creates a category when one with the same name does not already exist.
  */
 async function findOrCreateCategory(
   categoryName: string,
@@ -42,20 +51,11 @@ async function findOrCreateCategory(
   });
   if (existing) return existing;
 
-  // Find the next available position for sorting
-  const { _max } = await db.category.aggregate({
-    where: { userId },
-    _max: { position: true },
-  });
-  const nextPosition = (_max.position ?? -1) + 1;
-
-  // Create new category
   return db.category.create({
     data: {
       name: trimmed,
       userId,
       icon: icon || getCategoryIconName(trimmed),
-      position: nextPosition,
     },
     select: { id: true },
   });
@@ -65,16 +65,17 @@ async function findOrCreateCategory(
  * 1. FETCH ACTION: User ke saare bookmarks aur unki categories lane ke liye.
  */
 export async function fetchBookmarksAction(userId: string) {
-  if (!userId) {
-    throw new Error("Unauthorized: userId is required");
+  const authenticatedUserId = await getAuthenticatedUserId();
+  if (userId !== authenticatedUserId) {
+    throw new Error("Unauthorized");
   }
 
   const categories = await db.category.findMany({
     where: { userId },
-    orderBy: { position: "asc" },
+    orderBy: { createdAt: "asc" },
     include: {
       bookmarks: {
-        orderBy: { position: "asc" },
+        orderBy: { createdAt: "desc" },
         select: {
           id: true,
           title: true,
@@ -101,11 +102,15 @@ interface CreateBookmarkInput {
 
 /**
  * 2. CREATE ACTION: Naya bookmark save karne ke liye.
- * Yeh transaction ($transaction) use karta hai taaki data secure tarike se sequentially save ho.
+ * Stores a bookmark in its selected category.
  */
 export async function createBookmarkAction(input: CreateBookmarkInput) {
   try {
     const { url, title, favicon, categoryName, categoryIcon, userId } = input;
+    const authenticatedUserId = await getAuthenticatedUserId();
+    if (userId !== authenticatedUserId) {
+      return { success: false as const, error: "Unauthorized" };
+    }
     if (!url || !title) {
       return { success: false as const, error: "URL and title are required" };
     }
@@ -117,23 +122,14 @@ export async function createBookmarkAction(input: CreateBookmarkInput) {
       categoryIcon,
     );
 
-    // Database transaction use karke position manage aur add bookmark karein
-    const newBookmark = await db.$transaction(async (tx) => {
-      const { _max } = await tx.bookmark.aggregate({
-        where: { userId, categoryId: category.id },
-        _max: { position: true },
-      });
-
-      return tx.bookmark.create({
-        data: {
-          title,
-          url,
-          favicon,
-          userId,
-          categoryId: category.id,
-          position: (_max.position ?? -1) + 1,
-        },
-      });
+    const newBookmark = await db.bookmark.create({
+      data: {
+        title,
+        url,
+        favicon,
+        userId,
+        categoryId: category.id,
+      },
     });
 
     return {
@@ -152,7 +148,14 @@ export async function createBookmarkAction(input: CreateBookmarkInput) {
  */
 export async function deleteBookmarkAction(bookmarkId: number) {
   try {
-    await db.bookmark.delete({ where: { id: bookmarkId } });
+    const userId = await getAuthenticatedUserId();
+    const result = await db.bookmark.deleteMany({
+      where: { id: bookmarkId, userId },
+    });
+    if (!result.count) {
+      return { success: false as const, error: "Bookmark not found" };
+    }
+
     return { success: true as const };
   } catch (error) {
     console.error("Delete Bookmark Error:", error);
