@@ -1,7 +1,4 @@
 "use client";
-
-/* eslint-disable @next/next/no-img-element */
-
 import { AnimatePresence, motion } from "framer-motion";
 import {
   AllBookmarkIcon,
