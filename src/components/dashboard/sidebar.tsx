@@ -3,7 +3,7 @@
 import { useDashboardStore } from "@/store/useDashboard";
 import { useEffect, useRef } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation"; // useRouter add kiya
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -22,7 +22,8 @@ export default function Sidebar() {
   const setActiveTab = useDashboardStore((state) => state.setActiveTab);
 
   const pathname = usePathname();
-  const router = useRouter(); // Router initialize kiya
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const wasMobile = useRef<boolean | null>(null);
 
   // Better Auth se user data fetch kar rahe hain
@@ -111,15 +112,21 @@ export default function Sidebar() {
 
         <nav className="flex-1 scrollbar-none space-y-1.5 overflow-x-hidden overflow-y-auto px-3 py-4">
           {navItems.map((item) => {
-            const isActive =
-              pathname === item.href || (item.active && pathname === "/");
+            const isBookmarks = item.label === "Bookmarks";
+            const href = isBookmarks
+              ? item.href
+              : `/coming-soon?feature=${encodeURIComponent(item.label)}`;
+            const isActive = isBookmarks
+              ? pathname === item.href
+              : pathname === "/coming-soon" &&
+                searchParams.get("feature") === item.label;
 
             return (
               <Link
                 key={item.href}
-                href={item.href}
+                href={href}
                 onClick={() => {
-                  setActiveTab(item.href);
+                  setActiveTab(href);
                   if (window.innerWidth < 768) setIsCollapsed(true);
                 }}
                 className={cn(
