@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Instrument_Serif } from "next/font/google";
 import ThemeProvider from "./theme-provider";
+import QueryProvider from "./query-provider";
 import "./globals.css";
 
 const serif = Instrument_Serif({
@@ -49,7 +50,9 @@ export default function RootLayout({
       className={`${inter.variable} ${serif.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
-        <ThemeProvider>{children}</ThemeProvider>
+        <QueryProvider>
+          <ThemeProvider>{children}</ThemeProvider>
+        </QueryProvider>
       </body>
     </html>
   );
