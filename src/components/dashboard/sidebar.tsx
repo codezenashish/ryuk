@@ -112,14 +112,8 @@ export default function Sidebar() {
 
         <nav className="flex-1 scrollbar-none space-y-1.5 overflow-x-hidden overflow-y-auto px-3 py-4">
           {navItems.map((item) => {
-            const isBookmarks = item.label === "Bookmarks";
-            const href = isBookmarks
-              ? item.href
-              : `/coming-soon?feature=${encodeURIComponent(item.label)}`;
-            const isActive = isBookmarks
-              ? pathname === item.href
-              : pathname === "/coming-soon" &&
-                searchParams.get("feature") === item.label;
+            const href = item.href;
+            const isActive = pathname === item.href;
 
             return (
               <Link
