@@ -1,5 +1,6 @@
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Folder01Icon } from "@hugeicons/core-free-icons";
+import { cn } from "@/lib/utils";
 import type {
   BookmarkItem,
   CategoryWithBookmarks,
@@ -23,7 +24,11 @@ export default function BookmarkList({
   isDeleting,
 }: BookmarkListProps) {
   return (
-    <div className="space-y-8">
+    <div
+      className={cn(
+        viewType === "list" ? "grid gap-8 md:grid-cols-2" : "space-y-8",
+      )}
+    >
       {categories.map((category) => {
         const categoryIcon = getIconComponent(category.icon) || Folder01Icon;
 
