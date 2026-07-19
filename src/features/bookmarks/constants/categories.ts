@@ -1,6 +1,6 @@
 export const DEFAULT_CATEGORIES = [
   { label: "Development", icon: "CodeIcon" },
-  { label: "Design", icon: "PaletteIcon" },
+  { label: "Design", icon: "PaintBoardIcon" },
   { label: "Shopping", icon: "ShoppingCart01Icon" },
   { label: "Education", icon: "BookOpen01Icon" },
   { label: "Entertainment", icon: "Film01Icon" },
@@ -11,7 +11,7 @@ export const DEFAULT_CATEGORIES = [
 
 export const POPULAR_ICONS = [
   "CodeIcon",
-  "PaletteIcon",
+  "PaintBoardIcon",
   "ShoppingCart01Icon",
   "BookOpen01Icon",
   "Film01Icon",
@@ -22,8 +22,8 @@ export const POPULAR_ICONS = [
   "Layout01Icon",
   "Rocket01Icon",
   "Database01Icon",
-  "Globe01Icon",
+  "GlobeIcon",
   "Folder01Icon",
-  "DocumentTextIcon",
+  "DocumentCodeIcon",
   "StarIcon",
 ];
