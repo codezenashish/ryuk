@@ -1,17 +1,17 @@
 "use client";
-import { useEffect, useState } from "react";
-import { useTheme } from "next-themes";
+import { useSyncExternalStore } from "react";
+import { useTheme } from "@/app/theme-provider";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Moon02Icon, Sun03Icon } from "@hugeicons/core-free-icons";
 import { motion, AnimatePresence } from "framer-motion";
 
 export const ThemeToggle = () => {
-  const { theme, setTheme, systemTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const { theme, setTheme } = useTheme();
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   if (!mounted) {
     return (
@@ -19,8 +19,7 @@ export const ThemeToggle = () => {
     );
   }
 
-  const currentTheme = theme === "system" ? systemTheme : theme;
-  const isDark = currentTheme === "dark";
+  const isDark = theme === "dark";
 
   const toggleTheme = () => {
     const nextTheme = isDark ? "light" : "dark";
