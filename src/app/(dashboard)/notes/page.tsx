@@ -1,3 +1,5 @@
+"use client";
+
 import NotesToolbar from "@/features/notes/components/notes-toolbar";
 
 export default function NotesPage() {
