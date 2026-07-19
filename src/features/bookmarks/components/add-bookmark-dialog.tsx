@@ -18,7 +18,10 @@ import { authClient } from "@/lib/auth-client";
 
 import { fetchBookmarkMetadata } from "../actions/scrape-metadata-action";
 import { useCombobox } from "../hook/use-category-combobox";
-import { useCreateBookmarkMutation } from "../hook/use-bookmark-queries";
+import {
+  useBookmarksQuery,
+  useCreateBookmarkMutation,
+} from "../hook/use-bookmark-queries";
 import { cn } from "@/lib/utils";
 import { DEFAULT_CATEGORIES } from "../constants/categories";
 import { getIconComponent } from "../utils/category-icon-registry";
@@ -28,11 +31,6 @@ interface AddBookmarkDialogProps {
   isDialogOpen: boolean;
   onDialogClose: () => void;
 }
-
-const mappedCategories = DEFAULT_CATEGORIES.map((c) => ({
-  label: c.label,
-  icon: getIconComponent(c.icon),
-}));
 
 function normalizeUrl(value: string) {
   const trimmedUrl = value.trim();
@@ -70,11 +68,31 @@ export default function AddBookmarkDialog({
   const [isSuccess, setIsSuccess] = useState(false);
   const [categoryIcon, setCategoryIcon] = useState<string>("Folder01Icon");
 
+  const { data: savedCategories = [] } = useBookmarksQuery(userId);
   const createMutation = useCreateBookmarkMutation();
   const isSaving = createMutation.isPending;
 
   const latestMetadataRequestRef = useRef(0);
   const titleManuallyEdited = useRef(false);
+  const categoryOptions = useMemo(() => {
+    const categories = [
+      ...DEFAULT_CATEGORIES,
+      ...savedCategories.map((category) => ({
+        label: category.name,
+        icon: category.icon,
+      })),
+    ];
+    const uniqueCategories = new Map<string, (typeof categories)[number]>();
+
+    for (const category of categories) {
+      uniqueCategories.set(category.label.trim().toLowerCase(), category);
+    }
+
+    return [...uniqueCategories.values()].map((category) => ({
+      label: category.label,
+      icon: getIconComponent(category.icon),
+    }));
+  }, [savedCategories]);
 
   const {
     inputValue: selectedCategory,
@@ -95,14 +113,15 @@ export default function AddBookmarkDialog({
     handleKeyDown,
     handleChevronClick,
     resetCombobox: resetCategoryCombobox,
-  } = useCombobox(mappedCategories);
+  } = useCombobox(categoryOptions);
 
-  const isCustomCategorySelected = useMemo(() => {
+  const isNewCategorySelected = useMemo(() => {
     if (!selectedCategory) return false;
-    return !DEFAULT_CATEGORIES.some(
-      (c) => c.label.toLowerCase() === selectedCategory.trim().toLowerCase(),
+    return !categoryOptions.some(
+      (category) =>
+        category.label.toLowerCase() === selectedCategory.trim().toLowerCase(),
     );
-  }, [selectedCategory]);
+  }, [categoryOptions, selectedCategory]);
 
   const urlState = useMemo(() => getUrlParts(bookmarkUrl), [bookmarkUrl]);
   const canSubmit =
@@ -195,7 +214,7 @@ export default function AddBookmarkDialog({
         title: finalTitle,
         favicon: finalFavicon,
         categoryName: finalCategory,
-        categoryIcon: isCustomCategorySelected ? categoryIcon : undefined,
+        categoryIcon: isNewCategorySelected ? categoryIcon : undefined,
         userId: userId,
       },
       {
@@ -520,7 +539,7 @@ export default function AddBookmarkDialog({
 
                     {/* Custom Category Icon Picker Panel */}
                     <AnimatePresence>
-                      {isCustomCategorySelected && (
+                      {isNewCategorySelected && (
                         <motion.div
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: "auto" }}
