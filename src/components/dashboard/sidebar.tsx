@@ -3,7 +3,7 @@
 import { useDashboardStore } from "@/store/useDashboard";
 import { useEffect, useRef } from "react";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -22,7 +22,6 @@ export default function Sidebar() {
   const setActiveTab = useDashboardStore((state) => state.setActiveTab);
 
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const router = useRouter();
   const wasMobile = useRef<boolean | null>(null);
 
