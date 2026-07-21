@@ -4,7 +4,7 @@ import { useDashboardStore } from "@/store/useDashboard";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { motion, AnimatePresence, useDragControls } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   ViewSidebarLeftIcon,
@@ -26,7 +26,6 @@ export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const wasMobile = useRef<boolean | null>(null);
-  const dragControls = useDragControls();
 
   // Better Auth se user data fetch kar rahe hain
   const { data: session, isPending } = authClient.useSession();
@@ -74,8 +73,9 @@ export default function Sidebar() {
     _event: MouseEvent | TouchEvent | PointerEvent,
     info: { offset: { x: number }; velocity: { x: number } },
   ) => {
-    const shouldHide =
-      info.offset.x < -28 || info.velocity.x < -450 || info.velocity.x > 450;
+    if (window.innerWidth >= 768) return;
+
+    const shouldHide = info.offset.x < -28 || info.velocity.x < -450;
 
     if (shouldHide) {
       setIsMobileSidebarVisible(false);
@@ -93,12 +93,7 @@ export default function Sidebar() {
       )}
 
       <motion.aside
-        drag="x"
-        dragControls={dragControls}
-        dragListener={false}
-        dragElastic={0.08}
-        dragMomentum={false}
-        onDragEnd={handleMobileDragEnd}
+        onPanEnd={handleMobileDragEnd}
         animate={{ width, x: mobileSidebarX }}
         transition={{
           width: { type: "spring", stiffness: 350, damping: 35 },
@@ -139,19 +134,6 @@ export default function Sidebar() {
             ) : (
               <HugeiconsIcon icon={ViewSidebarLeftIcon} size={16} />
             )}
-          </button>
-
-          <button
-            type="button"
-            aria-label="Swipe left to hide sidebar"
-            onPointerDown={(event) => {
-              if (window.innerWidth < 768) {
-                dragControls.start(event);
-              }
-            }}
-            className="absolute top-1/2 right-1 flex h-10 w-3 -translate-y-1/2 cursor-grab items-center justify-center rounded-full active:cursor-grabbing md:hidden"
-          >
-            <span className="h-8 w-1 rounded-full bg-zinc-700/80 shadow-[0_0_0_1px_rgba(9,9,11,0.35)]" />
           </button>
         </div>
 
