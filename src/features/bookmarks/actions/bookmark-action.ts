@@ -100,43 +100,46 @@ interface CreateBookmarkInput {
   userId: string;
 }
 
+export async function saveBookmarkToDatabase(input: CreateBookmarkInput) {
+  const { url, title, favicon, categoryName, categoryIcon, userId } = input;
+  if (!url || !title) {
+    return { success: false as const, error: "URL and title are required" };
+  }
+
+  const category = await findOrCreateCategory(
+    categoryName,
+    userId,
+    categoryIcon,
+  );
+
+  const newBookmark = await db.bookmark.create({
+    data: {
+      title,
+      url,
+      favicon,
+      userId,
+      categoryId: category.id,
+    },
+  });
+
+  return {
+    success: true as const,
+    bookmark: newBookmark,
+    categoryId: category.id,
+  };
+}
+
 /**
- * 2. CREATE ACTION: Naya bookmark save karne ke liye.
+ * 2. CREATE ACTION: Naya bookmark save karne ke liye (Web UI se session cookie auth ke sath).
  * Stores a bookmark in its selected category.
  */
 export async function createBookmarkAction(input: CreateBookmarkInput) {
   try {
-    const { url, title, favicon, categoryName, categoryIcon, userId } = input;
     const authenticatedUserId = await getAuthenticatedUserId();
-    if (userId !== authenticatedUserId) {
+    if (input.userId !== authenticatedUserId) {
       return { success: false as const, error: "Unauthorized" };
     }
-    if (!url || !title) {
-      return { success: false as const, error: "URL and title are required" };
-    }
-
-    // Pehle check karein ya banayein category
-    const category = await findOrCreateCategory(
-      categoryName,
-      userId,
-      categoryIcon,
-    );
-
-    const newBookmark = await db.bookmark.create({
-      data: {
-        title,
-        url,
-        favicon,
-        userId,
-        categoryId: category.id,
-      },
-    });
-
-    return {
-      success: true as const,
-      bookmark: newBookmark,
-      categoryId: category.id,
-    };
+    return await saveBookmarkToDatabase(input);
   } catch (error) {
     console.error("Database Save Action Error:", error);
     return { success: false as const, error: "Internal Server Error" };
