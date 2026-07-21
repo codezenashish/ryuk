@@ -15,7 +15,6 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { DASHBOARD_TOP_STRIP_CLASS } from "@/components/dashboard/dashboard-frame";
 
-// AddBookmarkDialog component import karein
 import AddBookmarkDialog from "./add-bookmark-dialog";
 
 interface BookmarksToolbarProps {
@@ -36,7 +35,6 @@ export default function BookmarksToolbar({
   const [dialogInstance, setDialogInstance] = useState(0);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Dropdown ko bahar click karne par close karne ka clean logic
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -73,7 +71,7 @@ export default function BookmarksToolbar({
             />
           </div>
 
-          {/* Add Button - subtle click feedback connected to Dialog toggle */}
+    
           <Button
             title="Add Bookmark"
             variant="outline"
