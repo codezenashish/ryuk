@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { Key01Icon } from "@hugeicons/core-free-icons";
 import {
   ViewSidebarLeftIcon,
   ViewSidebarRightIcon,
@@ -16,6 +17,7 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { authClient } from "@/lib/auth-client"; // Better Auth client import kiya
 import Image from "next/image";
 import { DASHBOARD_TOP_STRIP_CLASS } from "./dashboard-frame";
+import ApiKeyDialog from "@/features/settings/components/ApiKeyDialog";
 
 export default function Sidebar() {
   const isCollapsed = useDashboardStore((state) => state.isCollapsed);
@@ -26,6 +28,7 @@ export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const wasMobile = useRef<boolean | null>(null);
+  const [isApiKeyDialogOpen, setIsApiKeyDialogOpen] = useState(false);
 
   // Better Auth se user data fetch kar rahe hain
   const { data: session, isPending } = authClient.useSession();
@@ -241,6 +244,43 @@ export default function Sidebar() {
           <ThemeToggle />
         </div>
 
+        <div
+          className={cn(
+            "shrink-0 border-t border-zinc-900 px-3 py-3",
+            isCollapsed ? "flex justify-center" : "",
+          )}
+        >
+          <button
+            type="button"
+            onClick={() => setIsApiKeyDialogOpen(true)}
+            disabled={!session?.user?.id}
+            className={cn(
+              "group flex h-10 items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-900/40 text-zinc-300 transition-colors hover:border-zinc-700 hover:bg-zinc-900 hover:text-zinc-100 disabled:cursor-not-allowed disabled:opacity-50",
+              isCollapsed ? "w-10 justify-center px-0" : "w-full px-3",
+            )}
+            title={isCollapsed ? "API Key / Settings" : undefined}
+          >
+            <HugeiconsIcon
+              icon={Key01Icon}
+              size={16}
+              className="text-zinc-400 transition-colors group-hover:text-zinc-100"
+            />
+            <AnimatePresence initial={false} mode="wait">
+              {!isCollapsed && (
+                <motion.span
+                  initial={{ opacity: 0, x: -6 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -6 }}
+                  transition={{ duration: 0.16 }}
+                  className="text-sm font-medium"
+                >
+                  API Key / Settings
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </button>
+        </div>
+
         {/* 👇 YAHAN SE CHANGES HAIN: Dynamic Profile & Logout Section 👇 */}
         <div className="shrink-0 border-t border-zinc-900 p-4">
           {isPending ? (
@@ -320,6 +360,11 @@ export default function Sidebar() {
           </motion.button>
         )}
       </AnimatePresence>
+
+      <ApiKeyDialog
+        isOpen={isApiKeyDialogOpen}
+        onClose={() => setIsApiKeyDialogOpen(false)}
+      />
     </>
   );
 }
