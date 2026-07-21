@@ -26,7 +26,7 @@ export default function BookmarkList({
   return (
     <div
       className={cn(
-        viewType === "list" ? "grid gap-8 md:grid-cols-2" : "space-y-8",
+        viewType === "list" ? "flex flex-col gap-8" : "space-y-8",
       )}
     >
       {categories.map((category) => {
