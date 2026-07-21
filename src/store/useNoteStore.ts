@@ -50,7 +50,7 @@ export const useNoteStore = create<NoteState>((set) => ({
   updateNote: (id: string, data: Partial<Note>) =>
     set((state) => ({
       notes: state.notes.map((note) =>
-        note.id === id ? { ...note, ...data } : note
+        note.id === id ? { ...note, ...data } : note,
       ),
     })),
   deleteNote: (id: string) =>
