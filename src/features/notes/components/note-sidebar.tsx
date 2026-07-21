@@ -28,12 +28,6 @@ export default function NoteSidebar() {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="shrink-0 border-b border-zinc-900 bg-zinc-950/40 px-4 py-3">
-        <p className="text-xs font-medium text-zinc-500">
-          {filteredNotes.length} {filteredNotes.length === 1 ? "note" : "notes"}
-        </p>
-      </div>
-
       <div className="flex-1 overflow-y-auto bg-black/20 p-2">
         {filteredNotes.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center gap-2 px-4 text-center text-zinc-700">
