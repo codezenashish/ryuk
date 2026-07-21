@@ -13,6 +13,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { DASHBOARD_TOP_STRIP_CLASS } from "@/components/dashboard/dashboard-frame";
 
 // AddBookmarkDialog component import karein
 import AddBookmarkDialog from "./add-bookmark-dialog";
@@ -48,11 +49,16 @@ export default function BookmarksToolbar({
 
   return (
     <>
-      <div className="flex w-full items-center justify-between gap-3 font-sans text-zinc-300">
+      <div
+        className={cn(
+          DASHBOARD_TOP_STRIP_CLASS,
+          "w-full justify-between gap-3 font-sans text-zinc-300",
+        )}
+      >
         {/* Left side: Search and Add */}
         <div className="flex flex-1 items-center gap-2">
           {/* Search Bar */}
-          <div className="group relative max-w-[200px] flex-1 md:max-w-[240px]">
+          <div className="group relative max-w-50 flex-1 md:max-w-60">
             <HugeiconsIcon
               icon={Search01Icon}
               size={14}
