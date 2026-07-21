@@ -11,7 +11,7 @@ export default function NotesView() {
   const { activeNoteId, setActiveNoteId } = useNoteStore();
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-full bg-black">
       {/* Notes list — acts like a secondary sidebar */}
       <div
         className={cn(
@@ -25,7 +25,7 @@ export default function NotesView() {
       {/* Preview / editor pane */}
       <div
         className={cn(
-          "h-full flex-1 overflow-y-auto",
+          "h-full flex-1 overflow-y-auto bg-zinc-950/20",
           !activeNoteId && "hidden md:block",
         )}
       >
