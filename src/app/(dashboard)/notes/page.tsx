@@ -22,13 +22,11 @@ export default function NotesPage() {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-zinc-950">
-      <div className="shrink-0 p-4 pb-0 md:p-8 md:pb-0">
-        <NotesToolbar
-          searchQuery={searchQuery}
-          onSearchQueryChange={setSearchQuery}
-          onNewNote={handleNewNote}
-        />
-      </div>
+      <NotesToolbar
+        searchQuery={searchQuery}
+        onSearchQueryChange={setSearchQuery}
+        onNewNote={handleNewNote}
+      />
       <div className="flex-1 overflow-hidden">
         <NotesView />
       </div>
