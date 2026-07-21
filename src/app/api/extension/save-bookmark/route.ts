@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { createBookmarkAction } from "@/features/bookmarks/actions/bookmark-action";
+import { saveBookmarkToDatabase } from "@/features/bookmarks/actions/bookmark-action";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -54,14 +54,21 @@ export async function POST(req: Request) {
     const hostname = new URL(url).hostname;
     const favicon = `https://www.google.com/s2/favicons?sz=64&domain=${hostname}`;
 
-    // 3. User ki verified ID ke sath bookmark create karein
-    const result = await createBookmarkAction({
+    // User ki verified ID ke sath bookmark database me create karein
+    const result = await saveBookmarkToDatabase({
       url,
       title: title || hostname,
       favicon,
       categoryName: categoryName || "General",
-      userId: user.id, // Authenticated User ID
+      userId: user.id, // Authenticated User ID from API key
     });
+
+    if (!result.success) {
+      return NextResponse.json(
+        { success: false, error: result.error || "Failed to create bookmark." },
+        { status: 400, headers: corsHeaders },
+      );
+    }
 
     return NextResponse.json(
       { success: true, bookmark: result.bookmark },
@@ -69,7 +76,7 @@ export async function POST(req: Request) {
     );
   } catch (error: any) {
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: error.message || "Server error" },
       { status: 500, headers: corsHeaders },
     );
   }
