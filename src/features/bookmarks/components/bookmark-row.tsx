@@ -7,7 +7,6 @@ interface BookmarkRowProps {
   isDeleting?: boolean;
 }
 
-/** The compact row view within one category. */
 export default function BookmarkRow({
   bookmarks,
   onDelete,
