@@ -137,7 +137,7 @@ export default function Sidebar() {
           </button>
         </div>
 
-        <nav className="flex-1 scrollbar-none space-y-1.5 overflow-x-hidden overflow-y-auto px-3 py-4">
+        <nav className="flex-1 space-y-1.5 overflow-x-hidden overflow-y-auto px-3 py-4">
           {navItems.map((item) => {
             const href = item.href;
             const isActive = pathname === item.href;
