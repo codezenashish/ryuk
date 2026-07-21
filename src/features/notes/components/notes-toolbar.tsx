@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Search01Icon,
@@ -27,8 +27,15 @@ export default function NotesToolbar({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Note: Dropdown logic (click outside) aapne bookmark me implement kiya tha, 
-  // wahi logic yahan reuse ho sakta hai.
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <div className="flex w-full items-center justify-between gap-3 font-sans text-zinc-300">
