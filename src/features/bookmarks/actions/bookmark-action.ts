@@ -129,10 +129,7 @@ export async function saveBookmarkToDatabase(input: CreateBookmarkInput) {
   };
 }
 
-/**
- * 2. CREATE ACTION: Naya bookmark save karne ke liye (Web UI se session cookie auth ke sath).
- * Stores a bookmark in its selected category.
- */
+
 export async function createBookmarkAction(input: CreateBookmarkInput) {
   try {
     const authenticatedUserId = await getAuthenticatedUserId();
@@ -146,9 +143,7 @@ export async function createBookmarkAction(input: CreateBookmarkInput) {
   }
 }
 
-/**
- * 3. DELETE ACTION: Kisi bookmark ko delete karne ke liye.
- */
+
 export async function deleteBookmarkAction(bookmarkId: number) {
   try {
     const userId = await getAuthenticatedUserId();
