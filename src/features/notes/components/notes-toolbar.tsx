@@ -8,7 +8,6 @@ import {
   MoreHorizontalIcon,
   Download01Icon,
   Upload01Icon,
-  
 } from "@hugeicons/core-free-icons";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -86,7 +85,11 @@ export default function NotesToolbar({
             size="sm"
             className="h-8 cursor-pointer gap-1.5 border-zinc-900 bg-zinc-950/40 px-3 text-xs text-zinc-400 transition-colors duration-150 hover:border-zinc-800 hover:bg-zinc-900/30 hover:text-zinc-200"
           >
-            <HugeiconsIcon icon={Upload01Icon} size={13} className="text-zinc-500" />
+            <HugeiconsIcon
+              icon={Upload01Icon}
+              size={13}
+              className="text-zinc-500"
+            />
             <span>Import</span>
           </Button>
 
@@ -95,7 +98,11 @@ export default function NotesToolbar({
             size="sm"
             className="h-8 cursor-pointer gap-1.5 border-zinc-900 bg-zinc-950/40 px-3 text-xs text-zinc-400 transition-colors duration-150 hover:border-zinc-800 hover:bg-zinc-900/30 hover:text-zinc-200"
           >
-            <HugeiconsIcon icon={Download01Icon} size={13} className="text-zinc-500" />
+            <HugeiconsIcon
+              icon={Download01Icon}
+              size={13}
+              className="text-zinc-500"
+            />
             <span>Export</span>
           </Button>
 
@@ -136,7 +143,9 @@ export default function NotesToolbar({
             variant="outline"
             className={cn(
               "flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border p-0 transition-colors duration-150",
-              isMenuOpen ? "border-zinc-700 bg-zinc-900" : "border-zinc-900 bg-zinc-950/40"
+              isMenuOpen
+                ? "border-zinc-700 bg-zinc-900"
+                : "border-zinc-900 bg-zinc-950/40",
             )}
           >
             <HugeiconsIcon icon={MoreHorizontalIcon} size={15} />
