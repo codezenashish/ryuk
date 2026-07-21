@@ -1,10 +1,10 @@
 "use client";
 
 import { useDashboardStore } from "@/store/useDashboard";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useDragControls } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   ViewSidebarLeftIcon,
@@ -21,10 +21,12 @@ export default function Sidebar() {
   const isCollapsed = useDashboardStore((state) => state.isCollapsed);
   const setIsCollapsed = useDashboardStore((state) => state.setIsCollapsed);
   const setActiveTab = useDashboardStore((state) => state.setActiveTab);
+  const [isMobileSidebarVisible, setIsMobileSidebarVisible] = useState(true);
 
   const pathname = usePathname();
   const router = useRouter();
   const wasMobile = useRef<boolean | null>(null);
+  const dragControls = useDragControls();
 
   // Better Auth se user data fetch kar rahe hain
   const { data: session, isPending } = authClient.useSession();
@@ -49,6 +51,9 @@ export default function Sidebar() {
 
       if (isMobileNow) {
         setIsCollapsed(true);
+        if (wasMobile.current === null || wasMobile.current === false) {
+          setIsMobileSidebarVisible(true);
+        }
       } else {
         if (wasMobile.current === null || wasMobile.current === true) {
           setIsCollapsed(false);
@@ -63,6 +68,19 @@ export default function Sidebar() {
   }, [setIsCollapsed]);
 
   const width = isCollapsed ? 64 : 256;
+  const mobileSidebarX = isMobileSidebarVisible ? 0 : -width;
+
+  const handleMobileDragEnd = (
+    _event: MouseEvent | TouchEvent | PointerEvent,
+    info: { offset: { x: number }; velocity: { x: number } },
+  ) => {
+    const shouldHide =
+      info.offset.x < -28 || info.velocity.x < -450 || info.velocity.x > 450;
+
+    if (shouldHide) {
+      setIsMobileSidebarVisible(false);
+    }
+  };
 
   return (
     <>
@@ -75,13 +93,27 @@ export default function Sidebar() {
       )}
 
       <motion.aside
-        animate={{ width }}
-        transition={{ type: "spring", stiffness: 350, damping: 35 }}
-        className="fixed top-0 left-0 z-50 flex h-screen shrink-0 flex-col overflow-hidden border-r border-zinc-900 bg-black text-zinc-400 select-none md:relative"
+        drag="x"
+        dragControls={dragControls}
+        dragListener={false}
+        dragElastic={0.08}
+        dragMomentum={false}
+        onDragEnd={handleMobileDragEnd}
+        animate={{ width, x: mobileSidebarX }}
+        transition={{
+          width: { type: "spring", stiffness: 350, damping: 35 },
+          x: { duration: 0.28, ease: "easeInOut" },
+        }}
+        className={cn(
+          "fixed top-0 left-0 z-50 flex h-screen shrink-0 flex-col overflow-hidden border-r border-zinc-900 bg-black text-zinc-400 select-none md:relative",
+          !isMobileSidebarVisible &&
+            "pointer-events-none md:pointer-events-auto",
+        )}
       >
         <div
           className={cn(
             DASHBOARD_TOP_STRIP_CLASS,
+            "relative",
             isCollapsed ? "justify-center" : "justify-between",
           )}
         >
@@ -107,6 +139,19 @@ export default function Sidebar() {
             ) : (
               <HugeiconsIcon icon={ViewSidebarLeftIcon} size={16} />
             )}
+          </button>
+
+          <button
+            type="button"
+            aria-label="Swipe left to hide sidebar"
+            onPointerDown={(event) => {
+              if (window.innerWidth < 768) {
+                dragControls.start(event);
+              }
+            }}
+            className="absolute top-1/2 right-1 flex h-10 w-3 -translate-y-1/2 cursor-grab items-center justify-center rounded-full active:cursor-grabbing md:hidden"
+          >
+            <span className="h-8 w-1 rounded-full bg-zinc-700/80 shadow-[0_0_0_1px_rgba(9,9,11,0.35)]" />
           </button>
         </div>
 
@@ -276,6 +321,23 @@ export default function Sidebar() {
           ) : null}
         </div>
       </motion.aside>
+
+      <AnimatePresence>
+        {!isMobileSidebarVisible && (
+          <motion.button
+            type="button"
+            aria-label="Show sidebar"
+            initial={{ opacity: 0, scale: 0.9, y: 8 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 8 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            onClick={() => setIsMobileSidebarVisible(true)}
+            className="fixed bottom-4 left-4 z-50 flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-950/95 text-zinc-200 shadow-xl shadow-black/60 md:hidden"
+          >
+            <HugeiconsIcon icon={ViewSidebarRightIcon} size={16} />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </>
   );
 }
