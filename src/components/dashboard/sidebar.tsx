@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { authClient } from "@/lib/auth-client"; // Better Auth client import kiya
 import Image from "next/image";
+import { DASHBOARD_TOP_STRIP_CLASS } from "./dashboard-frame";
 
 export default function Sidebar() {
   const isCollapsed = useDashboardStore((state) => state.isCollapsed);
@@ -80,7 +81,7 @@ export default function Sidebar() {
       >
         <div
           className={cn(
-            "flex h-16 shrink-0 items-center border-b border-zinc-900 px-4",
+            DASHBOARD_TOP_STRIP_CLASS,
             isCollapsed ? "justify-center" : "justify-between",
           )}
         >
