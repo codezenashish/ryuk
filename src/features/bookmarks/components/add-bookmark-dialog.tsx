@@ -568,7 +568,7 @@ export default function AddBookmarkDialog({
                   type="submit"
                   disabled={!canSubmit}
                   className={cn(
-                    "flex min-w-[100px] cursor-pointer items-center justify-center rounded-lg px-4 py-1.5 text-xs font-medium transition-colors",
+                    "flex min-w-25 cursor-pointer items-center justify-center rounded-lg px-4 py-1.5 text-xs font-medium transition-colors",
                     isSuccess
                       ? "bg-zinc-100 font-semibold text-zinc-950"
                       : "bg-zinc-100 text-zinc-950 hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-40",
