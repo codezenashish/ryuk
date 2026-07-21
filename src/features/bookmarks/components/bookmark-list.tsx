@@ -25,9 +25,7 @@ export default function BookmarkList({
 }: BookmarkListProps) {
   return (
     <div
-      className={cn(
-        viewType === "list" ? "flex flex-col gap-8" : "space-y-8",
-      )}
+      className={cn(viewType === "list" ? "flex flex-col gap-8" : "space-y-8")}
     >
       {categories.map((category) => {
         const categoryIcon = getIconComponent(category.icon) || Folder01Icon;
