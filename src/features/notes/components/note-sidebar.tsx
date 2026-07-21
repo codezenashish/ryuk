@@ -74,7 +74,7 @@ export default function NoteSidebar() {
                         e.stopPropagation();
                         deleteNote(note.id);
                       }}
-                      className="shrink-0 rounded p-1 text-zinc-600 opacity-0 transition-opacity hover:text-red-400 group-hover:opacity-100"
+                      className="shrink-0 rounded p-1 text-zinc-600 opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-400"
                     >
                       <HugeiconsIcon icon={Delete02Icon} size={13} />
                     </span>
