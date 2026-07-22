@@ -27,14 +27,14 @@ export async function getBookmarkMeta(
     const html = await response.text();
     const $ = cheerio.load(html);
 
-    // --- Title extraction (ordered by preference) ---
+    
     const title =
       $('meta[property="og:title"]').attr("content")?.trim() ||
       $('meta[name="twitter:title"]').attr("content")?.trim() ||
       $("title").first().text().trim() ||
       hostname;
 
-    // --- Favicon extraction (ordered by preference) ---
+    
     const icon = extractFavicon($, url) || getFallbackFavicon(url);
 
     return { title, icon };
@@ -44,9 +44,7 @@ export async function getBookmarkMeta(
   }
 }
 
-/**
- * HTML head se sabse best favicon nikalne ke liye
- */
+
 function extractFavicon($: cheerio.CheerioAPI, pageUrl: string): string | null {
   const selectors = [
     'link[rel="apple-touch-icon"]',
@@ -66,9 +64,7 @@ function extractFavicon($: cheerio.CheerioAPI, pageUrl: string): string | null {
   return null;
 }
 
-/**
- * Relative URL (like /favicon.ico) ko full absolute URL me convert karne ke liye
- */
+
 function resolveUrl(href: string, pageUrl: string): string {
   try {
     return new URL(href, pageUrl).href;
@@ -77,9 +73,7 @@ function resolveUrl(href: string, pageUrl: string): string {
   }
 }
 
-/**
- * Fallback — Agar favicon nahi milta toh Google S2 API se icon nikalenge
- */
+
 function getFallbackFavicon(url: string): string {
   try {
     const domain = new URL(url).hostname;
