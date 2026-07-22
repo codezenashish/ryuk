@@ -8,7 +8,7 @@ import { getSuggestionItems } from "../util/editor-extensions";
 import { CommandList } from "./command-list";
 import { useNoteStore } from "@/store/useNoteStore";
 import tippy from "tippy.js";
-import "tippy.js/dist/tippy.css"; // Ensure tippy styles are loaded
+import "tippy.js/dist/tippy.css"; 
 
 interface EditorProps {
   noteId: string;
@@ -90,7 +90,7 @@ export default function NoteEditor({ noteId }: EditorProps) {
     },
   });
 
-  // Keep editor content in sync if note changes
+  
   useEffect(() => {
     if (editor && currentNote) {
       const currentHtml = editor.getHTML();
