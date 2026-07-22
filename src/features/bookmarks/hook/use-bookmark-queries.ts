@@ -35,7 +35,7 @@ export function useBookmarksQuery(userId: string | null | undefined) {
   });
 }
 
-// ── 2. CREATE MUTATION (Bookmark Save Karne Ke Liye With Optimistic UI) ──
+
 
 interface CreateBookmarkVars {
   url: string;
@@ -94,7 +94,7 @@ export function useCreateBookmarkMutation() {
         const optimisticCategory: CategoryWithBookmarks = {
           id: `optimistic-${Date.now()}`,
           name: categoryName,
-          icon: newBookmark.categoryIcon || "Folder01Icon", // Default to Hugeicons name
+          icon: newBookmark.categoryIcon || "Folder01Icon", 
           color: "#6366F1",
           bookmarks: [optimisticBookmark],
         };
@@ -145,7 +145,7 @@ export function useDeleteBookmarkMutation() {
       const previousData =
         queryClient.getQueryData<CategoryWithBookmarks[]>(queryKey);
 
-      // UI se instantly hata dein bookmark ko
+      
       queryClient.setQueryData<CategoryWithBookmarks[]>(queryKey, (old) => {
         if (!old) return old;
         return old.map((category) => ({
