@@ -37,7 +37,7 @@ export const iconRegistry: Record<string, IconSvgElement> = {
   Folder01Icon,
   GlobeIcon,
 
-  // Popular Icons for IconPicker
+  
   CodeIcon,
   ShoppingCart01Icon,
   Film01Icon,
