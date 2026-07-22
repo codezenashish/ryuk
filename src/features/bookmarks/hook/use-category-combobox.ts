@@ -30,7 +30,7 @@ export function useCombobox(
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
-  // Saare available items ke labels ko lowecase me store karne ke liye (fast searching)
+
   const lowercasedItems = useMemo(
     () =>
       availableComboboxItems.map((item) => ({
@@ -40,7 +40,7 @@ export function useCombobox(
     [availableComboboxItems],
   );
 
-  // User jo type kar raha hai uske hisab se list ko filter karna
+
   const { filteredItems, isNewValueTyped } = useMemo(() => {
     const lowerInput = inputValue.toLowerCase();
     const trimmedInput = inputValue.trim().toLowerCase();
@@ -49,7 +49,7 @@ export function useCombobox(
       item._lowerLabel.includes(lowerInput),
     );
 
-    // Check karna ki kya user koi bilkul naya category name type kar raha hai[cite: 4]
+ 
     const isNew =
       trimmedInput.length > 0 &&
       !lowercasedItems.some((item) => item._lowerLabel === trimmedInput);
@@ -73,7 +73,7 @@ export function useCombobox(
     inputRef.current?.focus();
   }, []);
 
-  // Dropdown ke bahar click karne par usey band karna[cite: 4]
+  
   const handleClickOutside = useCallback(
     (event: MouseEvent) => {
       if (
@@ -92,7 +92,7 @@ export function useCombobox(
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isDropdownOpen, handleClickOutside]);
 
-  // Keyboard navigation support: Dropdown list scrolling inside view[cite: 4]
+  
   useEffect(() => {
     if (activeHighlightedIndex < 0 || !listRef.current) return;
     listRef.current
@@ -106,7 +106,7 @@ export function useCombobox(
     openDropdown();
   };
 
-  // Keyboard controls handling (Arrow keys, Enter, Escape)[cite: 4]
+ 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (!isDropdownOpen) {
       if (event.key === "ArrowDown" || event.key === "ArrowUp") {
