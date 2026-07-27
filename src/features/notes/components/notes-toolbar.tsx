@@ -48,7 +48,7 @@ export default function NotesToolbar({
         "w-full justify-between gap-3 font-sans text-zinc-300",
       )}
     >
-      {/* Left side: Search and New Note */}
+    
       <div className="flex flex-1 items-center gap-2">
         <div className="group relative max-w-50 flex-1 md:max-w-60">
           <HugeiconsIcon
