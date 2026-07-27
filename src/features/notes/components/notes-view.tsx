@@ -12,7 +12,7 @@ export default function NotesView() {
 
   return (
     <div className="flex h-full bg-black">
-      {/* Notes list — acts like a secondary sidebar */}
+      
       <div
         className={cn(
           "h-full w-full shrink-0 overflow-y-auto border-r border-zinc-900 md:w-70 lg:w-[320px]",
