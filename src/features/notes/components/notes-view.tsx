@@ -22,7 +22,7 @@ export default function NotesView() {
         <NoteSidebar />
       </div>
 
-      {/* Preview / editor pane */}
+     
       <div
         className={cn(
           "h-full flex-1 overflow-y-auto bg-zinc-950/20",
