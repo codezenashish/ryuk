@@ -68,7 +68,7 @@ export default function Terminal({ command, selectedStack }: TerminalProps) {
               </span>
             );
           }
-          // Highlight other packages/flags
+       
           if (trimmed.length > 0 && !token.startsWith(" ") && trimmed !== "&&") {
             return (
               <span key={idx} className="text-zinc-200">
