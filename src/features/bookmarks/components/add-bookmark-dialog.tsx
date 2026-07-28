@@ -249,7 +249,6 @@ export default function AddBookmarkDialog({
             onClick={handleModalDismissal}
           />
 
-          {/* Main Card Dialog Box */}
           <motion.div
             role="dialog"
             aria-modal="true"
