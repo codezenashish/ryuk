@@ -84,7 +84,7 @@ export default function Terminal({ command, selectedStack }: TerminalProps) {
 
   return (
     <div className="space-y-6">
-      {/* Terminal Mockup */}
+     
       <div className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950 shadow-2xl shadow-violet-950/10 backdrop-blur-xl transition-all duration-300 hover:border-zinc-700/80">
         {/* Header Bar */}
         <div className="flex items-center justify-between border-b border-zinc-900 bg-zinc-900/40 px-4 py-3">
