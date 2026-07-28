@@ -220,7 +220,7 @@ export default function AddBookmarkDialog({
           setTimeout(() => {
             resetForm();
             onDialogClose();
-          }, 800); // 800ms success animation text state hold karne ke liye
+          }, 800); 
         },
         onError: () => {
           setFormError("Failed to save bookmark. Please try again.");
