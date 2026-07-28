@@ -22,7 +22,7 @@ export default function Terminal({ command, selectedStack }: TerminalProps) {
     }
   };
 
-  // Syntax highlight tokens safely in React
+  
   const renderHighlightedCommand = () => {
     const tokens = command.split(/(\s+|&&)/);
     return (
