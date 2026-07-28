@@ -47,7 +47,7 @@ export function buildCommand(
   selectedFeatures.forEach((id) => {
     const item = featureItems[id];
     if (!item) return;
-    if (fw === "nextjs" && id === "tailwind") return; // Handled by Next.js --tailwind flag
+    if (fw === "nextjs" && id === "tailwind") return; 
     if (item.dev) {
       devPkgs.push(...item.pkg);
     } else {
