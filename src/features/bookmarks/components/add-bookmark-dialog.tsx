@@ -325,7 +325,7 @@ export default function AddBookmarkDialog({
                     transition={{ duration: 0.2 }}
                     className="space-y-4 overflow-hidden pt-1"
                   >
-                    {/* Live Preview Block */}
+                    
                     <div className="rounded-xl border border-zinc-900 bg-zinc-900/20 p-3.5">
                       <div className="mb-2 flex items-center justify-between">
                         <span className="font-mono text-[9px] font-bold tracking-widest text-zinc-600 uppercase">
