@@ -400,7 +400,7 @@ export default function AddBookmarkDialog({
                         />
                       </div>
 
-                      {/* Searchable Combobox Category Selector */}
+                    
                       <div className="space-y-1">
                         <label className="pl-0.5 font-mono text-[9px] font-bold tracking-widest text-zinc-500 uppercase">
                           Category
