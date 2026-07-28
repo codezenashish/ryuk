@@ -18,7 +18,7 @@ interface NoteState {
   deleteNote: (id: string) => void;
 }
 
-// Dummy initial data for demonstration purposes
+
 const INITIAL_NOTES: Note[] = [
   {
     id: "1",
