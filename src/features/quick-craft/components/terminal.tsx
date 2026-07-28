@@ -113,7 +113,7 @@ export default function Terminal({ command, selectedStack }: TerminalProps) {
         </div>
 
      
-        <div className="p-6 font-mono leading-relaxed min-h-[140px]">
+        <div className="p-6 font-mono leading-relaxed min-h-35">
           <div className="flex items-start gap-2.5 rounded-xl border border-zinc-900/50 bg-zinc-900/20 p-4 transition-all hover:border-zinc-800/50 hover:bg-zinc-900/30">
             <span className="select-none text-violet-400 font-bold">$</span>
             <div className="min-w-0 flex-1">
