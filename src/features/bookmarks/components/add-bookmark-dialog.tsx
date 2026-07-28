@@ -288,7 +288,7 @@ export default function AddBookmarkDialog({
             </div>
 
             <form onSubmit={handleFormSubmit} className="space-y-4">
-              {/* URL Input */}
+          
               <div className="group relative">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                   <HugeiconsIcon
