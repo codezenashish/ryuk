@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils";
 import { DEFAULT_CATEGORIES } from "../constants/categories";
 import { getIconComponent } from "../utils/category-icon-registry";
 import IconPicker from "./IconPicker";
+import Image from "next/image";
 
 interface AddBookmarkDialogProps {
   isDialogOpen: boolean;
@@ -220,7 +221,7 @@ export default function AddBookmarkDialog({
           setTimeout(() => {
             resetForm();
             onDialogClose();
-          }, 800); 
+          }, 800);
         },
         onError: () => {
           setFormError("Failed to save bookmark. Please try again.");
@@ -239,7 +240,6 @@ export default function AddBookmarkDialog({
     <AnimatePresence>
       {isDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-         
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -288,7 +288,6 @@ export default function AddBookmarkDialog({
             </div>
 
             <form onSubmit={handleFormSubmit} className="space-y-4">
-          
               <div className="group relative">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                   <HugeiconsIcon
@@ -325,7 +324,6 @@ export default function AddBookmarkDialog({
                     transition={{ duration: 0.2 }}
                     className="space-y-4 overflow-hidden pt-1"
                   >
-                    
                     <div className="rounded-xl border border-zinc-900 bg-zinc-900/20 p-3.5">
                       <div className="mb-2 flex items-center justify-between">
                         <span className="font-mono text-[9px] font-bold tracking-widest text-zinc-600 uppercase">
@@ -340,7 +338,7 @@ export default function AddBookmarkDialog({
                           {isFetchingMeta ? (
                             <div className="h-full w-full animate-pulse bg-zinc-900" />
                           ) : bookmarkFavicon ? (
-                            <img
+                            <Image
                               src={bookmarkFavicon}
                               alt=""
                               className="h-4 w-4 object-contain"
