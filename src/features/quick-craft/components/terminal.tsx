@@ -124,7 +124,7 @@ export default function Terminal({ command, selectedStack }: TerminalProps) {
         </div>
       </div>
 
-      {/* Selected Stack Panel */}
+     
       <div className="rounded-2xl border border-zinc-900/80 bg-zinc-950/40 p-5 backdrop-blur-md space-y-3">
         <h3 className="font-mono text-xs text-zinc-500 uppercase tracking-widest">
           Selected Stack ({selectedStack.length})
