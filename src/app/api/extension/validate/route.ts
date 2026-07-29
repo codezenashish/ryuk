@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     if (!apiKey) {
       return NextResponse.json(
         { success: false, error: "API key is required." },
-        { status: 401, headers: corsHeaders }
+        { status: 401, headers: corsHeaders },
       );
     }
 
@@ -29,8 +29,11 @@ export async function POST(req: Request) {
 
     if (!user) {
       return NextResponse.json(
-        { success: false, error: "Invalid API Key. Please check your DevNest settings." },
-        { status: 403, headers: corsHeaders }
+        {
+          success: false,
+          error: "Invalid API Key. Please check your DevNest settings.",
+        },
+        { status: 403, headers: corsHeaders },
       );
     }
 
@@ -43,12 +46,15 @@ export async function POST(req: Request) {
           email: user.email,
         },
       },
-      { headers: corsHeaders }
+      { headers: corsHeaders },
     );
   } catch (error: any) {
     return NextResponse.json(
-      { success: false, error: error.message || "Server error while validating API key." },
-      { status: 500, headers: corsHeaders }
+      {
+        success: false,
+        error: error.message || "Server error while validating API key.",
+      },
+      { status: 500, headers: corsHeaders },
     );
   }
 }
