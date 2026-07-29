@@ -82,4 +82,3 @@ export async function generateApiKeyAction(userId: string) {
     return { success: false as const, error: "Failed to generate key" };
   }
 }
-
