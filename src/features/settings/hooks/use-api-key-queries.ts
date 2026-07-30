@@ -7,7 +7,10 @@ import {
 
 const API_KEY_QUERY_KEY = ["settings", "api-key"] as const;
 
-export function useApiKeyQuery(userId: string | null | undefined, enabled = true) {
+export function useApiKeyQuery(
+  userId: string | null | undefined,
+  enabled = true,
+) {
   return useQuery<string | null>({
     queryKey: [...API_KEY_QUERY_KEY, userId ?? ""],
     queryFn: async () => {

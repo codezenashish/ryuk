@@ -148,7 +148,7 @@ export default function ApiKeyDialog({ isOpen, onClose }: ApiKeyDialogProps) {
                     >
                       API Key / Settings
                     </h2>
-                    <p className="mt-1 text-[11px] uppercase tracking-[0.24em] text-zinc-500">
+                    <p className="mt-1 text-[11px] tracking-[0.24em] text-zinc-500 uppercase">
                       Manage your extension key
                     </p>
                   </div>
@@ -167,7 +167,7 @@ export default function ApiKeyDialog({ isOpen, onClose }: ApiKeyDialogProps) {
             <div className="space-y-5 px-6 py-6">
               <div className="rounded-2xl border border-zinc-900 bg-zinc-950 p-4">
                 <div className="mb-2 flex items-center justify-between gap-3">
-                  <span className="text-[11px] uppercase tracking-[0.24em] text-zinc-500">
+                  <span className="text-[11px] tracking-[0.24em] text-zinc-500 uppercase">
                     Current API Key
                   </span>
                   {apiKeyQuery.isPending && isOpen ? (
@@ -185,10 +185,7 @@ export default function ApiKeyDialog({ isOpen, onClose }: ApiKeyDialogProps) {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -4 }}
                       transition={{ duration: 0.16 }}
-                      className={cn(
-                        "break-all",
-                        !apiKey && "text-zinc-500",
-                      )}
+                      className={cn("break-all", !apiKey && "text-zinc-500")}
                     >
                       {keyPreview}
                     </motion.span>
