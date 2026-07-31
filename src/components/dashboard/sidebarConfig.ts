@@ -32,49 +32,49 @@ export const navItems: NavItem[] = [
     href: "/bookmarks",
     icon: Bookmark01Icon,
   },
-  {
-    label: "Notes",
-    href: "/notes",
-    icon: File01Icon,
-  },
-  {
-    label: "Habits",
-    href: "/habits",
-    icon: CalendarCheckIcon,
-  },
-  {
-    label: "Dev Search",
-    href: "/search",
-    icon: Search01Icon,
-  },
-  {
-    label: "Friends",
-    href: "/friends",
-    icon: UserIcon,
-  },
-  {
-    label: "Received",
-    href: "/received",
-    icon: CircleArrowDown01Icon,
-  },
-  {
-    label: "Sent",
-    href: "/sent",
-    icon: CircleArrowUp01Icon,
-  },
-  {
-    label: "Excalidraw",
-    href: "/excalidraw",
-    icon: PenTool01Icon,
-  },
-  {
-    label: "Snippets",
-    href: "/snippets",
-    icon: CodeIcon,
-  },
-  {
-    label: "API Tester",
-    href: "/api-tester",
-    icon: ComputerTerminal01Icon,
-  },
+  // {
+  //   label: "Notes",
+  //   href: "/notes",
+  //   icon: File01Icon,
+  // },
+  // {
+  //   label: "Habits",
+  //   href: "/habits",
+  //   icon: CalendarCheckIcon,
+  // },
+  // {
+  //   label: "Dev Search",
+  //   href: "/search",
+  //   icon: Search01Icon,
+  // },
+  // {
+  //   label: "Friends",
+  //   href: "/friends",
+  //   icon: UserIcon,
+  // },
+  // {
+  //   label: "Received",
+  //   href: "/received",
+  //   icon: CircleArrowDown01Icon,
+  // },
+  // {
+  //   label: "Sent",
+  //   href: "/sent",
+  //   icon: CircleArrowUp01Icon,
+  // },
+  // {
+  //   label: "Excalidraw",
+  //   href: "/excalidraw",
+  //   icon: PenTool01Icon,
+  // },
+  // {
+  //   label: "Snippets",
+  //   href: "/snippets",
+  //   icon: CodeIcon,
+  // },
+  // {
+  //   label: "API Tester",
+  //   href: "/api-tester",
+  //   icon: ComputerTerminal01Icon,
+  // },
 ];
