@@ -37,10 +37,10 @@ export default function BookmarkCard({
         />
       )}
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-sm text-zinc-200">
+        <span className="block truncate text-sm text-neutral-950 dark:text-zinc-200">
           {bookmark.title}
         </span>
-        <span className="block truncate text-xs text-zinc-500">
+        <span className="block truncate text-xs text-neutral-950 dark:text-zinc-500">
           {bookmark.url}
         </span>
       </span>
@@ -48,7 +48,7 @@ export default function BookmarkCard({
   );
 
   return (
-    <article className="group flex min-w-0 items-center gap-3 rounded-xl border border-zinc-900 bg-zinc-950/40 p-3 transition-colors hover:border-zinc-800 hover:bg-zinc-900/30">
+    <article className="group flex min-w-0 items-center gap-3 rounded-xl bg-white   dark:border-zinc-900 dark:bg-zinc-900/20 p-3 transition-colors dark:hover:border-zinc-800 dark:hover:bg-zinc-900/30 hover:border-zinc-800 hover:bg-zinc-900/30">
       {bookmark.url ? (
         <a
           href={bookmark.url}
