@@ -66,7 +66,7 @@ export default function Sidebar() {
 
     handleResize();
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize); // Typo fix kiya yahan (removeEventListener)
+    return () => window.removeEventListener("resize", handleResize); 
   }, [setIsCollapsed]);
 
   const width = isCollapsed ? 64 : 256;
