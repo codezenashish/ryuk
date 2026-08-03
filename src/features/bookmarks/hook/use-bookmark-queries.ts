@@ -23,14 +23,10 @@ export interface CategoryWithBookmarks {
 
 export const BOOKMARKS_KEY = ["bookmarks"] as const;
 
-export function useBookmarksQuery(userId: string | null | undefined) {
+export function useBookmarksQuery(userId?: string | null) {
   return useQuery<CategoryWithBookmarks[]>({
-    queryKey: [...BOOKMARKS_KEY, userId ?? ""],
-    queryFn: () => {
-      if (!userId) return Promise.resolve([]);
-      return fetchBookmarksAction(userId);
-    },
-    enabled: !!userId,
+    queryKey: [...BOOKMARKS_KEY, userId || "me"],
+    queryFn: () => fetchBookmarksAction(userId || undefined),
     staleTime: 1000 * 60 * 5, // 5 minutes cache validity
     gcTime: 1000 * 60 * 30, // Keep unused data in cache for 30 minutes
     refetchOnWindowFocus: false,
