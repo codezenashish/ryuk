@@ -21,7 +21,8 @@ export interface CategoryWithBookmarks {
   bookmarks: BookmarkItem[];
 }
 
-const BOOKMARKS_KEY = ["bookmarks"] as const;
+export const BOOKMARKS_KEY = ["bookmarks"] as const;
+
 export function useBookmarksQuery(userId: string | null | undefined) {
   return useQuery<CategoryWithBookmarks[]>({
     queryKey: [...BOOKMARKS_KEY, userId ?? ""],
@@ -30,12 +31,15 @@ export function useBookmarksQuery(userId: string | null | undefined) {
       return fetchBookmarksAction(userId);
     },
     enabled: !!userId,
-    refetchInterval: 5000,
-    refetchIntervalInBackground: true,
+    staleTime: 1000 * 60 * 5, // 5 minutes cache validity
+    gcTime: 1000 * 60 * 30, // Keep unused data in cache for 30 minutes
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 }
 
-
+// Alias for backwards compatibility / alternative import names
+export const useBookmarkQuery = useBookmarksQuery;
 
 interface CreateBookmarkVars {
   url: string;
@@ -60,12 +64,16 @@ export function useCreateBookmarkMutation() {
 
     onMutate: async (newBookmark) => {
       const queryKey = [...BOOKMARKS_KEY, newBookmark.userId];
+
+      // 1. Cancel any outgoing refetches so they don't overwrite optimistic update
       await queryClient.cancelQueries({ queryKey });
+
+      // 2. Snapshot current cached data for rollback
       const previousData =
         queryClient.getQueryData<CategoryWithBookmarks[]>(queryKey);
-      queryClient.setQueryData<CategoryWithBookmarks[]>(queryKey, (old) => {
-        if (!old) return old;
 
+      // 3. Optimistically update the cache immediately
+      queryClient.setQueryData<CategoryWithBookmarks[]>(queryKey, (old = []) => {
         const categoryName = newBookmark.categoryName.trim() || "General";
         const existingIndex = old.findIndex(
           (category) =>
@@ -82,19 +90,18 @@ export function useCreateBookmarkMutation() {
 
         if (existingIndex >= 0) {
           const updated = [...old];
+          const existingCategory = updated[existingIndex];
           updated[existingIndex] = {
-            ...updated[existingIndex],
-            bookmarks: [
-              ...updated[existingIndex].bookmarks,
-              optimisticBookmark,
-            ],
+            ...existingCategory,
+            bookmarks: [optimisticBookmark, ...existingCategory.bookmarks],
           };
           return updated;
         }
+
         const optimisticCategory: CategoryWithBookmarks = {
           id: `optimistic-${Date.now()}`,
           name: categoryName,
-          icon: newBookmark.categoryIcon || "Folder01Icon", 
+          icon: newBookmark.categoryIcon || "Folder01Icon",
           color: "#6366F1",
           bookmarks: [optimisticBookmark],
         };
@@ -105,6 +112,7 @@ export function useCreateBookmarkMutation() {
     },
 
     onError: (_error, vars, context) => {
+      // Rollback on error using snapshotted previousData
       if (context?.previousData) {
         queryClient.setQueryData(
           [...BOOKMARKS_KEY, vars.userId],
@@ -113,7 +121,41 @@ export function useCreateBookmarkMutation() {
       }
     },
 
+    onSuccess: (result, vars) => {
+      const queryKey = [...BOOKMARKS_KEY, vars.userId];
+      if (result.success && result.bookmark) {
+        queryClient.setQueryData<CategoryWithBookmarks[]>(queryKey, (old) => {
+          if (!old) return old;
+          return old.map((category) => {
+            if (
+              category.id === result.categoryId ||
+              category.name.toLowerCase() ===
+                vars.categoryName.trim().toLowerCase()
+            ) {
+              return {
+                ...category,
+                id: result.categoryId || category.id,
+                bookmarks: category.bookmarks.map((b) =>
+                  b.id < 0
+                    ? {
+                        id: result.bookmark.id,
+                        title: result.bookmark.title,
+                        url: result.bookmark.url,
+                        favicon: result.bookmark.favicon,
+                        createdAt: new Date(result.bookmark.createdAt),
+                      }
+                    : b,
+                ),
+              };
+            }
+            return category;
+          });
+        });
+      }
+    },
+
     onSettled: (_data, _error, vars) => {
+      // Background refetch to ensure final server synchronization
       queryClient.invalidateQueries({
         queryKey: [...BOOKMARKS_KEY, vars.userId],
       });
@@ -145,15 +187,16 @@ export function useDeleteBookmarkMutation() {
       const previousData =
         queryClient.getQueryData<CategoryWithBookmarks[]>(queryKey);
 
-      
       queryClient.setQueryData<CategoryWithBookmarks[]>(queryKey, (old) => {
         if (!old) return old;
-        return old.map((category) => ({
-          ...category,
-          bookmarks: category.bookmarks.filter(
-            (bookmark) => bookmark.id !== vars.bookmarkId,
-          ),
-        }));
+        return old
+          .map((category) => ({
+            ...category,
+            bookmarks: category.bookmarks.filter(
+              (bookmark) => bookmark.id !== vars.bookmarkId,
+            ),
+          }))
+          .filter((category) => category.bookmarks.length > 0);
       });
 
       return { previousData };
