@@ -4,11 +4,11 @@ import { dash } from "@better-auth/infra";
 import { db } from "./db";
 
 export const auth = betterAuth({
-  baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+  baseURL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   trustedOrigins: [
     "http://localhost:3000",
     process.env.NEXT_PUBLIC_APP_URL as string,
-  ],
+  ].filter(Boolean),
 
   database: prismaAdapter(db, {
     provider: "postgresql",
@@ -21,7 +21,7 @@ export const auth = betterAuth({
   plugins: [
     dash({
       apiKey: process.env.BETTER_AUTH_API_KEY,
-      apiTimeout: 10_000,
+      apiTimeout: 5_000,
       ...(process.env.BETTER_AUTH_API_URL
         ? { apiUrl: process.env.BETTER_AUTH_API_URL }
         : {}),
@@ -31,3 +31,4 @@ export const auth = betterAuth({
     }),
   ],
 });
+
