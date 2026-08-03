@@ -64,14 +64,15 @@ async function findOrCreateCategory(
 /**
  * 1. FETCH ACTION: User ke saare bookmarks aur unki categories lane ke liye.
  */
-export async function fetchBookmarksAction(userId: string) {
+export async function fetchBookmarksAction(userId?: string) {
   const authenticatedUserId = await getAuthenticatedUserId();
-  if (userId !== authenticatedUserId) {
+  const targetUserId = userId || authenticatedUserId;
+  if (targetUserId !== authenticatedUserId) {
     throw new Error("Unauthorized");
   }
 
   const categories = await db.category.findMany({
-    where: { userId },
+    where: { userId: targetUserId },
     orderBy: { createdAt: "asc" },
     include: {
       bookmarks: {
