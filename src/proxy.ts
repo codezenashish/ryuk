@@ -1,26 +1,22 @@
-import { authClient } from "./lib/auth-client";
+import { auth } from "./lib/auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export default async function middleware(request: NextRequest) {
-  const { data: session } = await authClient.getSession({
-    fetchOptions: {
-      headers: {
-        cookie: request.headers.get("cookie") || "",
-      },
-    },
+  const session = await auth.api.getSession({
+    headers: request.headers,
   });
 
-  if (request.nextUrl.pathname.startsWith("/dashboard")) {
+  const { pathname } = request.nextUrl;
+
+  // Protected: dashboard requires a valid session
+  if (pathname.startsWith("/dashboard")) {
     if (!session) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
   }
 
-  if (
-    session &&
-    (request.nextUrl.pathname === "/login" ||
-      request.nextUrl.pathname === "/signup")
-  ) {
+  // Authenticated users should not see login, signup, or landing page
+  if (session && (pathname === "/" || pathname === "/login" || pathname === "/signup")) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
@@ -28,5 +24,5 @@ export default async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/login", "/signup"],
+  matcher: ["/", "/dashboard/:path*", "/login", "/signup"],
 };
