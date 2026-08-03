@@ -48,7 +48,7 @@ export default function BookmarkCard({
   );
 
   return (
-    <article className="group flex min-w-0 items-center gap-3 rounded-xl bg-white   dark:border-zinc-900 dark:bg-zinc-900/20 p-3 transition-colors dark:hover:border-zinc-800 dark:hover:bg-zinc-900/30 hover:border-zinc-800 hover:bg-zinc-900/30">
+    <article className="group flex min-w-0 items-center gap-3 rounded-xl bg-white p-3 transition-colors hover:border-zinc-800 hover:bg-zinc-900/30 dark:border-zinc-900 dark:bg-zinc-900/20 dark:hover:border-zinc-800 dark:hover:bg-zinc-900/30">
       {bookmark.url ? (
         <a
           href={bookmark.url}
