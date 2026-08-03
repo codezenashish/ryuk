@@ -7,12 +7,11 @@ import BookmarkView from "@/features/bookmarks/components/bookmark-view";
 import { useBookmarksQuery } from "@/features/bookmarks/hook/use-bookmark-queries";
 
 export default function BookmarksPage() {
-  const { data: session, isPending: isSessionPending } =
-    authClient.useSession();
+  const { data: session } = authClient.useSession();
   const userId = session?.user?.id;
   const { data: categories = [], isLoading } = useBookmarksQuery(userId);
 
-  if (isSessionPending || isLoading) {
+  if (isLoading && categories.length === 0) {
     return <BookmarkLoadingState />;
   }
 
