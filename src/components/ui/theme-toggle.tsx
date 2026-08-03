@@ -15,7 +15,7 @@ export const ThemeToggle = () => {
 
   if (!mounted) {
     return (
-      <div className="h-10 w-10 rounded-xl border border-zinc-800 bg-zinc-900/40 shadow-[0_0_0_1px_rgba(255,255,255,0.02)]" />
+      <div className="h-10 w-10 rounded-xl border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900/40 shadow-xs" />
     );
   }
 
@@ -40,7 +40,7 @@ export const ThemeToggle = () => {
       onClick={toggleTheme}
       aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
       aria-pressed={isDark}
-      className="group relative flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900/40 text-zinc-200 shadow-[0_0_0_1px_rgba(255,255,255,0.02)] transition-all duration-200 hover:border-zinc-700 hover:bg-zinc-900/70 hover:text-white"
+      className="group relative flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-100 text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900/40 dark:text-zinc-200 shadow-xs transition-all duration-200 hover:border-zinc-300 hover:bg-zinc-200/60 hover:text-zinc-900 dark:hover:border-zinc-700 dark:hover:bg-zinc-900/70 dark:hover:text-white"
     >
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
