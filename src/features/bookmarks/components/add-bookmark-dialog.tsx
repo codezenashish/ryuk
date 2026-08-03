@@ -341,6 +341,9 @@ export default function AddBookmarkDialog({
                             <Image
                               src={bookmarkFavicon}
                               alt=""
+                              width={16}
+                              height={16}
+                              unoptimized
                               className="h-4 w-4 object-contain"
                             />
                           ) : (
