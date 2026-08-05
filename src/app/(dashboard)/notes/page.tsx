@@ -21,7 +21,7 @@ export default function NotesPage() {
   };
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-zinc-950">
+    <div className="flex h-screen flex-col overflow-hidden bg-stone-50 dark:bg-[#0c0c0b]">
       <NotesToolbar
         searchQuery={searchQuery}
         onSearchQueryChange={setSearchQuery}
