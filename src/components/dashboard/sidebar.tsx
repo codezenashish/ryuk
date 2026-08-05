@@ -66,8 +66,24 @@ export default function Sidebar() {
 
     handleResize();
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize); 
+    return () => window.removeEventListener("resize", handleResize);
   }, [setIsCollapsed]);
+
+  // Group nav items by their "group" field so we can render them like the
+  // grouped-card design: a gray section label + a rounded card per group,
+  // instead of one flat list of rows.
+  const groupedNavItems = navItems.reduce<
+    { group: string; items: typeof navItems }[]
+  >((acc, item) => {
+    const groupName = item.group ?? "";
+    const existing = acc.find((g) => g.group === groupName);
+    if (existing) {
+      existing.items.push(item);
+    } else {
+      acc.push({ group: groupName, items: [item] });
+    }
+    return acc;
+  }, []);
 
   const width = isCollapsed ? 64 : 256;
   const mobileSidebarX = isMobileSidebarVisible ? 0 : -width;
@@ -103,7 +119,7 @@ export default function Sidebar() {
           x: { duration: 0.28, ease: "easeInOut" },
         }}
         className={cn(
-          "fixed top-0 left-0 z-50 flex h-screen shrink-0 flex-col overflow-hidden border-r border-zinc-200 dark:border-zinc-900 bg-white dark:bg-neutral-950 text-zinc-600 dark:text-zinc-400 transition-colors duration-300 select-none md:relative",
+          "fixed top-0 left-0 z-50 flex h-screen shrink-0 flex-col overflow-hidden border-r border-zinc-200 bg-white text-zinc-600 transition-colors duration-300 select-none md:relative dark:border-zinc-900 dark:bg-neutral-950 dark:text-zinc-400",
           !isMobileSidebarVisible &&
             "pointer-events-none md:pointer-events-auto",
         )}
@@ -130,7 +146,7 @@ export default function Sidebar() {
 
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/40 text-zinc-600 dark:text-zinc-400 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-200/60 dark:hover:bg-zinc-900/70 hover:text-zinc-900 dark:hover:text-zinc-200"
+            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-zinc-200 bg-zinc-100 text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-200/60 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900/40 dark:text-zinc-400 dark:hover:border-zinc-700 dark:hover:bg-zinc-900/70 dark:hover:text-zinc-200"
           >
             {isCollapsed ? (
               <HugeiconsIcon icon={ViewSidebarRightIcon} size={16} />
@@ -140,104 +156,147 @@ export default function Sidebar() {
           </button>
         </div>
 
-        <nav className="flex-1 space-y-1.5 overflow-x-hidden overflow-y-auto px-3 py-4">
-          {navItems.map((item) => {
-            const href = item.href;
-            const isActive = pathname === item.href;
+        <nav className="flex-1 space-y-4 overflow-x-hidden overflow-y-auto px-3 py-4">
+          {groupedNavItems.map(({ group, items }) => (
+            <div key={group || "ungrouped"}>
+              {/* Gray section label above each card, e.g. Account / Preferences / Support */}
+              <AnimatePresence initial={false}>
+                {!isCollapsed && group && (
+                  <motion.p
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.15 }}
+                    className="overflow-hidden px-2 pb-1.5 text-[11px] font-semibold tracking-wide text-zinc-400 uppercase dark:text-zinc-600"
+                  >
+                    {group}
+                  </motion.p>
+                )}
+              </AnimatePresence>
 
-            return (
-              <Link
-                key={item.href}
-                href={href}
-                onClick={() => {
-                  setActiveTab(href);
-                  if (window.innerWidth < 768) setIsCollapsed(true);
-                }}
+              <div
                 className={cn(
-                  "group font-sans-system relative flex items-center gap-3 rounded-xl text-sm tracking-tighter transition-all duration-300",
                   isCollapsed
-                    ? "mx-auto h-11 w-11 justify-center p-0"
-                    : "px-3 py-2.5",
-                  isActive
-                    ? "bg-violet-500/10 text-violet-700 dark:bg-zinc-900/60 dark:text-violet-200 font-medium"
-                    : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900/40 hover:text-zinc-900 dark:hover:text-zinc-100",
+                    ? "space-y-1.5"
+                    : "overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50/60 dark:border-zinc-900 dark:bg-zinc-900/20",
                 )}
-                title={isCollapsed ? item.label : undefined}
               >
-                {isActive && (
-                  <motion.div
-                    layoutId="activeGlowPipeIndicator"
-                    className="absolute top-1/4 -left-3 h-1/2 w-0.75 rounded-r-full bg-violet-600 dark:bg-violet-400 shadow-[0_0_15px_4px_rgba(167,139,250,0.65)]"
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                  />
-                )}
+                {items.map((item, idx) => {
+                  const href = item.href;
+                  const isActive = pathname === item.href;
 
-                <div className="relative flex shrink-0 items-center justify-center">
-                  <AnimatePresence>
-                    {isActive && (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.7 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.7 }}
-                        transition={{ duration: 0.25 }}
-                        className="absolute -inset-4 -z-10 rounded-full opacity-40 mix-blend-screen blur-md group-hover:opacity-65"
-                      />
-                    )}
-                  </AnimatePresence>
-
-                  {!isActive && (
-                    <div className="absolute inset-0 -z-10 -m-2 rounded-lg bg-zinc-500/5 dark:bg-white/5 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
-                  )}
-
-                  <HugeiconsIcon
-                    icon={item.icon}
-                    className={cn(
-                      "relative z-10 h-4.5 w-4.5 shrink-0 transition-all duration-300",
-                      isActive
-                        ? "scale-105 text-violet-600 dark:text-violet-300 drop-shadow-[0_0_8px_rgba(196,181,253,0.5)]"
-                        : "text-zinc-500 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-zinc-300",
-                      isCollapsed && !isActive ? "group-hover:scale-110" : "",
-                    )}
-                  />
-                </div>
-
-                <AnimatePresence mode="wait" initial={false}>
-                  {!isCollapsed && (
-                    <motion.span
-                      initial={{
-                        opacity: 0,
-                        width: 0,
-                        filter: "blur(4px)",
-                        x: -6,
+                  return (
+                    <Link
+                      key={item.href}
+                      href={href}
+                      onClick={() => {
+                        setActiveTab(href);
+                        if (window.innerWidth < 768) setIsCollapsed(true);
                       }}
-                      animate={{
-                        opacity: 1,
-                        width: "auto",
-                        filter: "blur(0px)",
-                        x: 0,
-                      }}
-                      exit={{
-                        opacity: 0,
-                        width: 0,
-                        filter: "blur(4px)",
-                        x: -6,
-                      }}
-                      transition={{ duration: 0.18 }}
-                      className="flex-1 overflow-hidden whitespace-nowrap"
+                      className={cn(
+                        "group font-sans-system relative flex items-center gap-3 text-sm tracking-tighter transition-all duration-300",
+                        isCollapsed
+                          ? "mx-auto h-11 w-11 justify-center rounded-xl p-0"
+                          : "px-3 py-2.5",
+                        !isCollapsed &&
+                          idx !== items.length - 1 &&
+                          "border-b border-zinc-200/70 dark:border-zinc-900",
+                        isActive
+                          ? "bg-violet-500/10 font-medium text-violet-700 dark:bg-zinc-900/60 dark:text-violet-200"
+                          : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900/40 dark:hover:text-zinc-100",
+                      )}
+                      title={isCollapsed ? item.label : undefined}
                     >
-                      {item.label}
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </Link>
-            );
-          })}
+                      {isActive && (
+                        <motion.div
+                          layoutId="activeGlowPipeIndicator"
+                          className="absolute top-1/4 -left-3 h-1/2 w-0.75 rounded-r-full bg-violet-600 shadow-[0_0_15px_4px_rgba(167,139,250,0.65)] dark:bg-violet-400"
+                          transition={{
+                            type: "spring",
+                            stiffness: 380,
+                            damping: 30,
+                          }}
+                        />
+                      )}
+
+                      <div className="relative flex shrink-0 items-center justify-center">
+                        <AnimatePresence>
+                          {isActive && (
+                            <motion.div
+                              initial={{ opacity: 0, scale: 0.7 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0.7 }}
+                              transition={{ duration: 0.25 }}
+                              className="absolute -inset-4 -z-10 rounded-full opacity-40 mix-blend-screen blur-md group-hover:opacity-65"
+                            />
+                          )}
+                        </AnimatePresence>
+
+                        {!isActive && (
+                          <div className="absolute inset-0 -z-10 -m-2 rounded-lg bg-zinc-500/5 opacity-0 transition-opacity duration-200 group-hover:opacity-100 dark:bg-white/5" />
+                        )}
+
+                        <HugeiconsIcon
+                          icon={item.icon}
+                          className={cn(
+                            "relative z-10 h-4.5 w-4.5 shrink-0 transition-all duration-300",
+                            isActive
+                              ? "scale-105 text-violet-600 drop-shadow-[0_0_8px_rgba(196,181,253,0.5)] dark:text-violet-300"
+                              : "text-zinc-500 group-hover:text-zinc-900 dark:text-zinc-500 dark:group-hover:text-zinc-300",
+                            isCollapsed && !isActive
+                              ? "group-hover:scale-110"
+                              : "",
+                          )}
+                        />
+                      </div>
+
+                      <AnimatePresence mode="wait" initial={false}>
+                        {!isCollapsed && (
+                          <motion.span
+                            initial={{
+                              opacity: 0,
+                              width: 0,
+                              filter: "blur(4px)",
+                              x: -6,
+                            }}
+                            animate={{
+                              opacity: 1,
+                              width: "auto",
+                              filter: "blur(0px)",
+                              x: 0,
+                            }}
+                            exit={{
+                              opacity: 0,
+                              width: 0,
+                              filter: "blur(4px)",
+                              x: -6,
+                            }}
+                            transition={{ duration: 0.18 }}
+                            className="flex-1 overflow-hidden whitespace-nowrap"
+                          >
+                            {item.label}
+                          </motion.span>
+                        )}
+                      </AnimatePresence>
+
+                      {/* Right-side value, e.g. "English" next to Language, "Light" next to Theme */}
+                      {!isCollapsed && item.value && (
+                        <span className="shrink-0 text-xs text-zinc-400 dark:text-zinc-500">
+                          {item.value}
+                        </span>
+                      )}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
 
         {/* Theme Toggle */}
         <div
           className={cn(
-            "shrink-0 border-t border-zinc-200 dark:border-zinc-900 px-3 py-3 transition-colors duration-300",
+            "shrink-0 border-t border-zinc-200 px-3 py-3 transition-colors duration-300 dark:border-zinc-900",
             isCollapsed ? "flex justify-center" : "",
           )}
         >
@@ -246,7 +305,7 @@ export default function Sidebar() {
 
         <div
           className={cn(
-            "shrink-0 border-t border-zinc-200 dark:border-zinc-900 px-3 py-3 transition-colors duration-300",
+            "shrink-0 border-t border-zinc-200 px-3 py-3 transition-colors duration-300 dark:border-zinc-900",
             isCollapsed ? "flex justify-center" : "",
           )}
         >
@@ -255,7 +314,7 @@ export default function Sidebar() {
             onClick={() => setIsApiKeyDialogOpen(true)}
             disabled={!session?.user?.id}
             className={cn(
-              "group flex h-10 items-center gap-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/40 text-zinc-700 dark:text-zinc-300 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-200/60 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-100 disabled:cursor-not-allowed disabled:opacity-50",
+              "group flex h-10 items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-100 text-zinc-700 transition-colors hover:border-zinc-300 hover:bg-zinc-200/60 hover:text-zinc-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800 dark:bg-zinc-900/40 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:bg-zinc-900 dark:hover:text-zinc-100",
               isCollapsed ? "w-10 justify-center px-0" : "w-full px-3",
             )}
             title={isCollapsed ? "API Key / Settings" : undefined}
@@ -263,7 +322,7 @@ export default function Sidebar() {
             <HugeiconsIcon
               icon={Key01Icon}
               size={16}
-              className="text-zinc-500 dark:text-zinc-400 transition-colors group-hover:text-zinc-900 dark:group-hover:text-zinc-100"
+              className="text-zinc-500 transition-colors group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-zinc-100"
             />
             <AnimatePresence initial={false} mode="wait">
               {!isCollapsed && (
@@ -282,7 +341,7 @@ export default function Sidebar() {
         </div>
 
         {/* Dynamic Profile & Logout Section */}
-        <div className="shrink-0 border-t border-zinc-200 dark:border-zinc-900 p-4 transition-colors duration-300">
+        <div className="shrink-0 border-t border-zinc-200 p-4 transition-colors duration-300 dark:border-zinc-900">
           {isPending ? (
             <div
               className={cn(
@@ -307,7 +366,7 @@ export default function Sidebar() {
                 isCollapsed && "justify-center px-0",
               )}
             >
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full border border-violet-500/30 bg-violet-500/10 text-xs font-bold text-violet-600 dark:text-violet-400 shadow-[0_0_10px_rgba(139,92,246,0.1)] transition-colors group-hover:border-red-500/30 group-hover:bg-red-500/20 group-hover:text-red-500 dark:group-hover:text-red-400">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full border border-violet-500/30 bg-violet-500/10 text-xs font-bold text-violet-600 shadow-[0_0_10px_rgba(139,92,246,0.1)] transition-colors group-hover:border-red-500/30 group-hover:bg-red-500/20 group-hover:text-red-500 dark:text-violet-400 dark:group-hover:text-red-400">
                 {session.user.image ? (
                   <Image
                     src={session.user.image}
@@ -328,7 +387,7 @@ export default function Sidebar() {
                     transition={{ duration: 0.15 }}
                     className="flex min-w-0 flex-col overflow-hidden"
                   >
-                    <span className="truncate text-xs font-semibold whitespace-nowrap text-zinc-800 dark:text-zinc-200 transition-colors group-hover:text-red-500 dark:group-hover:text-red-400">
+                    <span className="truncate text-xs font-semibold whitespace-nowrap text-zinc-800 transition-colors group-hover:text-red-500 dark:text-zinc-200 dark:group-hover:text-red-400">
                       {session.user.name}
                     </span>
                     <span className="truncate text-[9px] whitespace-nowrap text-zinc-500 transition-colors group-hover:text-red-500/70">
@@ -352,7 +411,7 @@ export default function Sidebar() {
             exit={{ opacity: 0, scale: 0.9, y: 8 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
             onClick={() => setIsMobileSidebarVisible(true)}
-            className="fixed bottom-4 left-4 z-50 flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 text-zinc-800 dark:text-zinc-200 shadow-xl shadow-black/10 dark:shadow-black/60 md:hidden"
+            className="fixed bottom-4 left-4 z-50 flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-white/95 text-zinc-800 shadow-xl shadow-black/10 md:hidden dark:border-zinc-800 dark:bg-zinc-950/95 dark:text-zinc-200 dark:shadow-black/60"
           >
             <HugeiconsIcon icon={ViewSidebarRightIcon} size={16} />
           </motion.button>
