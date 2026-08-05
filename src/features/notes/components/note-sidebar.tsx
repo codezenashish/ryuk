@@ -28,9 +28,9 @@ export default function NoteSidebar() {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex-1 overflow-y-auto bg-black/20 p-2">
+      <div className="flex-1 overflow-y-auto bg-stone-50/50 dark:bg-white/1 p-2">
         {filteredNotes.length === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center gap-2 px-4 text-center text-zinc-700">
+          <div className="flex h-full flex-col items-center justify-center gap-2 px-4 text-center text-stone-400 dark:text-stone-600">
             <HugeiconsIcon icon={StickyNote01Icon} size={24} />
             <p className="text-xs">
               {searchQuery ? "No notes match your search" : "No notes yet"}
@@ -47,17 +47,17 @@ export default function NoteSidebar() {
                   key={note.id}
                   onClick={() => setActiveNoteId(note.id)}
                   className={cn(
-                    "group relative flex w-full flex-col gap-1 rounded-xl border px-3 py-3 text-left transition-colors",
+                    "group relative flex w-full flex-col gap-1 rounded-xl border px-3 py-3 text-left transition-all duration-200",
                     isActive
-                      ? "border-zinc-800 bg-zinc-950/40"
-                      : "border-zinc-900 bg-zinc-950/40 hover:border-zinc-800 hover:bg-zinc-900/30",
+                      ? "border-stone-300 dark:border-white/10 bg-white dark:bg-white/6"
+                      : "border-stone-200 dark:border-white/5 bg-white/60 dark:bg-white/2 hover:border-stone-300 dark:hover:border-white/10 hover:bg-white dark:hover:bg-white/4",
                   )}
                 >
                   <div className="flex items-center justify-between gap-2">
                     <span
                       className={cn(
                         "truncate text-sm font-medium",
-                        isActive ? "text-zinc-100" : "text-zinc-200",
+                        isActive ? "text-stone-900 dark:text-stone-100" : "text-stone-700 dark:text-stone-200",
                       )}
                     >
                       {note.title || "Untitled"}
@@ -68,15 +68,15 @@ export default function NoteSidebar() {
                         e.stopPropagation();
                         deleteNote(note.id);
                       }}
-                      className="shrink-0 rounded p-1 text-zinc-600 opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-400"
+                      className="shrink-0 rounded p-1 text-stone-400 dark:text-stone-600 opacity-0 transition-all duration-200 group-hover:opacity-100 hover:text-red-400"
                     >
                       <HugeiconsIcon icon={Delete02Icon} size={13} />
                     </span>
                   </div>
-                  <p className="line-clamp-2 text-xs text-zinc-500">
+                  <p className="line-clamp-2 text-xs text-stone-500 dark:text-stone-500">
                     {preview || "No additional content"}
                   </p>
-                  <span className="text-[10px] text-zinc-700">
+                  <span className="text-[10px] text-stone-400 dark:text-stone-600">
                     {note.updatedAt}
                   </span>
                 </button>
