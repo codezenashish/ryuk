@@ -15,7 +15,7 @@ export default function LandingLayout({
 
   return (
     <SmoothScroll>
-      <div className="flex min-h-screen flex-col bg-neutral-950">
+      <div className="flex min-h-screen flex-col bg-[#0c0c0b]">
         {showNavbar && <Navbar />}
         <main className="flex w-full grow flex-col">{children}</main>
         <Footer />
