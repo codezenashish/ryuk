@@ -32,14 +32,14 @@ export default function BookmarkList({
 
         return (
           <section key={category.id}>
-            <h2 className="mb-3 flex items-center gap-2 text-sm font-medium text-zinc-800 dark:text-zinc-200 transition-colors">
+            <h2 className="mb-3 flex items-center gap-2 text-sm font-medium text-stone-800 dark:text-stone-200 transition-colors">
               <HugeiconsIcon
                 icon={categoryIcon}
                 size={16}
-                className="text-zinc-500 dark:text-zinc-400 transition-colors"
+                className="text-stone-500 dark:text-stone-400 transition-colors"
               />
               {category.name}
-              <span className="rounded-full bg-zinc-100 dark:bg-zinc-800/60 px-2 py-0.5 text-xs font-normal text-zinc-500 dark:text-zinc-400 transition-colors">
+              <span className="rounded-full bg-stone-100 dark:bg-white/6 px-2 py-0.5 text-xs font-normal text-stone-500 dark:text-stone-400 transition-colors">
                 {category.bookmarks.length}
               </span>
             </h2>
