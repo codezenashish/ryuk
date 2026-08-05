@@ -9,18 +9,19 @@ export default function Hero() {
       className="relative flex min-h-screen items-center overflow-hidden max-sm:py-25 md:py-25"
       id="home"
     >
-      <div className="pointer-events-none absolute -top-50 -left-50 h-175 w-175 bg-[radial-gradient(circle,rgba(124,58,237,0.12)_0%,transparent_70%)]" />
-      <div className="pointer-events-none absolute -right-50 -bottom-50 h-150 w-150 bg-[radial-gradient(circle,rgba(34,211,238,0.07)_0%,transparent_70%)]" />
+      {/* Warm ambient gradients */}
+      <div className="pointer-events-none absolute -top-50 -left-50 h-175 w-175 bg-[radial-gradient(circle,rgba(139,115,85,0.08)_0%,transparent_70%)]" />
+      <div className="pointer-events-none absolute -right-50 -bottom-50 h-150 w-150 bg-[radial-gradient(circle,rgba(107,143,113,0.06)_0%,transparent_70%)]" />
 
       <div className="mx-auto w-full max-w-6xl px-4">
         <div className="grid grid-cols-1 items-center gap-16 md:gap-12 lg:grid-cols-2">
           <div className="max-w-130 max-lg:max-w-full max-lg:text-center">
             <div className="mb-6 flex items-center gap-3 max-lg:justify-center">
-              <span className="rounded-full border border-violet-400/25 bg-violet-400/10 px-2.5 py-0.5 text-[11px] font-medium tracking-widest text-violet-200 uppercase">
+              <span className="rounded-full border border-stone-500/20 bg-stone-500/8 px-3 py-1 text-[11px] font-medium tracking-widest text-stone-300 uppercase">
                 Open Source
               </span>
-              <span className="h-1 w-1 rounded-full bg-zinc-600" />
-              <span className="rounded-full border border-violet-400/25 bg-violet-400/10 px-2.5 py-0.5 text-[11px] font-medium tracking-widest text-violet-200 uppercase">
+              <span className="h-1 w-1 rounded-full bg-stone-700" />
+              <span className="rounded-full border border-stone-500/20 bg-stone-500/8 px-3 py-1 text-[11px] font-medium tracking-widest text-stone-300 uppercase">
                 Privacy-first
               </span>
             </div>
@@ -28,20 +29,20 @@ export default function Hero() {
             <h1 className="mb-6 text-4xl font-inter text-white sm:text-5xl md:text-6xl">
               One place for
               <br />
-              <span className="bg-linear-to-r from-white via-violet-200 to-violet-400 bg-clip-text font-serif text-transparent">
+              <span className="bg-linear-to-r from-white via-stone-300 to-stone-500 bg-clip-text font-serif text-transparent">
                 everything
               </span>{" "}
               you build
             </h1>
 
-            <p className="mx-auto  mb-8 max-w-110 text-sm text-zinc-400 normal-case max-lg:max-w-full md:text-lg lg:mx-0">
+            <p className="mx-auto mb-8 max-w-110 text-sm leading-relaxed text-stone-400 normal-case max-lg:max-w-full md:text-lg lg:mx-0">
               Stop switching between 12 tabs. DevNest brings your bookmarks,
               notes, code snippets, and habits into a single calm workspace —
               open source and fully private.
             </p>
 
             <div className="mb-6 flex flex-wrap gap-4 max-lg:justify-center">
-              <Button className="h-12 gap-2 rounded-xl bg-linear-to-r from-violet-300 to-violet-500 px-6 text-sm font-semibold text-zinc-950 transition-colors duration-300 hover:from-violet-200 hover:to-violet-400">
+              <Button className="h-12 gap-2 rounded-xl bg-white px-6 text-sm font-semibold text-stone-900 transition-all duration-300 hover:bg-stone-100 hover:shadow-lg hover:shadow-white/5">
                 Start building your nest
                 <FiArrowRight
                   className="transition-transform duration-200 group-hover/button:translate-x-1"
@@ -50,7 +51,7 @@ export default function Hero() {
               </Button>
               <Button
                 variant="ghost"
-                className="h-12 gap-2 rounded-xl border border-white/10 bg-white/5 px-6 text-sm font-medium text-stone-300 transition-colors duration-300 hover:bg-white/10 hover:text-white dark:hover:bg-white/10"
+                className="h-12 gap-2 rounded-xl border border-white/8 bg-white/4 px-6 text-sm font-medium text-stone-400 transition-all duration-300 hover:border-white/14 hover:bg-white/8 hover:text-white"
               >
                 <a
                   href="https://github.com/codezenashish/devnest.git"
@@ -64,8 +65,8 @@ export default function Hero() {
               </Button>
             </div>
 
-            <p className="text-center text-xs text-zinc-500 max-lg:text-center">
-              <span className="font-mono text-xs text-cyan-300">
+            <p className="text-center text-xs text-stone-500 max-lg:text-center lg:text-left">
+              <span className="font-mono text-xs text-stone-400">
                 v1.0.0-beta
               </span>
               {" — "}
