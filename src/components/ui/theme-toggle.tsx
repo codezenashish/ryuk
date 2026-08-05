@@ -1,5 +1,6 @@
 "use client";
 import { useSyncExternalStore } from "react";
+import { flushSync } from "react-dom";
 import { useTheme } from "@/app/theme-provider";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Moon02Icon, Sun03Icon } from "@hugeicons/core-free-icons";
@@ -15,23 +16,57 @@ export const ThemeToggle = () => {
 
   if (!mounted) {
     return (
-      <div className="h-10 w-10 rounded-xl border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900/40 shadow-xs" />
+      <div className="h-10 w-10 rounded-xl border border-stone-200 bg-stone-100 dark:border-white/8 dark:bg-white/4 shadow-xs" />
     );
   }
 
   const isDark = theme === "dark";
 
-  const toggleTheme = () => {
+  const toggleTheme = (event: React.MouseEvent<HTMLButtonElement>) => {
     const nextTheme = isDark ? "light" : "dark";
 
-    if (!document.startViewTransition) {
-      setTheme(nextTheme);
-      return;
-    }
+    if (
+      typeof document !== "undefined" &&
+      "startViewTransition" in document &&
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      const rect = event.currentTarget.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+      const endRadius = Math.hypot(
+        Math.max(x, window.innerWidth - x),
+        Math.max(y, window.innerHeight - y),
+      );
 
-    document.startViewTransition(() => {
+      const transition = (document as unknown as {
+        startViewTransition: (cb: () => void) => { ready: Promise<void> };
+      }).startViewTransition(() => {
+        flushSync(() => {
+          setTheme(nextTheme);
+        });
+      });
+
+      transition.ready.then(() => {
+        const clipPath = [
+          `circle(0px at ${x}px ${y}px)`,
+          `circle(${endRadius}px at ${x}px ${y}px)`,
+        ];
+        document.documentElement.animate(
+          {
+            clipPath: isDark ? clipPath.reverse() : clipPath,
+          },
+          {
+            duration: 450,
+            easing: "cubic-bezier(0.16, 1, 0.3, 1)",
+            pseudoElement: isDark
+              ? "::view-transition-old(root)"
+              : "::view-transition-new(root)",
+          },
+        );
+      });
+    } else {
       setTheme(nextTheme);
-    });
+    }
   };
 
   return (
@@ -40,7 +75,7 @@ export const ThemeToggle = () => {
       onClick={toggleTheme}
       aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
       aria-pressed={isDark}
-      className="group relative flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-100 text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900/40 dark:text-zinc-200 shadow-xs transition-all duration-200 hover:border-zinc-300 hover:bg-zinc-200/60 hover:text-zinc-900 dark:hover:border-zinc-700 dark:hover:bg-zinc-900/70 dark:hover:text-white"
+      className="group relative flex h-10 w-10 items-center justify-center rounded-xl border border-stone-200 bg-stone-100 text-stone-700 dark:border-white/8 dark:bg-white/4 dark:text-stone-200 shadow-xs transition-all duration-200 hover:border-stone-300 hover:bg-stone-200/60 hover:text-stone-900 dark:hover:border-white/14 dark:hover:bg-white/8 dark:hover:text-white"
     >
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
@@ -54,12 +89,12 @@ export const ThemeToggle = () => {
           {isDark ? (
             <HugeiconsIcon
               icon={Moon02Icon}
-              className="h-4.5 w-4.5 text-sky-200 drop-shadow-[0_0_8px_rgba(186,230,253,0.25)]"
+              className="h-4.5 w-4.5 text-stone-300 drop-shadow-[0_0_8px_rgba(214,211,209,0.2)]"
             />
           ) : (
             <HugeiconsIcon
               icon={Sun03Icon}
-              className="h-4.5 w-4.5 text-amber-300 drop-shadow-[0_0_8px_rgba(253,224,71,0.28)]"
+              className="h-4.5 w-4.5 text-amber-500 drop-shadow-[0_0_8px_rgba(245,158,11,0.25)]"
             />
           )}
         </motion.div>
