@@ -283,3 +283,26 @@ html.lenis body {
 .animate-subtle-float {
   animation: subtle-float 6s ease-in-out infinite;
 }
+
+/* View Transition API styles for smooth synchronized theme switching */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 9999;
+}
+
+.dark::view-transition-old(root) {
+  z-index: 9999;
+}
+
+.dark::view-transition-new(root) {
+  z-index: 1;
+}
