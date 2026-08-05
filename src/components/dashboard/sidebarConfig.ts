@@ -18,6 +18,8 @@ export interface NavItem {
   href: string;
   icon: IconSvgElement;
   active?: boolean;
+  group?: string;
+  value?: string;
 }
 
 export const navItems: NavItem[] = [
