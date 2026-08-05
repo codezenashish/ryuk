@@ -11,8 +11,8 @@ interface IconPickerProps {
 
 export default function IconPicker({ value, onChange }: IconPickerProps) {
   return (
-    <div className="space-y-2 rounded-2xl border border-zinc-900 bg-zinc-950/40 p-3">
-      <span className="block font-mono text-[9px] font-bold tracking-widest text-zinc-500 uppercase">
+    <div className="space-y-2 rounded-2xl border border-stone-200 dark:border-white/6 bg-stone-50 dark:bg-white/2 p-3">
+      <span className="block font-mono text-[9px] font-bold tracking-widest text-stone-400 dark:text-stone-500 uppercase">
         Select Custom Icon
       </span>
 
@@ -27,9 +27,9 @@ export default function IconPicker({ value, onChange }: IconPickerProps) {
               type="button"
               onClick={() => onChange(iconName)}
               className={cn(
-                "flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border text-zinc-400 transition-all duration-150 hover:bg-zinc-900 hover:text-white",
+                "flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border text-stone-600 dark:text-stone-400 transition-all duration-150 hover:bg-stone-200/60 dark:hover:bg-white/8 hover:text-stone-900 dark:hover:text-white",
                 isSelected
-                  ? "border-zinc-700 bg-zinc-900 text-zinc-200"
+                  ? "border-stone-300 dark:border-white/14 bg-stone-200 dark:bg-white/10 text-stone-900 dark:text-stone-100"
                   : "border-transparent bg-transparent",
               )}
             >
