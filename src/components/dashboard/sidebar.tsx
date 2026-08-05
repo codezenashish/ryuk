@@ -14,7 +14,7 @@ import {
 import { navItems } from "./sidebarConfig";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { authClient } from "@/lib/auth-client"; // Better Auth client import kiya
+import { authClient } from "@/lib/auth-client";
 import Image from "next/image";
 import { DASHBOARD_TOP_STRIP_CLASS } from "./dashboard-frame";
 import ApiKeyDialog from "@/features/settings/components/ApiKeyDialog";
@@ -69,9 +69,7 @@ export default function Sidebar() {
     return () => window.removeEventListener("resize", handleResize);
   }, [setIsCollapsed]);
 
-  // Group nav items by their "group" field so we can render them like the
-  // grouped-card design: a gray section label + a rounded card per group,
-  // instead of one flat list of rows.
+  // Group nav items by their "group" field
   const groupedNavItems = navItems.reduce<
     { group: string; items: typeof navItems }[]
   >((acc, item) => {
@@ -103,10 +101,10 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Mobile Backdrop Overlay black background */}
+      {/* Mobile Backdrop Overlay */}
       {!isCollapsed && (
         <div
-          className="fixed inset-0 z-40 bg-black/40 md:hidden"
+          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm md:hidden"
           onClick={() => setIsCollapsed(true)}
         />
       )}
@@ -115,11 +113,11 @@ export default function Sidebar() {
         onPanEnd={handleMobileDragEnd}
         animate={{ width, x: mobileSidebarX }}
         transition={{
-          width: { type: "spring", stiffness: 350, damping: 35 },
-          x: { duration: 0.28, ease: "easeInOut" },
+          width: { type: "spring", stiffness: 320, damping: 32 },
+          x: { duration: 0.3, ease: [0.16, 1, 0.3, 1] },
         }}
         className={cn(
-          "fixed top-0 left-0 z-50 flex h-screen shrink-0 flex-col overflow-hidden border-r border-zinc-200 bg-white text-zinc-600 transition-colors duration-300 select-none md:relative dark:border-zinc-900 dark:bg-neutral-950 dark:text-zinc-400",
+          "fixed top-0 left-0 z-50 flex h-screen shrink-0 flex-col overflow-hidden border-r border-stone-200 bg-white text-stone-600 transition-colors duration-300 select-none md:relative dark:border-white/6 dark:bg-[#0c0c0b] dark:text-stone-400",
           !isMobileSidebarVisible &&
             "pointer-events-none md:pointer-events-auto",
         )}
@@ -136,17 +134,18 @@ export default function Sidebar() {
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -10 }}
+              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
               className="flex items-center gap-2 px-1"
             >
-              <span className="font-sans-system text-sm font-semibold tracking-wider text-zinc-900 dark:text-zinc-200">
-                DevSpace
+              <span className="font-sans-system text-sm font-semibold tracking-wider text-stone-900 dark:text-stone-200">
+                DevNest
               </span>
             </motion.div>
           )}
 
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-zinc-200 bg-zinc-100 text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-200/60 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900/40 dark:text-zinc-400 dark:hover:border-zinc-700 dark:hover:bg-zinc-900/70 dark:hover:text-zinc-200"
+            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-stone-200 bg-stone-100 text-stone-600 transition-all duration-200 hover:border-stone-300 hover:bg-stone-200/60 hover:text-stone-900 dark:border-white/8 dark:bg-white/4 dark:text-stone-400 dark:hover:border-white/14 dark:hover:bg-white/8 dark:hover:text-stone-200"
           >
             {isCollapsed ? (
               <HugeiconsIcon icon={ViewSidebarRightIcon} size={16} />
@@ -159,15 +158,15 @@ export default function Sidebar() {
         <nav className="flex-1 space-y-4 overflow-x-hidden overflow-y-auto px-3 py-4">
           {groupedNavItems.map(({ group, items }) => (
             <div key={group || "ungrouped"}>
-              {/* Gray section label above each card, e.g. Account / Preferences / Support */}
+              {/* Gray section label */}
               <AnimatePresence initial={false}>
                 {!isCollapsed && group && (
                   <motion.p
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.15 }}
-                    className="overflow-hidden px-2 pb-1.5 text-[11px] font-semibold tracking-wide text-zinc-400 uppercase dark:text-zinc-600"
+                    transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                    className="overflow-hidden px-2 pb-1.5 text-[11px] font-semibold tracking-wide text-stone-400 uppercase dark:text-stone-600"
                   >
                     {group}
                   </motion.p>
@@ -178,7 +177,7 @@ export default function Sidebar() {
                 className={cn(
                   isCollapsed
                     ? "space-y-1.5"
-                    : "overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50/60 dark:border-zinc-900 dark:bg-zinc-900/20",
+                    : "overflow-hidden rounded-xl border border-stone-200 bg-stone-50/60 dark:border-white/6 dark:bg-white/2",
                 )}
               >
                 {items.map((item, idx) => {
@@ -200,17 +199,17 @@ export default function Sidebar() {
                           : "px-3 py-2.5",
                         !isCollapsed &&
                           idx !== items.length - 1 &&
-                          "border-b border-zinc-200/70 dark:border-zinc-900",
+                          "border-b border-stone-200/70 dark:border-white/5",
                         isActive
-                          ? "bg-violet-500/10 font-medium text-violet-700 dark:bg-zinc-900/60 dark:text-violet-200"
-                          : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900/40 dark:hover:text-zinc-100",
+                          ? "bg-stone-100 font-medium text-stone-900 dark:bg-white/6 dark:text-stone-100"
+                          : "text-stone-600 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-white/4 dark:hover:text-stone-200",
                       )}
                       title={isCollapsed ? item.label : undefined}
                     >
                       {isActive && (
                         <motion.div
                           layoutId="activeGlowPipeIndicator"
-                          className="absolute top-1/4 -left-3 h-1/2 w-0.75 rounded-r-full bg-violet-600 shadow-[0_0_15px_4px_rgba(167,139,250,0.65)] dark:bg-violet-400"
+                          className="absolute top-1/4 -left-3 h-1/2 w-0.75 rounded-r-full bg-stone-800 dark:bg-stone-300"
                           transition={{
                             type: "spring",
                             stiffness: 380,
@@ -227,13 +226,13 @@ export default function Sidebar() {
                               animate={{ opacity: 1, scale: 1 }}
                               exit={{ opacity: 0, scale: 0.7 }}
                               transition={{ duration: 0.25 }}
-                              className="absolute -inset-4 -z-10 rounded-full opacity-40 mix-blend-screen blur-md group-hover:opacity-65"
+                              className="absolute -inset-4 -z-10 rounded-full opacity-30 mix-blend-screen blur-md group-hover:opacity-50"
                             />
                           )}
                         </AnimatePresence>
 
                         {!isActive && (
-                          <div className="absolute inset-0 -z-10 -m-2 rounded-lg bg-zinc-500/5 opacity-0 transition-opacity duration-200 group-hover:opacity-100 dark:bg-white/5" />
+                          <div className="absolute inset-0 -z-10 -m-2 rounded-lg bg-stone-500/5 opacity-0 transition-opacity duration-200 group-hover:opacity-100 dark:bg-white/5" />
                         )}
 
                         <HugeiconsIcon
@@ -241,8 +240,8 @@ export default function Sidebar() {
                           className={cn(
                             "relative z-10 h-4.5 w-4.5 shrink-0 transition-all duration-300",
                             isActive
-                              ? "scale-105 text-violet-600 drop-shadow-[0_0_8px_rgba(196,181,253,0.5)] dark:text-violet-300"
-                              : "text-zinc-500 group-hover:text-zinc-900 dark:text-zinc-500 dark:group-hover:text-zinc-300",
+                              ? "scale-105 text-stone-800 dark:text-stone-200"
+                              : "text-stone-500 group-hover:text-stone-900 dark:text-stone-500 dark:group-hover:text-stone-300",
                             isCollapsed && !isActive
                               ? "group-hover:scale-110"
                               : "",
@@ -271,7 +270,7 @@ export default function Sidebar() {
                               filter: "blur(4px)",
                               x: -6,
                             }}
-                            transition={{ duration: 0.18 }}
+                            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                             className="flex-1 overflow-hidden whitespace-nowrap"
                           >
                             {item.label}
@@ -279,9 +278,9 @@ export default function Sidebar() {
                         )}
                       </AnimatePresence>
 
-                      {/* Right-side value, e.g. "English" next to Language, "Light" next to Theme */}
+                      {/* Right-side value */}
                       {!isCollapsed && item.value && (
-                        <span className="shrink-0 text-xs text-zinc-400 dark:text-zinc-500">
+                        <span className="shrink-0 text-xs text-stone-400 dark:text-stone-500">
                           {item.value}
                         </span>
                       )}
@@ -296,7 +295,7 @@ export default function Sidebar() {
         {/* Theme Toggle */}
         <div
           className={cn(
-            "shrink-0 border-t border-zinc-200 px-3 py-3 transition-colors duration-300 dark:border-zinc-900",
+            "shrink-0 border-t border-stone-200 px-3 py-3 transition-colors duration-300 dark:border-white/6",
             isCollapsed ? "flex justify-center" : "",
           )}
         >
@@ -305,7 +304,7 @@ export default function Sidebar() {
 
         <div
           className={cn(
-            "shrink-0 border-t border-zinc-200 px-3 py-3 transition-colors duration-300 dark:border-zinc-900",
+            "shrink-0 border-t border-stone-200 px-3 py-3 transition-colors duration-300 dark:border-white/6",
             isCollapsed ? "flex justify-center" : "",
           )}
         >
@@ -314,7 +313,7 @@ export default function Sidebar() {
             onClick={() => setIsApiKeyDialogOpen(true)}
             disabled={!session?.user?.id}
             className={cn(
-              "group flex h-10 items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-100 text-zinc-700 transition-colors hover:border-zinc-300 hover:bg-zinc-200/60 hover:text-zinc-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800 dark:bg-zinc-900/40 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:bg-zinc-900 dark:hover:text-zinc-100",
+              "group flex h-10 items-center gap-3 rounded-xl border border-stone-200 bg-stone-100 text-stone-700 transition-all duration-200 hover:border-stone-300 hover:bg-stone-200/60 hover:text-stone-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/8 dark:bg-white/4 dark:text-stone-300 dark:hover:border-white/14 dark:hover:bg-white/8 dark:hover:text-stone-100",
               isCollapsed ? "w-10 justify-center px-0" : "w-full px-3",
             )}
             title={isCollapsed ? "API Key / Settings" : undefined}
@@ -322,7 +321,7 @@ export default function Sidebar() {
             <HugeiconsIcon
               icon={Key01Icon}
               size={16}
-              className="text-zinc-500 transition-colors group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-zinc-100"
+              className="text-stone-500 transition-colors group-hover:text-stone-900 dark:text-stone-400 dark:group-hover:text-stone-100"
             />
             <AnimatePresence initial={false} mode="wait">
               {!isCollapsed && (
@@ -330,7 +329,7 @@ export default function Sidebar() {
                   initial={{ opacity: 0, x: -6 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -6 }}
-                  transition={{ duration: 0.16 }}
+                  transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
                   className="text-sm font-medium"
                 >
                   API Key / Settings
@@ -341,7 +340,7 @@ export default function Sidebar() {
         </div>
 
         {/* Dynamic Profile & Logout Section */}
-        <div className="shrink-0 border-t border-zinc-200 p-4 transition-colors duration-300 dark:border-zinc-900">
+        <div className="shrink-0 border-t border-stone-200 p-4 transition-colors duration-300 dark:border-white/6">
           {isPending ? (
             <div
               className={cn(
@@ -349,11 +348,11 @@ export default function Sidebar() {
                 isCollapsed && "justify-center",
               )}
             >
-              <div className="h-7 w-7 animate-pulse rounded-full bg-zinc-200 dark:bg-zinc-800" />
+              <div className="h-7 w-7 animate-pulse rounded-full bg-stone-200 dark:bg-stone-800" />
               {!isCollapsed && (
                 <div className="flex flex-col gap-1">
-                  <div className="h-3 w-16 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800" />
-                  <div className="h-2 w-24 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800" />
+                  <div className="h-3 w-16 animate-pulse rounded bg-stone-200 dark:bg-stone-800" />
+                  <div className="h-2 w-24 animate-pulse rounded bg-stone-200 dark:bg-stone-800" />
                 </div>
               )}
             </div>
@@ -362,11 +361,11 @@ export default function Sidebar() {
               onClick={handleLogout}
               title="Click to Log Out"
               className={cn(
-                "group flex cursor-pointer items-center gap-3 rounded-xl px-2 py-1.5 transition-colors hover:bg-red-500/10",
+                "group flex cursor-pointer items-center gap-3 rounded-xl px-2 py-1.5 transition-all duration-200 hover:bg-red-500/8",
                 isCollapsed && "justify-center px-0",
               )}
             >
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full border border-violet-500/30 bg-violet-500/10 text-xs font-bold text-violet-600 shadow-[0_0_10px_rgba(139,92,246,0.1)] transition-colors group-hover:border-red-500/30 group-hover:bg-red-500/20 group-hover:text-red-500 dark:text-violet-400 dark:group-hover:text-red-400">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full border border-stone-300 bg-stone-100 text-xs font-bold text-stone-700 transition-all duration-200 group-hover:border-red-500/30 group-hover:bg-red-500/15 group-hover:text-red-500 dark:border-white/12 dark:bg-white/6 dark:text-stone-300 dark:group-hover:text-red-400">
                 {session.user.image ? (
                   <Image
                     src={session.user.image}
@@ -384,13 +383,13 @@ export default function Sidebar() {
                     initial={{ opacity: 0, width: 0 }}
                     animate={{ opacity: 1, width: "auto" }}
                     exit={{ opacity: 0, width: 0 }}
-                    transition={{ duration: 0.15 }}
+                    transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
                     className="flex min-w-0 flex-col overflow-hidden"
                   >
-                    <span className="truncate text-xs font-semibold whitespace-nowrap text-zinc-800 transition-colors group-hover:text-red-500 dark:text-zinc-200 dark:group-hover:text-red-400">
+                    <span className="truncate text-xs font-semibold whitespace-nowrap text-stone-800 transition-colors group-hover:text-red-500 dark:text-stone-200 dark:group-hover:text-red-400">
                       {session.user.name}
                     </span>
-                    <span className="truncate text-[9px] whitespace-nowrap text-zinc-500 transition-colors group-hover:text-red-500/70">
+                    <span className="truncate text-[9px] whitespace-nowrap text-stone-500 transition-colors group-hover:text-red-500/70">
                       {session.user.email}
                     </span>
                   </motion.div>
@@ -409,9 +408,9 @@ export default function Sidebar() {
             initial={{ opacity: 0, scale: 0.9, y: 8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 8 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
             onClick={() => setIsMobileSidebarVisible(true)}
-            className="fixed bottom-4 left-4 z-50 flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-white/95 text-zinc-800 shadow-xl shadow-black/10 md:hidden dark:border-zinc-800 dark:bg-zinc-950/95 dark:text-zinc-200 dark:shadow-black/60"
+            className="fixed bottom-4 left-4 z-50 flex h-10 w-10 items-center justify-center rounded-xl border border-stone-200 bg-white/95 text-stone-800 shadow-xl shadow-black/10 md:hidden dark:border-white/8 dark:bg-[#0c0c0b]/95 dark:text-stone-200 dark:shadow-black/60"
           >
             <HugeiconsIcon icon={ViewSidebarRightIcon} size={16} />
           </motion.button>
