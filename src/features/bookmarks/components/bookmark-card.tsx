@@ -33,14 +33,14 @@ export default function BookmarkCard({
         <HugeiconsIcon
           icon={Folder01Icon}
           size={18}
-          className="shrink-0 text-zinc-400 dark:text-zinc-500"
+          className="shrink-0 text-stone-400 dark:text-stone-500"
         />
       )}
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-sm font-medium text-zinc-900 dark:text-zinc-200 transition-colors">
+        <span className="block truncate text-sm font-medium text-stone-900 dark:text-stone-200 transition-colors">
           {bookmark.title}
         </span>
-        <span className="block truncate text-xs text-zinc-500 dark:text-zinc-400 transition-colors">
+        <span className="block truncate text-xs text-stone-500 dark:text-stone-400 transition-colors">
           {bookmark.url}
         </span>
       </span>
@@ -48,7 +48,7 @@ export default function BookmarkCard({
   );
 
   return (
-    <article className="group flex min-w-0 items-center gap-3 rounded-xl border border-zinc-200/80 bg-white p-3 shadow-xs transition-all duration-200 hover:border-zinc-300 hover:bg-zinc-50/80 dark:border-zinc-900 dark:bg-zinc-900/20 dark:hover:border-zinc-800 dark:hover:bg-zinc-900/50">
+    <article className="group flex min-w-0 items-center gap-3 rounded-xl border border-stone-200/80 bg-white p-3 shadow-xs transition-all duration-300 hover:border-stone-300 hover:bg-stone-50/80 hover:shadow-md hover:shadow-stone-200/30 dark:border-white/6 dark:bg-[#111110] dark:hover:border-white/12 dark:hover:bg-white/4 dark:hover:shadow-xl dark:hover:shadow-black/20">
       {bookmark.url ? (
         <a
           href={bookmark.url}
@@ -67,7 +67,7 @@ export default function BookmarkCard({
           target="_blank"
           rel="noreferrer"
           aria-label={`Open ${bookmark.title}`}
-          className="text-zinc-400 hover:text-zinc-700 dark:text-zinc-500 dark:hover:text-zinc-300 transition-colors"
+          className="text-stone-400 hover:text-stone-700 dark:text-stone-500 dark:hover:text-stone-300 transition-colors"
         >
           <HugeiconsIcon icon={ExternalLinkIcon} size={15} />
         </a>
@@ -77,7 +77,7 @@ export default function BookmarkCard({
         aria-label={`Delete ${bookmark.title}`}
         onClick={() => onDelete(bookmark)}
         disabled={isDeleting}
-        className="text-zinc-400 hover:text-red-500 dark:text-zinc-500 dark:hover:text-red-400 transition-colors disabled:opacity-40"
+        className="text-stone-400 hover:text-red-500 dark:text-stone-500 dark:hover:text-red-400 transition-colors disabled:opacity-40"
       >
         <HugeiconsIcon icon={Delete02Icon} size={15} />
       </button>
