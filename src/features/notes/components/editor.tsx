@@ -81,7 +81,7 @@ export default function NoteEditor({ noteId }: EditorProps) {
     editorProps: {
       attributes: {
         class:
-          "focus:outline-none max-w-none text-zinc-300 min-h-[300px] text-sm leading-relaxed whitespace-pre-wrap",
+          "focus:outline-none max-w-none text-stone-700 dark:text-stone-300 min-h-[300px] text-sm leading-relaxed whitespace-pre-wrap",
       },
     },
     onUpdate: ({ editor }) => {
@@ -109,10 +109,10 @@ export default function NoteEditor({ noteId }: EditorProps) {
         value={currentNote.title}
         onChange={(e) => updateNote(noteId, { title: e.target.value })}
         placeholder="Untitled"
-        className="w-full border-none bg-transparent text-3xl font-bold tracking-tight text-zinc-100 outline-none placeholder:text-zinc-800 focus:ring-0"
+        className="w-full border-none bg-transparent text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-100 outline-none placeholder:text-stone-300 dark:placeholder:text-stone-700 focus:ring-0"
       />
 
-      <div className="min-h-87.5 rounded-xl border border-zinc-900 bg-zinc-950/40 p-6">
+      <div className="min-h-87.5 rounded-xl border border-stone-200 dark:border-white/6 bg-white dark:bg-white/2 p-6">
         <EditorContent editor={editor} />
       </div>
     </div>
