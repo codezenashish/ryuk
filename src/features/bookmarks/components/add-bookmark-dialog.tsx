@@ -256,22 +256,22 @@ export default function AddBookmarkDialog({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.98, y: 8 }}
             transition={{ type: "spring", stiffness: 400, damping: 28 }}
-            className="relative z-10 w-full max-w-md overflow-hidden rounded-2xl border border-zinc-900 bg-zinc-950 p-6 shadow-2xl"
+            className="relative z-10 w-full max-w-md overflow-hidden rounded-2xl border border-stone-200 dark:border-white/8 bg-white dark:bg-[#111110] p-6 shadow-2xl shadow-stone-950/10 dark:shadow-black/60"
           >
             <div className="mb-6 flex items-start justify-between">
               <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 shadow-inner">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-stone-200 dark:border-white/8 bg-stone-100 dark:bg-white/4 shadow-inner">
                   <HugeiconsIcon
                     icon={AllBookmarkIcon}
                     size={16}
-                    className="text-zinc-300"
+                    className="text-stone-700 dark:text-stone-300"
                   />
                 </div>
                 <div>
-                  <h2 className="text-sm font-semibold tracking-tight text-white">
+                  <h2 className="text-sm font-semibold tracking-tight text-stone-900 dark:text-white">
                     Add Bookmark
                   </h2>
-                  <p className="text-[10px] tracking-wider text-zinc-500 uppercase">
+                  <p className="text-[10px] tracking-wider text-stone-500 uppercase">
                     Save and organize links
                   </p>
                 </div>
@@ -281,7 +281,7 @@ export default function AddBookmarkDialog({
                 type="button"
                 disabled={isSaving || isSuccess}
                 onClick={handleModalDismissal}
-                className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border border-transparent text-zinc-500 transition-colors hover:border-zinc-800 hover:bg-zinc-900 hover:text-white disabled:opacity-40"
+                className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border border-transparent text-stone-400 dark:text-stone-500 transition-colors hover:border-stone-200 dark:hover:border-white/8 hover:bg-stone-100 dark:hover:bg-white/4 hover:text-stone-900 dark:hover:text-white disabled:opacity-40"
               >
                 <HugeiconsIcon icon={Cancel01Icon} size={14} />
               </button>
@@ -293,7 +293,7 @@ export default function AddBookmarkDialog({
                   <HugeiconsIcon
                     icon={GlobeIcon}
                     size={14}
-                    className="text-zinc-500 transition-colors group-focus-within:text-zinc-300"
+                    className="text-stone-400 dark:text-stone-500 transition-colors group-focus-within:text-stone-700 dark:group-focus-within:text-stone-300"
                   />
                 </div>
                 <input
@@ -308,7 +308,7 @@ export default function AddBookmarkDialog({
                   onBlur={handleUrlBlur}
                   disabled={isSaving || isSuccess}
                   placeholder="https://example.com"
-                  className="h-9 w-full rounded-xl border border-zinc-900 bg-zinc-950 pr-3 pl-9 text-xs text-zinc-200 transition-all outline-none placeholder:text-zinc-600 focus:border-zinc-800 focus:bg-zinc-950 focus:ring-1 focus:ring-zinc-800 disabled:opacity-50"
+                  className="h-9 w-full rounded-xl border border-stone-200 dark:border-white/8 bg-stone-50 dark:bg-white/3 pr-3 pl-9 text-xs text-stone-800 dark:text-stone-200 transition-all outline-none placeholder:text-stone-400 dark:placeholder:text-stone-600 focus:border-stone-300 dark:focus:border-white/14 focus:bg-white dark:focus:bg-white/6 focus:ring-1 focus:ring-stone-300 dark:focus:ring-white/10 disabled:opacity-50"
                 />
                 {formError && (
                   <p className="mt-1 text-xs text-red-500">{formError}</p>
@@ -324,19 +324,19 @@ export default function AddBookmarkDialog({
                     transition={{ duration: 0.2 }}
                     className="space-y-4 overflow-hidden pt-1"
                   >
-                    <div className="rounded-xl border border-zinc-900 bg-zinc-900/20 p-3.5">
+                    <div className="rounded-xl border border-stone-200 dark:border-white/6 bg-stone-50/60 dark:bg-white/2 p-3.5">
                       <div className="mb-2 flex items-center justify-between">
-                        <span className="font-mono text-[9px] font-bold tracking-widest text-zinc-600 uppercase">
+                        <span className="font-mono text-[9px] font-bold tracking-widest text-stone-400 dark:text-stone-500 uppercase">
                           Preview
                         </span>
                         {isFetchingMeta && (
-                          <Loader2 className="h-3 w-3 animate-spin text-zinc-500" />
+                          <Loader2 className="h-3 w-3 animate-spin text-stone-500" />
                         )}
                       </div>
                       <div className="flex items-center gap-3">
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-zinc-900 bg-zinc-950">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-stone-200 dark:border-white/8 bg-white dark:bg-white/3">
                           {isFetchingMeta ? (
-                            <div className="h-full w-full animate-pulse bg-zinc-900" />
+                            <div className="h-full w-full animate-pulse bg-stone-200 dark:bg-white/6" />
                           ) : bookmarkFavicon ? (
                             <Image
                               src={bookmarkFavicon}
@@ -350,31 +350,31 @@ export default function AddBookmarkDialog({
                             <HugeiconsIcon
                               icon={AllBookmarkIcon}
                               size={14}
-                              className="text-zinc-600"
+                              className="text-stone-500"
                             />
                           )}
                         </div>
                         <div className="min-w-0 flex-1">
                           {isFetchingMeta ? (
                             <div className="space-y-1.5 py-0.5">
-                              <div className="h-3 w-3/4 animate-pulse rounded bg-zinc-900" />
-                              <div className="h-2 w-1/2 animate-pulse rounded bg-zinc-900/60" />
+                              <div className="h-3 w-3/4 animate-pulse rounded bg-stone-200 dark:bg-white/6" />
+                              <div className="h-2 w-1/2 animate-pulse rounded bg-stone-200/60 dark:bg-white/4" />
                             </div>
                           ) : (
                             <>
-                              <h3 className="truncate text-xs font-medium text-zinc-200">
+                              <h3 className="truncate text-xs font-medium text-stone-900 dark:text-stone-200">
                                 {bookmarkTitle ||
                                   urlState.hostname ||
                                   "Untitled Site"}
                               </h3>
-                              <p className="mt-0.5 truncate text-[10px] text-zinc-500">
+                              <p className="mt-0.5 truncate text-[10px] text-stone-500">
                                 {urlState.hostname || "domain.com"}
                               </p>
                             </>
                           )}
                         </div>
                         <div className="shrink-0">
-                          <span className="rounded-md border border-zinc-900 bg-zinc-900/40 px-2 py-0.5 text-[10px] text-zinc-400">
+                          <span className="rounded-md border border-stone-200 dark:border-white/6 bg-stone-100 dark:bg-white/4 px-2 py-0.5 text-[10px] text-stone-600 dark:text-stone-400">
                             {selectedCategory || "General"}
                           </span>
                         </div>
@@ -385,7 +385,7 @@ export default function AddBookmarkDialog({
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                
                       <div className="space-y-1">
-                        <label className="pl-0.5 font-mono text-[9px] font-bold tracking-widest text-zinc-500 uppercase">
+                        <label className="pl-0.5 font-mono text-[9px] font-bold tracking-widest text-stone-500 uppercase">
                           Title
                         </label>
                         <input
@@ -399,13 +399,13 @@ export default function AddBookmarkDialog({
                           placeholder={
                             isFetchingMeta ? "Extracting..." : "Custom title"
                           }
-                          className="h-8.5 w-full rounded-lg border border-zinc-900 bg-zinc-950 px-2.5 text-xs text-zinc-200 outline-none focus:border-zinc-800"
+                          className="h-8.5 w-full rounded-lg border border-stone-200 dark:border-white/8 bg-stone-50 dark:bg-white/3 px-2.5 text-xs text-stone-800 dark:text-stone-200 outline-none focus:border-stone-300 dark:focus:border-white/14"
                         />
                       </div>
 
                     
                       <div className="space-y-1">
-                        <label className="pl-0.5 font-mono text-[9px] font-bold tracking-widest text-zinc-500 uppercase">
+                        <label className="pl-0.5 font-mono text-[9px] font-bold tracking-widest text-stone-500 uppercase">
                           Category
                         </label>
                         <div className="relative" ref={containerRef}>
@@ -424,13 +424,13 @@ export default function AddBookmarkDialog({
                             onKeyDown={handleKeyDown}
                             disabled={isSaving || isSuccess}
                             placeholder="Select category..."
-                            className="h-8.5 w-full rounded-lg border border-zinc-900 bg-zinc-950 px-2.5 pr-7 text-xs text-zinc-200 outline-none focus:border-zinc-800"
+                            className="h-8.5 w-full rounded-lg border border-stone-200 dark:border-white/8 bg-stone-50 dark:bg-white/3 px-2.5 pr-7 text-xs text-stone-800 dark:text-stone-200 outline-none focus:border-stone-300 dark:focus:border-white/14"
                           />
                           <button
                             type="button"
                             onClick={handleChevronClick}
                             disabled={isSaving || isSuccess}
-                            className="absolute top-1/2 right-2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
+                            className="absolute top-1/2 right-2 -translate-y-1/2 text-stone-400 hover:text-stone-600 dark:text-stone-500 dark:hover:text-stone-300"
                           >
                             <HugeiconsIcon
                               icon={ArrowDown01Icon}
@@ -452,7 +452,7 @@ export default function AddBookmarkDialog({
                                   initial={{ opacity: 0, y: -4 }}
                                   animate={{ opacity: 1, y: 0 }}
                                   exit={{ opacity: 0, y: -4 }}
-                                  className="absolute right-0 left-0 z-50 max-h-40 overflow-y-auto rounded-lg border border-zinc-900 bg-zinc-950 p-1 shadow-xl"
+                                  className="absolute right-0 left-0 z-50 max-h-40 overflow-y-auto rounded-lg border border-stone-200 dark:border-white/10 bg-white/95 dark:bg-[#111110]/95 p-1 shadow-xl shadow-stone-950/10 dark:shadow-black/80"
                                   style={{ scrollbarWidth: "none" }}
                                 >
                                   {filteredCategories.map(
@@ -483,8 +483,8 @@ export default function AddBookmarkDialog({
                                           className={cn(
                                             "flex w-full cursor-pointer items-center gap-2 rounded-md px-2.5 py-1.5 text-xs transition-colors select-none",
                                             isActive
-                                              ? "bg-zinc-900 text-zinc-200"
-                                              : "text-zinc-400",
+                                              ? "bg-stone-100 dark:bg-white/8 text-stone-900 dark:text-stone-200"
+                                              : "text-stone-600 dark:text-stone-400",
                                           )}
                                         >
                                           <HugeiconsIcon
@@ -499,7 +499,7 @@ export default function AddBookmarkDialog({
                                             <HugeiconsIcon
                                               icon={Tick02Icon}
                                               size={12}
-                                              className="text-zinc-400"
+                                              className="text-stone-400"
                                             />
                                           )}
                                         </div>
@@ -518,7 +518,7 @@ export default function AddBookmarkDialog({
                                         selectCategory(selectedCategory.trim());
                                       }}
                                       className={cn(
-                                        "mt-1 flex w-full cursor-pointer items-center gap-2 rounded-md border border-dashed border-zinc-900 px-2.5 py-1.5 text-xs text-zinc-400 select-none hover:bg-zinc-900/40 hover:text-zinc-200",
+                                        "mt-1 flex w-full cursor-pointer items-center gap-2 rounded-md border border-dashed border-stone-300 dark:border-white/10 px-2.5 py-1.5 text-xs text-stone-500 dark:text-stone-400 select-none hover:bg-stone-100 dark:hover:bg-white/4 hover:text-stone-900 dark:hover:text-stone-200",
                                       )}
                                     >
                                       <span className="truncate">
@@ -555,12 +555,12 @@ export default function AddBookmarkDialog({
               </AnimatePresence>
 
               {/* Form Actions Footer Panel */}
-              <div className="flex items-center justify-end gap-2 border-t border-zinc-900 pt-4">
+              <div className="flex items-center justify-end gap-2 border-t border-stone-200 dark:border-white/6 pt-4">
                 <button
                   type="button"
                   disabled={isSaving || isSuccess}
                   onClick={handleModalDismissal}
-                  className="cursor-pointer rounded-lg border border-zinc-900 bg-transparent px-3.5 py-1.5 text-xs font-medium text-zinc-400 transition-colors hover:bg-zinc-900 hover:text-white"
+                  className="cursor-pointer rounded-lg border border-stone-200 dark:border-white/8 bg-transparent px-3.5 py-1.5 text-xs font-medium text-stone-600 dark:text-stone-400 transition-colors hover:bg-stone-100 dark:hover:bg-white/4 hover:text-stone-900 dark:hover:text-white"
                 >
                   Cancel
                 </button>
@@ -570,8 +570,8 @@ export default function AddBookmarkDialog({
                   className={cn(
                     "flex min-w-25 cursor-pointer items-center justify-center rounded-lg px-4 py-1.5 text-xs font-medium transition-colors",
                     isSuccess
-                      ? "bg-zinc-100 font-semibold text-zinc-950"
-                      : "bg-zinc-100 text-zinc-950 hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-40",
+                      ? "bg-stone-900 dark:bg-stone-100 font-semibold text-white dark:text-stone-950"
+                      : "bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-950 hover:bg-stone-800 dark:hover:bg-white disabled:cursor-not-allowed disabled:opacity-40",
                   )}
                 >
                   {isSuccess
