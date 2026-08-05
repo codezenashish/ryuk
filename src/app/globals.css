@@ -89,36 +89,36 @@
 }
 
 .dark {
-  --background: #000000;
-  --foreground: #f4f4f5;
-  --card: #0a0a0c;
-  --card-foreground: #f4f4f5;
-  --popover: #0a0a0c;
-  --popover-foreground: #f4f4f5;
+  --background: #0c0c0b;
+  --foreground: #f0ece4;
+  --card: #111110;
+  --card-foreground: #f0ece4;
+  --popover: #111110;
+  --popover-foreground: #f0ece4;
   --primary: #a78bfa;
   --primary-foreground: #09090b;
-  --secondary: #18181b;
-  --secondary-foreground: #f4f4f5;
-  --muted: #18181b;
-  --muted-foreground: #a1a1aa;
-  --accent: #27272a;
-  --accent-foreground: #f4f4f5;
+  --secondary: #1c1b18;
+  --secondary-foreground: #f0ece4;
+  --muted: #1c1b18;
+  --muted-foreground: #9c9585;
+  --accent: #262520;
+  --accent-foreground: #f0ece4;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: rgb(255 255 255 / 10%);
-  --input: rgb(255 255 255 / 10%);
+  --border: rgb(255 255 255 / 8%);
+  --input: rgb(255 255 255 / 8%);
   --ring: #a78bfa;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --sidebar: #000000;
-  --sidebar-foreground: #f4f4f5;
+  --sidebar: #0c0c0b;
+  --sidebar-foreground: #f0ece4;
   --sidebar-primary: #a78bfa;
   --sidebar-primary-foreground: #09090b;
-  --sidebar-accent: #18181b;
-  --sidebar-accent-foreground: #f4f4f5;
-  --sidebar-border: rgb(255 255 255 / 10%);
+  --sidebar-accent: #1c1b18;
+  --sidebar-accent-foreground: #f0ece4;
+  --sidebar-border: rgb(255 255 255 / 8%);
   --sidebar-ring: #a78bfa;
 }
 
@@ -126,16 +126,17 @@
   * {
     @apply border-border outline-ring/50;
     scrollbar-width: thin;
-    scrollbar-color: rgb(167 139 250 / 0.35) transparent;
+    scrollbar-color: rgb(139 115 85 / 0.3) transparent;
   }
   body {
     @apply bg-background text-foreground font-sans transition-colors duration-300;
   }
 }
 
+/* Scrollbar — warm accent */
 *::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
 }
 
 *::-webkit-scrollbar-track {
@@ -144,22 +145,20 @@
 
 *::-webkit-scrollbar-thumb {
   border-radius: 9999px;
-  border: 3px solid transparent;
+  border: 2px solid transparent;
   background-clip: padding-box;
-  background-color: rgb(167 139 250 / 0.24);
+  background-color: rgb(139 115 85 / 0.2);
   transition:
     background-color 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+    border-color 0.2s ease;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background-color: rgb(167 139 250 / 0.42);
-  border-color: rgb(15 15 18 / 0.3);
+  background-color: rgb(139 115 85 / 0.38);
 }
 
 *::-webkit-scrollbar-thumb:active {
-  background-color: rgb(196 181 253 / 0.55);
+  background-color: rgb(139 115 85 / 0.5);
 }
 
 *::-webkit-scrollbar-corner {
@@ -174,13 +173,14 @@
   font-style: italic;
 }
 
+/* Noise texture overlay */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.035;
+  opacity: 0.025;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
   background-size: 256px 256px;
 }
@@ -206,4 +206,80 @@ html.lenis body {
 
 .lenis.lenis-smooth iframe {
   pointer-events: none;
+}
+
+/* ── Smooth animation keyframes ── */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes subtle-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* GPU-accelerated animation utility */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease both;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-subtle-float {
+  animation: subtle-float 6s ease-in-out infinite;
 }
