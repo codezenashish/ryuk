@@ -3,7 +3,7 @@ import { Loading03Icon } from "@hugeicons/core-free-icons";
 
 export default function BookmarkLoadingState() {
   return (
-    <div className="flex h-full items-center justify-center py-16 text-zinc-500">
+    <div className="flex h-full items-center justify-center py-16 text-stone-400 dark:text-stone-500">
       <HugeiconsIcon icon={Loading03Icon} className="animate-spin" size={20} />
     </div>
   );
