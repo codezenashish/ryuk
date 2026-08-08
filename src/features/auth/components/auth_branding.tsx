@@ -14,9 +14,7 @@ export default function AuthBranding({
         <div className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-linear-to-tr from-violet-600 to-indigo-500 text-sm font-black text-white shadow-lg shadow-violet-500/20">
           ⚡
         </div>
-        <span className=" text-base tracking-wider text-white">
-          DevSpace
-        </span>
+        <span className="text-base tracking-wider text-white">DevSpace</span>
         <span className="rounded-full border border-violet-500/20 bg-violet-500/10 px-2.5 py-0.5 text-[10px] font-medium text-violet-400">
           v1.0
         </span>
