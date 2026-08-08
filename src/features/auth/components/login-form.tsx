@@ -26,7 +26,9 @@ export default function LoginForm() {
       const { error } = await authClient.signIn.email({ email, password });
 
       if (error) {
-        setErrorMessage(error.message || "Unable to sign in. Please try again.");
+        setErrorMessage(
+          error.message || "Unable to sign in. Please try again.",
+        );
         setIsSubmitting(false);
         return;
       }
@@ -34,7 +36,9 @@ export default function LoginForm() {
       // Keep isSubmitting=true so the button stays in loading state during redirect
       router.push("/dashboard");
     } catch {
-      setErrorMessage("Unable to sign in. Please check your connection and try again.");
+      setErrorMessage(
+        "Unable to sign in. Please check your connection and try again.",
+      );
       setIsSubmitting(false);
     }
   }
@@ -55,7 +59,10 @@ export default function LoginForm() {
 
       <form onSubmit={handleLogin} className="mt-8 space-y-4">
         <div className="space-y-1.5">
-          <label htmlFor="email" className="font-mono text-[11px] font-medium tracking-wider text-zinc-400 uppercase">
+          <label
+            htmlFor="email"
+            className="font-mono text-[11px] font-medium tracking-wider text-zinc-400 uppercase"
+          >
             Email address
           </label>
           <input
@@ -66,16 +73,22 @@ export default function LoginForm() {
             onChange={(event) => setEmail(event.target.value)}
             required
             placeholder="name@example.com"
-            className="w-full rounded-xl border border-zinc-800 bg-zinc-900/40 px-3 py-2.5 text-sm text-white placeholder:text-zinc-600 outline-none transition focus:border-violet-500/60 focus:ring-2 focus:ring-violet-500/20"
+            className="w-full rounded-xl border border-zinc-800 bg-zinc-900/40 px-3 py-2.5 text-sm text-white transition outline-none placeholder:text-zinc-600 focus:border-violet-500/60 focus:ring-2 focus:ring-violet-500/20"
           />
         </div>
 
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <label htmlFor="password" className="font-mono text-[11px] font-medium tracking-wider text-zinc-400 uppercase">
+            <label
+              htmlFor="password"
+              className="font-mono text-[11px] font-medium tracking-wider text-zinc-400 uppercase"
+            >
               Password
             </label>
-            <Link href="/forgot-password" className="text-xs text-violet-400 transition hover:text-violet-300 hover:underline">
+            <Link
+              href="/forgot-password"
+              className="text-xs text-violet-400 transition hover:text-violet-300 hover:underline"
+            >
               Forgot password?
             </Link>
           </div>
@@ -88,7 +101,7 @@ export default function LoginForm() {
               onChange={(event) => setPassword(event.target.value)}
               required
               placeholder="Enter your password"
-              className="w-full rounded-xl border border-zinc-800 bg-zinc-900/40 px-3 py-2.5 pr-10 text-sm text-white placeholder:text-zinc-600 outline-none transition focus:border-violet-500/60 focus:ring-2 focus:ring-violet-500/20"
+              className="w-full rounded-xl border border-zinc-800 bg-zinc-900/40 px-3 py-2.5 pr-10 text-sm text-white transition outline-none placeholder:text-zinc-600 focus:border-violet-500/60 focus:ring-2 focus:ring-violet-500/20"
             />
             <button
               type="button"
@@ -107,19 +120,29 @@ export default function LoginForm() {
         </div>
 
         {errorMessage && (
-          <p role="alert" className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+          <p
+            role="alert"
+            className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-300"
+          >
             {errorMessage}
           </p>
         )}
 
-        <Button type="submit" disabled={isSubmitting} className="w-full rounded-xl bg-violet-600 py-5 font-semibold text-white hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-60">
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full rounded-xl bg-violet-600 py-5 font-semibold text-white hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-60"
+        >
           {isSubmitting ? "Logging in..." : "Log in"}
         </Button>
       </form>
 
       <p className="mt-7 text-center text-sm text-zinc-400">
         Don&apos;t have an account?{" "}
-        <Link href="/signup" className="font-medium text-violet-400 transition hover:text-violet-300 hover:underline">
+        <Link
+          href="/signup"
+          className="font-medium text-violet-400 transition hover:text-violet-300 hover:underline"
+        >
           Create one
         </Link>
       </p>
