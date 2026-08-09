@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "src/app/(dashboard)/@rightbar/default.tsx\n"  ],
   "exclude": ["node_modules"]
 }
