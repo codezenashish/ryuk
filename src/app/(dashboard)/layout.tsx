@@ -1,27 +1,35 @@
-import { auth } from "@/lib/auth";
-import Sidebar from "@/components/dashboard/sidebar";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
+import { Nav } from "@/components/layout/nav";
+import Sidebar from "@/components/layout/sidebar";
+import RightPanelWrapper from "@/components/layout/right-panel-wrapper";
+import MobileDock from "@/components/layout/mobile-dock";
 
-export default async function DashboardLayout({
+export default function DashboardLayout({
   children,
+  rightbar,
 }: {
   children: React.ReactNode;
+  rightbar: React.ReactNode;
 }) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    redirect("/login");
-  }
-
   return (
-    <div className="flex h-screen overflow-hidden bg-stone-50 transition-colors duration-200 dark:bg-[#0c0c0b]">
-      <Sidebar />
-      <main className="min-h-0 flex-1 overflow-y-auto pl-16 md:pl-0">
-        {children}
+    <div className="text-ink bg-paper font-body grid h-screen grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[240px_minmax(0,1fr)_300px] max-w-7xl mx-auto w-full relative">
+      <aside className="hidden lg:block border-r border-line">
+        <Sidebar />
+      </aside>
+
+      <main className="min-w-0 overflow-y-auto scrollbar-none w-full pb-24 lg:pb-0">
+        <header className="sticky top-0 z-50 h-16 border-b border-line bg-paper/80 backdrop-blur-md">
+          <Nav />
+        </header>
+        <section className="px-4">
+          {children}
+        </section>
       </main>
+
+      <aside className="hidden xl:flex xl:flex-col border-l border-line overflow-hidden">
+        <RightPanelWrapper rightbar={rightbar} />
+      </aside>
+
+      <MobileDock />
     </div>
   );
 }
