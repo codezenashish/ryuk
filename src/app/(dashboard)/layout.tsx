@@ -1,7 +1,7 @@
-import { Nav } from "@/components/layout/nav";
-import Sidebar from "@/components/layout/sidebar";
+import { Nav } from "@/components/navigation/nav";
+import Sidebar from "@/components/navigation/sidebar";
 import RightPanelWrapper from "@/components/layout/right-panel-wrapper";
-import MobileDock from "@/components/layout/mobile-dock";
+import MobileDock from "@/components/navigation/mobile-dock";
 
 export default function DashboardLayout({
   children,
