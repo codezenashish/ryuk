@@ -14,18 +14,16 @@ export default function Sidebar() {
   return (
     <aside className="h-full font-body flex flex-col">
       {/* App Branding */}
-      <Link
-        href="/"
+      <div
+       
         className="flex h-16 items-center gap-3 border-b border-line px-4 shrink-0"
       >
-        <Avatar theme={theme} seed="user@example.com" size={28} />
-        <span className="font-display text-lg font-medium tracking-tight text-ink">
-          Vyrn
-        </span>
-        <span className="ml-auto rounded-full border border-line-2 px-1.5 py-0.5 font-code text-[10px] tracking-[0.08em] text-ink-4">
-          v1.0
-        </span>
-      </Link>
+        
+        <h2 className="font-display text-lg font-medium tracking-tight text-ink">
+          Ryuk
+        </h2>
+        
+      </div>
 
       <nav className="flex flex-col gap-1 p-3">
 

@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { VyrnHeroPlayground } from "../client/hero-playground";
-import { HugeiconsIcon } from "@hugeicons/react";
-import ArrowRight02Icon from "@hugeicons/core-free-icons/ArrowRight02Icon";
+import { ArrowRight } from "lucide-react";
+import SVGComponent from "./svg";
+import { InstallCopy } from "../client/install-copy";
 
 const stats = [
   { num: 5, label: "Themes" },
@@ -31,12 +31,12 @@ export function Hero({ docsLink = "/docs" }: { docsLink?: string }) {
             <div className="mt-9 flex flex-wrap items-center gap-3">
               <Link
                 href={docsLink}
-                className="inline-flex items-center gap-2 rounded-lg border border-ink bg-ink px-4 py-2.5 text-sm font-medium whitespace-nowrap text-paper transition hover:border-white hover:bg-white active:translate-y-px"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-ink bg-ink px-4 py-2.5 text-sm font-medium whitespace-nowrap text-paper transition hover:border-white hover:bg-white hover:text-ink active:translate-y-px"
               >
                 <span>Get started</span>
-                <HugeiconsIcon icon={ArrowRight02Icon} />
+                <ArrowRight className="h-4 w-4 shrink-0" />
               </Link>
-              {/*<InstallCopy />*/}
+              <InstallCopy />
             </div>
 
             <div className="mt-12 flex items-stretch gap-0 border-t border-line pt-6">
@@ -56,8 +56,8 @@ export function Hero({ docsLink = "/docs" }: { docsLink?: string }) {
             </div>
           </div>
 
-          <div className="min-w-0">
-            <VyrnHeroPlayground />
+          <div className="flex min-w-0 items-center  justify-center lg:justify-end">
+            <SVGComponent />
           </div>
         </div>
       </div>
