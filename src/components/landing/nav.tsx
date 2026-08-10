@@ -15,9 +15,9 @@ export function Nav() {
     <header className="sticky top-0 z-50 border-b border-line bg-paper/70 backdrop-blur-md [-webkit-backdrop-filter:blur(10px)_saturate(140%)] [backdrop-filter:blur(10px)_saturate(140%)]">
       <div className="mx-auto flex h-15 max-w-7xl items-center justify-between px-8">
         <Link href="/" className="flex items-center gap-3 text-ink">
-          <ExampleAvatar />
+         
           <span className="font-display text-[22px] font-medium tracking-tight">
-            Vyrn
+            Ryuk
           </span>
           <span className="ml-1 rounded-full border border-line-2 px-1.75 py-0.5 font-code text-[10.5px] tracking-[0.08em] text-ink-3">
             v1.0
