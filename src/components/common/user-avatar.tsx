@@ -10,7 +10,6 @@ interface UserAvatarProps {
 }
 
 export function UserAvatar({ seed, size = 36, className = "" }: UserAvatarProps) {
-  // Use user email/image/name as seed, or default fallback
   const avatarSeed = seed && seed.trim() !== "" ? seed : "ryuk-default-user";
 
   return (
