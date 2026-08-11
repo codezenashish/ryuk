@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Github } from "@hugeicons/core-free-icons";
-import { ExampleAvatar } from "./avatar";
+
 
 const navLinks = [
   { href: "/docs", label: "Docs" },
