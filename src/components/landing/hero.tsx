@@ -1,7 +1,13 @@
-import Link from "next/link";
+"use client"
+
+
 import { ArrowRight } from "lucide-react";
 import SVGComponent from "./svg";
 import { InstallCopy } from "../client/install-copy";
+import AuthModal from "../common/auth-model";
+import { useState, useEffect } from "react";
+import { useSession } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 const stats = [
   { num: 5, label: "Themes" },
@@ -9,10 +15,31 @@ const stats = [
   { num: 0, label: "Dependencies" },
 ];
 
-export function Hero({ docsLink = "/docs" }: { docsLink?: string }) {
+export function Hero() {
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const { data: session } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("auth") === "required" && !session) {
+        setIsAuthOpen(true);
+      }
+    }
+  }, [session]);
+
+  const handleStartClick = () => {
+    if (session) {
+      router.push("/dashboard");
+    } else {
+      setIsAuthOpen(true);
+    }
+  };
   return (
     <section className="relative overflow-hidden">
       <div className="mx-auto max-w-7xl px-8 pt-20 pb-30">
+        <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
         <div className="grid grid-cols-1 items-center gap-14 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1fr)] lg:gap-16">
           <div className="min-w-0">
             <h1 className="mb-7 font-display text-[clamp(56px,7.2vw,104px)] leading-[0.96] font-[380] tracking-[-0.035em] [&_.soft]:font-normal [&_.soft]:text-ink-3">
@@ -29,13 +56,13 @@ export function Hero({ docsLink = "/docs" }: { docsLink?: string }) {
             </p>
 
             <div className="mt-9 flex flex-wrap items-center gap-3">
-              <Link
-                href={docsLink}
+              <button
+                onClick={handleStartClick}
                 className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-ink bg-ink px-4 py-2.5 text-sm font-medium whitespace-nowrap text-paper transition hover:border-white hover:bg-white hover:text-ink active:translate-y-px"
               >
                 <span>Get started</span>
                 <ArrowRight className="h-4 w-4 shrink-0" />
-              </Link>
+              </button>
               <InstallCopy />
             </div>
 
