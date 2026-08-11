@@ -2,16 +2,20 @@
 
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { BellDotIcon } from "@hugeicons/core-free-icons";
 import { useSession } from "@/lib/auth-client";
 import { UserAvatar } from "@/components/common/user-avatar";
 import EditProfileModal from "@/components/common/edit-profile-modal";
+import { Skeleton } from "@/components/ui/skeleton";
+import { SearchBar } from "@/components/common/search-bar";
+import { NotificationBall } from "@/components/common/notification-ball";
+
+import { useBookmarkStore } from "@/store/useBookmarkStore";
 
 export function Nav() {
   const pathname = usePathname();
-  const { data: session } = useSession();
+  const { data: session, isPending } = useSession();
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const setSearchQuery = useBookmarkStore((state) => state.setSearchQuery);
 
   // Get current page title from pathname
   const pageTitle =
@@ -35,45 +39,57 @@ export function Nav() {
       {/* Mobile Nav (shown only on mobile < lg) */}
       <nav className="flex h-full items-center justify-between px-4 lg:hidden">
         {/* Left side: Avatar */}
-        <button
-          onClick={() => setIsEditProfileOpen(true)}
-          className="rounded-full ring-2 ring-transparent transition hover:ring-line-2 cursor-pointer"
-          aria-label="User menu"
-        >
-          <UserAvatar seed={userSeed} size={32} />
-        </button>
+        {isPending ? (
+          <Skeleton className="h-8 w-8 rounded-full bg-paper-3 border border-line" />
+        ) : (
+          <button
+            onClick={() => setIsEditProfileOpen(true)}
+            className="rounded-full ring-2 ring-transparent transition hover:ring-line-2 cursor-pointer"
+            aria-label="User menu"
+          >
+            <UserAvatar seed={userSeed} size={32} />
+          </button>
+        )}
 
-        {/* Right side: Bell icon */}
-        <button
-          className="relative rounded-lg p-2 text-ink-3 transition hover:bg-paper-3 hover:text-ink cursor-pointer"
-          aria-label="Notifications"
-        >
-          <HugeiconsIcon icon={BellDotIcon} size={20} strokeWidth={1.8} />
-          <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-paper" />
-        </button>
+        {/* Right side: Notification Ball */}
+        <NotificationBall />
       </nav>
 
       {/* Desktop Nav (shown on desktop >= lg) */}
       <nav className="hidden h-full items-center justify-between px-6 lg:flex">
         {/* Left side: Page Title */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 min-w-40">
           <h2 className="font-body text-lg font-semibold tracking-tight text-ink">
             {pageTitle}
           </h2>
         </div>
 
-        {/* Right side: User Profile Avatar */}
+        {/* Center: Search Bar */}
+        <div className="flex-1 max-w-md mx-6 flex justify-center">
+          <SearchBar onSearch={setSearchQuery} />
+        </div>
+
+        {/* Right side: Notification Ball & User Profile Avatar */}
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => setIsEditProfileOpen(true)}
-            className="flex items-center gap-2.5 rounded-full p-1 border border-line bg-paper-3 hover:bg-paper-card transition cursor-pointer pr-3"
-            title="Edit Profile"
-          >
-            <UserAvatar seed={userSeed} size={30} />
-            <span className="text-xs font-medium text-ink max-w-[120px] truncate">
-              {session?.user?.name || "Guest"}
-            </span>
-          </button>
+          <NotificationBall />
+
+          {isPending ? (
+            <div className="flex items-center gap-2.5 rounded-full p-1 border border-line bg-paper-3 pr-3">
+              <Skeleton className="h-7 w-7 rounded-full bg-paper-card" />
+              <Skeleton className="h-3.5 w-20 rounded-md bg-paper-card" />
+            </div>
+          ) : (
+            <button
+              onClick={() => setIsEditProfileOpen(true)}
+              className="flex items-center gap-2.5 rounded-full p-1 border border-line bg-paper-3 hover:bg-paper-card transition cursor-pointer pr-3"
+              title="Edit Profile"
+            >
+              <UserAvatar seed={userSeed} size={30} />
+              <span className="text-xs font-medium text-ink max-w-30 truncate">
+                {session?.user?.name || "User"}
+              </span>
+            </button>
+          )}
         </div>
       </nav>
     </div>
