@@ -4,6 +4,7 @@ import {
   DashboardSquare03Icon,
   Bookmark01Icon,
   Note01Icon,
+  Settings02Icon
 } from "@hugeicons/core-free-icons";
 import { TagVariant } from "./sidebar-tag";
 
@@ -32,4 +33,9 @@ export const sidebar: SidebarItem[] = [
     href: "/notes",
     icon: Note01Icon,
   },
+  {
+    label:"Setting",
+    href:"/setting",
+    icon:Settings02Icon
+  }
 ];
