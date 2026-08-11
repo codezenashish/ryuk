@@ -7,8 +7,7 @@ import {
   ArrowUp01Icon,
   ArrowDown01Icon,
 } from "@hugeicons/core-free-icons";
-import { Avatar } from "@avatune/react";
-import theme from "@avatune/yanliu-theme/react";
+
 
 interface RightPanelHeaderProps {
   isOpen: boolean;
@@ -50,7 +49,7 @@ export default function RightPanelHeader({
         className="rounded-full ring-2 ring-transparent transition hover:ring-line-2"
         aria-label="User menu"
       >
-        <Avatar theme={theme} seed="user@example.com" size={28} />
+        
       </button>
 
       <button
