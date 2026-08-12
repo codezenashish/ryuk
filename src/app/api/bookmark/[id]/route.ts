@@ -21,7 +21,7 @@ export async function PATCH(
 
     const { id } = await params;
     const body = await req.json();
-    const { title, url, description, categoryId, tags, favicon } = body;
+    const { title, url, description, categoryId, favicon } = body;
 
     // Check ownership
     const existing = await db.bookmark.findUnique({
