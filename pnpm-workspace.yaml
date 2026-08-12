@@ -1,7 +1,7 @@
 allowBuilds:
   '@prisma/engines': true
-  esbuild: set this to true or false
+  esbuild: true
   prisma: true
-  re2: set this to true or false
+  re2: true
   sharp: false
   unrs-resolver: false
