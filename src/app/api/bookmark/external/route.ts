@@ -26,6 +26,11 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
       count: bookmarks.length,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      },
       bookmarks,
     });
   } catch (error) {
@@ -79,7 +84,14 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return NextResponse.json({ bookmark: newBookmark }, { status: 201 });
+    return NextResponse.json({
+      bookmark: newBookmark,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      },
+    }, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: "Failed to save bookmark" }, { status: 500 });
   }

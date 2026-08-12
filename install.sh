@@ -58,11 +58,11 @@ fi
 cat << 'EOF' > "$INSTALL_DIR/ryuk"
 #!/usr/bin/env bash
 if [ -f "$HOME/Desktop/dev-nest/cli/index.ts" ]; then
-    exec npx tsx "$HOME/Desktop/dev-nest/cli/index.ts" "$@"
+    exec npx --quiet tsx "$HOME/Desktop/dev-nest/cli/index.ts" "$@"
 elif [ -f "$HOME/.ryuk/cli/index.js" ]; then
     exec node "$HOME/.ryuk/cli/index.js" "$@"
 else
-    exec npx -y ryuk-cli "$@"
+    exec npx --quiet -y ryuk-cli "$@"
 fi
 EOF
 

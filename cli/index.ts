@@ -10,6 +10,8 @@ import os from "os";
 interface RyukConfig {
   apiKey?: string;
   serverUrl?: string;
+  email?: string;
+  name?: string;
 }
 
 interface MetadataResponse {
@@ -28,11 +30,19 @@ interface BookmarkSaveResponse {
     description?: string;
     favicon?: string;
   };
+  user?: {
+    name: string;
+    email: string;
+  };
   error?: string;
 }
 
 interface BookmarkListResponse {
   count: number;
+  user?: {
+    name: string;
+    email: string;
+  };
   bookmarks: Array<{
     id: string;
     title: string;
@@ -47,9 +57,6 @@ interface BookmarkListResponse {
 const CONFIG_FILE = path.join(os.homedir(), ".ryukrc");
 const DEFAULT_HOST = process.env.RYUK_SERVER_URL || "http://localhost:3000";
 
-/**
- * Reads local configuration from ~/.ryukrc
- */
 function getConfig(): RyukConfig {
   try {
     if (fs.existsSync(CONFIG_FILE)) {
@@ -62,9 +69,6 @@ function getConfig(): RyukConfig {
   return {};
 }
 
-/**
- * Saves updated configuration to ~/.ryukrc
- */
 function saveConfig(config: Partial<RyukConfig>): void {
   try {
     const existing = getConfig();
@@ -77,9 +81,28 @@ function saveConfig(config: Partial<RyukConfig>): void {
   }
 }
 
+function clearConfig(): void {
+  try {
+    if (fs.existsSync(CONFIG_FILE)) {
+      fs.unlinkSync(CONFIG_FILE);
+    }
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    console.error(chalk.red("✖ Failed to clear configuration file:"), errorMsg);
+  }
+}
+
+function printHeader(): void {
+  const config = getConfig();
+  const userDisplay = config.email ? chalk.cyan(config.email) : chalk.dim("Not signed in");
+  console.log("");
+  console.log(chalk.bold("ryuk CLI ") + chalk.dim("1.0.0"));
+  console.log(`  ${chalk.cyan("▲ ryuk")}        ${userDisplay}\n`);
+}
+
 program
   .name("ryuk")
-  .description("TypeScript CLI tool to manage bookmarks & save web resources to Ryuk")
+  .description("Official CLI tool to manage bookmarks & save web resources to Ryuk")
   .version("1.0.0");
 
 /**
@@ -89,8 +112,8 @@ program
   .command("login")
   .description("Authenticate using your Ryuk API Key")
   .action(async () => {
-    console.log(chalk.bold.cyan("\n🚀 Ryuk CLI Authentication"));
-    console.log(chalk.dim("Get your API Key from your Ryuk Settings page.\n"));
+    printHeader();
+    console.log(chalk.dim("Get your API Key from your Ryuk Settings page (/setting).\n"));
 
     try {
       const answers = await inquirer.prompt<{ apiKey: string; serverUrl: string }>([
@@ -120,15 +143,63 @@ program
       const apiKey = answers.apiKey.trim();
       const serverUrl = answers.serverUrl.trim().replace(/\/$/, "");
 
-      saveConfig({ apiKey, serverUrl });
+      console.log(chalk.blue("🔍 Validating API Key with Ryuk server..."));
+
+      const valRes = await fetch(`${serverUrl}/api/bookmark/external`, {
+        headers: { Authorization: `Bearer ${apiKey}` },
+      });
+
+      if (!valRes.ok) {
+        const valData = (await valRes.json().catch(() => ({}))) as { error?: string };
+        throw new Error(valData.error || "Invalid API Key or server unreachable.");
+      }
+
+      const valData = (await valRes.json()) as BookmarkListResponse;
+      const userEmail = valData.user?.email || "user@ryuk.dev";
+      const userName = valData.user?.name || "User";
+
+      saveConfig({ apiKey, serverUrl, email: userEmail, name: userName });
 
       console.log(
-        chalk.green.bold("\n✔ Successfully authenticated and saved credentials to ~/.ryukrc!\n")
+        chalk.green.bold(`\n✔ Successfully authenticated as ${chalk.cyan(userEmail)}!\n`)
       );
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : String(err);
-      console.error(chalk.red("\n✖ Login process interrupted or failed:"), errorMsg);
+      console.error(chalk.red("\n✖ Login failed:"), errorMsg, "\n");
       process.exit(1);
+    }
+  });
+
+/**
+ * Command: ryuk logout
+ */
+program
+  .command("logout")
+  .description("Sign out and clear stored credentials")
+  .action(async () => {
+    printHeader();
+    clearConfig();
+    console.log(chalk.green.bold("✔ Logged out successfully.\n"));
+  });
+
+/**
+ * Command: ryuk status / ryuk whoami
+ */
+program
+  .command("status")
+  .alias("whoami")
+  .description("Show current authentication status & user profile")
+  .action(async () => {
+    printHeader();
+    const config = getConfig();
+    if (config.apiKey && config.email) {
+      console.log(chalk.bold("Authenticated User: ") + chalk.cyan(config.email));
+      if (config.name) console.log(chalk.bold("Display Name:       ") + config.name);
+      console.log(chalk.bold("Server URL:         ") + (config.serverUrl || DEFAULT_HOST));
+      console.log(chalk.bold("Config File:        ") + CONFIG_FILE + "\n");
+    } else {
+      console.log(chalk.yellow("Welcome to the Ryuk CLI. You are currently not signed in."));
+      console.log(chalk.dim("Run 'ryuk login' to authenticate.\n"));
     }
   });
 
@@ -143,27 +214,27 @@ program
       const config = getConfig();
 
       if (!config.apiKey) {
-        console.log(chalk.yellow("\n⚠️  No API Key found. Please run 'ryuk login' first."));
+        printHeader();
+        console.log(chalk.yellow("Welcome to the Ryuk CLI. You are currently not signed in."));
+        console.log(chalk.dim("Run 'ryuk login' to authenticate.\n"));
         process.exit(1);
       }
 
       let targetUrl = urlArg;
 
       if (!targetUrl) {
+        printHeader();
         const answers = await inquirer.prompt<{ url: string }>([
           {
             type: "input",
             name: "url",
             message: "Enter the webpage URL to bookmark:",
-            validate: (input: string) => {
-              if (!input || !input.trim()) {
-                return "URL is required.";
-              }
-              return true;
-            },
+            validate: (input: string) => (input.trim() ? true : "URL is required."),
           },
         ]);
         targetUrl = answers.url;
+      } else {
+        printHeader();
       }
 
       targetUrl = targetUrl.trim();
@@ -173,7 +244,7 @@ program
 
       const host = config.serverUrl || DEFAULT_HOST;
 
-      console.log(chalk.blue(`\n🔍 Fetching metadata for ${chalk.underline(targetUrl)}...`));
+      console.log(chalk.blue(`🔍 Fetching metadata for ${chalk.underline(targetUrl)}...`));
 
       let extractedTitle = "";
       let extractedDesc = "";
@@ -242,7 +313,7 @@ program
       console.log(chalk.dim(`   URL:   ${result.bookmark?.url || targetUrl}\n`));
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : String(err);
-      console.error(chalk.red.bold("\n✖ Failed to add bookmark:"), chalk.red(errorMsg));
+      console.error(chalk.red.bold("\n✖ Failed to add bookmark:"), chalk.red(errorMsg), "\n");
       process.exit(1);
     }
   });
@@ -259,13 +330,16 @@ program
       const config = getConfig();
 
       if (!config.apiKey) {
-        console.log(chalk.yellow("\n⚠️  No API Key found. Please run 'ryuk login' first."));
+        printHeader();
+        console.log(chalk.yellow("Welcome to the Ryuk CLI. You are currently not signed in."));
+        console.log(chalk.dim("Run 'ryuk login' to authenticate.\n"));
         process.exit(1);
       }
 
+      printHeader();
       const host = config.serverUrl || DEFAULT_HOST;
 
-      console.log(chalk.blue("\n📚 Fetching your Ryuk bookmarks..."));
+      console.log(chalk.blue("📚 Fetching your Ryuk bookmarks..."));
 
       const res = await fetch(`${host}/api/bookmark/external`, {
         headers: {
@@ -299,9 +373,58 @@ program
       });
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : String(err);
-      console.error(chalk.red.bold("\n✖ Failed to fetch bookmarks:"), chalk.red(errorMsg));
+      console.error(chalk.red.bold("\n✖ Failed to fetch bookmarks:"), chalk.red(errorMsg), "\n");
       process.exit(1);
     }
   });
+
+/**
+ * Command: ryuk uninstall
+ */
+program
+  .command("uninstall")
+  .description("Remove Ryuk CLI configuration and links from your system")
+  .action(async () => {
+    printHeader();
+
+    const answers = await inquirer.prompt<{ confirm: boolean }>([
+      {
+        type: "confirm",
+        name: "confirm",
+        message: "Are you sure you want to uninstall Ryuk CLI and delete saved credentials?",
+        default: false,
+      },
+    ]);
+
+    if (!answers.confirm) {
+      console.log(chalk.dim("Uninstallation cancelled.\n"));
+      return;
+    }
+
+    try {
+      clearConfig();
+
+      const localBinPath = path.join(os.homedir(), ".local", "bin", "ryuk");
+      if (fs.existsSync(localBinPath)) {
+        fs.unlinkSync(localBinPath);
+      }
+
+      console.log(chalk.green.bold("✔ Ryuk CLI configuration and binaries uninstalled successfully.\n"));
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      console.error(chalk.red("✖ Failed during uninstallation:"), errorMsg, "\n");
+      process.exit(1);
+    }
+  });
+
+// Handle zero args: Show status & help
+if (process.argv.length <= 2) {
+  printHeader();
+  const config = getConfig();
+  if (!config.apiKey) {
+    console.log(chalk.yellow("Welcome to the Ryuk CLI. You are currently not signed in."));
+    console.log(chalk.dim("Run 'ryuk login' to authenticate.\n"));
+  }
+}
 
 program.parse(process.argv);
