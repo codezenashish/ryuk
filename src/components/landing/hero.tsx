@@ -4,7 +4,7 @@
 import { ArrowRight } from "lucide-react";
 import SVGComponent from "./svg";
 import { InstallCopy } from "../client/install-copy";
-import AuthModal from "../common/auth-model";
+import AuthModal from "../common/AuthModal";
 import { useState, useEffect } from "react";
 import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
