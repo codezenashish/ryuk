@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-#  Ryuk CLI One-Line Shell Installer for Linux & macOS
+#  Ryuk CLI One-Line Shell Installer for Linux & macOS (Bash, Zsh, Fish)
 #  Usage: curl -fsSL https://raw.githubusercontent.com/codezenashish/devnest/main/install.sh | bash
 # ==============================================================================
 
 set -e
 
-# Styling Colors
 BOLD='\033[1m'
 CYAN='\033[0;36m'
 GREEN='\033[0;32m'
@@ -24,7 +23,6 @@ echo " |_| \_\\\\__,_|\__,_|_|\_\\"
 echo -e "${NC}"
 echo -e "${BOLD}Installing Ryuk CLI Tool...${NC}\n"
 
-# Step 1: Detect Operating System
 OS="$(uname -s)"
 case "${OS}" in
     Linux*)     PLATFORM="Linux";;
@@ -34,7 +32,6 @@ esac
 
 echo -e "${CYAN}ℹ Operating System:${NC} ${PLATFORM}"
 
-# Step 2: Check Node.js prerequisite
 if ! command -v node &> /dev/null; then
     echo -e "${RED}✖ Error: Node.js is not installed.${NC}"
     echo -e "${YELLOW}Please install Node.js (v18+) from https://nodejs.org and rerun this script.${NC}"
@@ -44,11 +41,36 @@ fi
 NODE_VERSION=$(node -v)
 echo -e "${GREEN}✔ Node.js detected:${NC} ${NODE_VERSION}"
 
-# Step 3: Install Ryuk CLI via npm global
-echo -e "\n${BOLD}📦 Installing Ryuk CLI...${NC}"
+# Install path setup (~/.local/bin is standard on Linux/macOS)
+INSTALL_DIR="$HOME/.local/bin"
+mkdir -p "$INSTALL_DIR"
 
-if command -v npm &> /dev/null; then
-    npm install -g ryuk-cli --silent 2>/dev/null || npm install -g landing 2>/dev/null || true
+# Also try pnpm link / npm link if inside repository
+if [ -f "package.json" ]; then
+    if command -v pnpm &> /dev/null; then
+        pnpm link --global 2>/dev/null || true
+    elif command -v npm &> /dev/null; then
+        npm link 2>/dev/null || true
+    fi
+fi
+
+# Fallback wrapper in ~/.local/bin/ryuk
+cat << 'EOF' > "$INSTALL_DIR/ryuk"
+#!/usr/bin/env bash
+if [ -f "$HOME/Desktop/dev-nest/cli/index.ts" ]; then
+    exec npx tsx "$HOME/Desktop/dev-nest/cli/index.ts" "$@"
+elif [ -f "$HOME/.ryuk/cli/index.js" ]; then
+    exec node "$HOME/.ryuk/cli/index.js" "$@"
+else
+    exec npx -y ryuk-cli "$@"
+fi
+EOF
+
+chmod +x "$INSTALL_DIR/ryuk"
+
+# Try copying symlink to /usr/local/bin if writable
+if [ -w "/usr/local/bin" ]; then
+    cp "$INSTALL_DIR/ryuk" /usr/local/bin/ryuk 2>/dev/null || true
 fi
 
 echo -e "\n------------------------------------------------------------"

@@ -31,6 +31,19 @@ interface BookmarkSaveResponse {
   error?: string;
 }
 
+interface BookmarkListResponse {
+  count: number;
+  bookmarks: Array<{
+    id: string;
+    title: string;
+    url: string;
+    description?: string | null;
+    category?: { name: string } | null;
+    createdAt: string;
+  }>;
+  error?: string;
+}
+
 const CONFIG_FILE = path.join(os.homedir(), ".ryukrc");
 const DEFAULT_HOST = process.env.RYUK_SERVER_URL || "http://localhost:3000";
 
@@ -230,6 +243,63 @@ program
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : String(err);
       console.error(chalk.red.bold("\n✖ Failed to add bookmark:"), chalk.red(errorMsg));
+      process.exit(1);
+    }
+  });
+
+/**
+ * Command: ryuk list / ryuk ls
+ */
+program
+  .command("list")
+  .alias("ls")
+  .description("List all saved bookmarks in your Ryuk account")
+  .action(async () => {
+    try {
+      const config = getConfig();
+
+      if (!config.apiKey) {
+        console.log(chalk.yellow("\n⚠️  No API Key found. Please run 'ryuk login' first."));
+        process.exit(1);
+      }
+
+      const host = config.serverUrl || DEFAULT_HOST;
+
+      console.log(chalk.blue("\n📚 Fetching your Ryuk bookmarks..."));
+
+      const res = await fetch(`${host}/api/bookmark/external`, {
+        headers: {
+          Authorization: `Bearer ${config.apiKey}`,
+        },
+      });
+
+      if (!res.ok) {
+        const errJson = (await res.json().catch(() => ({}))) as { error?: string };
+        throw new Error(errJson.error || `Server responded with status ${res.status}`);
+      }
+
+      const data = (await res.json()) as BookmarkListResponse;
+
+      console.log(chalk.bold.green(`\n📌 Total Bookmarks: ${data.count || 0}\n`));
+
+      if (!data.bookmarks || data.bookmarks.length === 0) {
+        console.log(chalk.dim("   No bookmarks saved yet. Use 'ryuk add [url]' to save your first link!\n"));
+        return;
+      }
+
+      data.bookmarks.forEach((item, index) => {
+        const catName = item.category?.name ? ` [${item.category.name}]` : "";
+        console.log(
+          chalk.cyan(`${index + 1}. `) +
+            chalk.bold.white(item.title) +
+            chalk.yellow(catName)
+        );
+        console.log(chalk.dim(`   URL: ${item.url}`));
+        console.log("");
+      });
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      console.error(chalk.red.bold("\n✖ Failed to fetch bookmarks:"), chalk.red(errorMsg));
       process.exit(1);
     }
   });

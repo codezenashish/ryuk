@@ -21,7 +21,6 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ apiKey: user?.apiKey || null });
   } catch (error) {
-    console.error("GET /api/user/api-key error:", error);
     return NextResponse.json({ error: "Failed to fetch API key" }, { status: 500 });
   }
 }
@@ -46,7 +45,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ apiKey: updatedUser.apiKey });
   } catch (error) {
-    console.error("POST /api/user/api-key error:", error);
     return NextResponse.json({ error: "Failed to generate API key" }, { status: 500 });
   }
 }
