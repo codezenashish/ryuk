@@ -61,10 +61,32 @@ export default function AuthModal({
     setSocialLoading(provider);
 
     try {
-      await signIn.social({
+      const res = await signIn.social({
         provider,
         callbackURL: "/dashboard",
       });
+
+      if (res?.error) {
+        console.error(`${provider} sign-in error:`, res.error);
+        setError(
+          res.error.message ||
+            `Unable to start ${provider} sign-in. Please try again.`
+        );
+        setSocialLoading(null);
+        return;
+      }
+
+      // Better Auth normally follows this URL through its redirect plugin.
+      // Navigate explicitly as a fallback so the modal cannot remain loading
+      // when the plugin is unavailable or a browser blocks the redirect.
+      const redirectUrl = res?.data?.url;
+      if (redirectUrl) {
+        window.location.assign(redirectUrl);
+        return;
+      }
+
+      setError(`Unable to start ${provider} sign-in. Please try again.`);
+      setSocialLoading(null);
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error ? err.message : `Failed to sign in with ${provider}`;
