@@ -9,22 +9,23 @@ export async function GET(req: NextRequest) {
       headers: await headers(),
     });
 
-    let userId = session?.user?.id;
-    if (!userId) {
-      const firstUser = await db.user.findFirst();
-      if (firstUser) userId = firstUser.id;
-    }
-
-    if (!userId) {
-      return NextResponse.json({ categories: [] });
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "Unauthorized. Please sign in." },
+        { status: 401 }
+      );
     }
 
     const categories = await db.category.findMany({
-      where: { userId },
-      orderBy: { createdAt: "asc" },
+      where: {
+        userId: session.user.id,
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
     });
 
-    return NextResponse.json({ categories });
+    return NextResponse.json({ categories }, { status: 200 });
   } catch (error) {
     console.error("GET /api/category error:", error);
     return NextResponse.json(
@@ -40,13 +41,7 @@ export async function POST(req: NextRequest) {
       headers: await headers(),
     });
 
-    let userId = session?.user?.id;
-    if (!userId) {
-      const firstUser = await db.user.findFirst();
-      if (firstUser) userId = firstUser.id;
-    }
-
-    if (!userId) {
+    if (!session?.user?.id) {
       return NextResponse.json(
         { error: "Unauthorized. Please sign in." },
         { status: 401 }
@@ -56,7 +51,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { name, color, icon } = body;
 
-    if (!name) {
+    if (!name || typeof name !== "string" || !name.trim()) {
       return NextResponse.json(
         { error: "Category name is required" },
         { status: 400 }
@@ -65,10 +60,10 @@ export async function POST(req: NextRequest) {
 
     const category = await db.category.create({
       data: {
-        name,
+        name: name.trim(),
         color: color || "#6366F1",
         icon: icon || "Folder01Icon",
-        userId,
+        userId: session.user.id,
       },
     });
 

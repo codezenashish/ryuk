@@ -100,10 +100,20 @@ export default function AuthModal({
 
         if (res?.error) {
           setError(res.error.message || "Failed to create account. Email may already exist.");
-        } else {
-          handleClose();
-          router.push("/dashboard");
+          setEmailLoading(false);
+          return;
         }
+
+        // Auto sign in & redirect using Next.js App Router
+        await signIn.email({
+          email: email.trim(),
+          password,
+          callbackURL: "/dashboard",
+        });
+
+        handleClose();
+        router.push("/dashboard");
+        router.refresh();
       } else {
         const res = await signIn.email({
           email: email.trim(),
@@ -113,16 +123,18 @@ export default function AuthModal({
 
         if (res?.error) {
           setError(res.error.message || "Invalid email or password.");
-        } else {
-          handleClose();
-          router.push("/dashboard");
+          setEmailLoading(false);
+          return;
         }
+
+        handleClose();
+        router.push("/dashboard");
+        router.refresh();
       }
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error ? err.message : "An unexpected error occurred. Please try again.";
       setError(errorMessage);
-    } finally {
       setEmailLoading(false);
     }
   };
