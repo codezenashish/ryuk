@@ -1,7 +1,7 @@
 import { createAuthClient } from "better-auth/react";
 
-export const authClient = createAuthClient({
-  baseURL: process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_APP_URL,
-});
+// Let Better Auth use the current browser origin. This keeps auth requests on
+// the active app instance in local development, preview deployments, and prod.
+export const authClient = createAuthClient();
 
 export const { signIn, signUp, useSession, signOut, updateUser } = authClient;
