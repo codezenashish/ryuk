@@ -79,7 +79,7 @@ export default function AuthModal({
       // Better Auth normally follows this URL through its redirect plugin.
       // Navigate explicitly as a fallback so the modal cannot remain loading
       // when the plugin is unavailable or a browser blocks the redirect.
-      const redirectUrl = res?.data?.url;
+      const redirectUrl = res.data?.url;
       if (redirectUrl) {
         window.location.assign(redirectUrl);
         return;
