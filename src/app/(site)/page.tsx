@@ -2,6 +2,7 @@ import { Footer } from "@/components/landing/footer";
 import { Hero } from "@/components/landing/hero";
 import { Nav } from "@/components/landing/nav";
 import { WhyGrid } from "@/components/landing/why";
+import { CliSection } from "@/components/landing/cli";
 
 export default function Page() {
   return (
@@ -9,6 +10,7 @@ export default function Page() {
       <Nav />
       <Hero />
       <WhyGrid />
+      <CliSection />
       <Footer />
     </main>
   );

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Terminal, Copy, Check } from 'lucide-react'
 
-const installCommand = 'npm install -g ryuk'
+const installCommand = 'npm i -g ryuk'
 
 export function InstallCopy() {
   const [copied, setCopied] = useState(false)
@@ -14,7 +14,7 @@ export function InstallCopy() {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
       window.dispatchEvent(
-        new CustomEvent('avatune:toast', {
+        new CustomEvent('ryuk:toast', {
           detail: `Copied ${installCommand}`,
         }),
       )

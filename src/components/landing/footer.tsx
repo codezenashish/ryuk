@@ -41,22 +41,22 @@ export function Footer() {
             <Link href="/" className="mb-4 flex items-center gap-3 text-ink">
               {/*<Image
                 src="/favicon.png"
-                alt="VYRN"
+                alt="Ryuk"
                 width={32}
                 height={32}
                 className="rounded-md"
               />*/}
               <span className="font-display text-[26px] font-medium tracking-[-0.025em]">
-                VYRN
+                Ryuk
               </span>
             </Link>
             <p className="mt-2 max-w-[36ch] text-sm text-ink-3">
               One place for everything you build — notes, habits, bookmarks,
-              sketches, and snippets.
+              CLI, sketches, and snippets.
             </p>
             <div className="mt-6 flex gap-2">
               <a
-                href="https://twitter.com/vyrnapp"
+                href="https://twitter.com/ryukapp"
                 target="_blank"
                 rel="noreferrer"
                 className={socialButtonClass}
@@ -74,7 +74,7 @@ export function Footer() {
                 <span className="sr-only">X (Twitter)</span>
               </a>
               <a
-                href="https://instagram.com/vyrnapp"
+                href="https://instagram.com/ryukapp"
                 target="_blank"
                 rel="noreferrer"
                 className={socialButtonClass}
@@ -124,7 +124,7 @@ export function Footer() {
           ))}
         </div>
         <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line pt-6 font-code text-[11px] tracking-[0.06em] text-ink-4">
-          <span>VYRN · v1.0 · 2026</span>
+          <span>Ryuk · v1.0 · 2026</span>
           <span>
             <a href="https://ashishchoudhary.dev/" target="_blank">Developed by Ashish.dev</a>
           </span>
