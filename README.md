@@ -145,12 +145,12 @@ End-users can install the Ryuk CLI globally without cloning the repository.
 
 #### Linux / macOS
 ```bash
-curl -fsSL https://raw.githubusercontent.com/codezenashish/devnest/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/codezenashish/ryuk/main/install.sh | bash
 ```
 
 #### Windows (PowerShell)
 ```powershell
-iwr -useb https://raw.githubusercontent.com/codezenashish/devnest/main/install.ps1 | iex
+iwr -useb https://raw.githubusercontent.com/codezenashish/ryuk/main/install.ps1 | iex
 ```
 
 ### Local Development Installation

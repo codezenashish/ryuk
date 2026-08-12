@@ -2,7 +2,7 @@
 
 # ==============================================================================
 #  Ryuk CLI One-Line Shell Installer for Linux & macOS (Bash, Zsh, Fish)
-#  Usage: curl -fsSL https://raw.githubusercontent.com/codezenashish/devnest/main/install.sh | bash
+#  Usage: curl -fsSL https://raw.githubusercontent.com/codezenashish/ryuk/main/install.sh | bash
 # ==============================================================================
 
 set -e

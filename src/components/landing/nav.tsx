@@ -38,7 +38,7 @@ export function Nav() {
 
         <div className="flex items-center gap-2">
           <a
-            href="https://github.com/codezenashish/devnest"
+            href="https://github.com/codezenashish/ryuk"
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-2 rounded-md border border-line-2 px-3 py-1.5 font-code text-xs text-ink-2 hover:border-line-strong hover:text-ink"

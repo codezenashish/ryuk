@@ -2,7 +2,7 @@
 
 # ==============================================================================
 #  Ryuk CLI Standalone Installer (Installs into ~/.ryuk/bin & configures PATH)
-#  Usage: curl -fsSL https://raw.githubusercontent.com/codezenashish/devnest/main/install-standalone.sh | bash
+#  Usage: curl -fsSL https://raw.githubusercontent.com/codezenashish/ryuk/main/install-standalone.sh | bash
 # ==============================================================================
 
 set -e
