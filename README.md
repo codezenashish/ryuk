@@ -198,22 +198,34 @@ ryuk add https://nextjs.org
 ryuk add https://tailwindcss.com --title "Tailwind CSS" --category "Development"
 ```
 
-#### Listing Bookmarks
+#### Unified Search Switcher
 ```bash
-# List all bookmarks
-ryuk list
-
-# Limit listed bookmarks count
-ryuk list --limit 10
+# Interactive menu asking whether to search Bookmarks or Notes
+ryuk search
 ```
 
-#### Managing Notes
+#### Bookmark Commands
 ```bash
+# Direct live fuzzy search for bookmarks only
+ryuk bookmark search
+
+# Add a bookmark
+ryuk add https://nextjs.org
+
+# List saved bookmarks
+ryuk list
+```
+
+#### Notes & Code Snippets Commands
+```bash
+# Direct live fuzzy search for notes & snippets only
+ryuk notes search
+
+# Create a new note or code snippet
+ryuk notes add "Deployment Checklist"
+
 # List saved notes
 ryuk notes list
-
-# Create a quick note
-ryuk notes add "Deployment Checklist" --content "1. Run migrations 2. Check env variables"
 ```
 
 ---
