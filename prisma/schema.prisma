@@ -141,11 +141,12 @@ model Tag {
 }
 
 model Note {
-    id        String  @id @default(cuid())
-    title     String  @default("Untitled Note")
-    content   String  @db.Text
-    language  String? @default("plaintext") // For Code Snippets (js, py, etc.)
-    isSnippet Boolean @default(false)
+    id        String   @id @default(cuid())
+    title     String   @default("Untitled Note")
+    content   String   @db.Text
+    language  String?  @default("plaintext")
+    isSnippet Boolean  @default(false)
+    tags      String[] @default([])
 
     userId String
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
