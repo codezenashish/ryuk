@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -54,6 +55,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "API key is required" }, { status: 401 });
     }
 
+    // Rate Limiting Protection (Max 30 POST requests per minute per API key)
+    const rateLimit = checkRateLimit(`note_post_${apiKey}`, 30, 60 * 1000);
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: "Too many requests. Rate limit exceeded (Max 30 notes/min)." },
+        { status: 429 }
+      );
+    }
+
     const user = await db.user.findFirst({ where: { apiKey } });
     if (!user) {
       return NextResponse.json({ error: "Invalid API key" }, { status: 401 });
@@ -65,6 +75,14 @@ export async function POST(req: NextRequest) {
     if (!content || typeof content !== "string" || !content.trim()) {
       return NextResponse.json(
         { error: "Note content is required" },
+        { status: 400 }
+      );
+    }
+
+    // Input Length Validation (Max 100KB note content limit)
+    if (content.length > 100000) {
+      return NextResponse.json(
+        { error: "Note content length exceeds 100KB limit." },
         { status: 400 }
       );
     }

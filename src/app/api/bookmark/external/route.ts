@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -55,6 +56,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "API key is required" }, { status: 401 });
     }
 
+    // Rate Limiting Protection (Max 30 POST requests per minute per API key)
+    const rateLimit = checkRateLimit(`bm_post_${apiKey}`, 30, 60 * 1000);
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: "Too many requests. Rate limit exceeded (Max 30 bookmarks/min)." },
+        { status: 429 }
+      );
+    }
+
     const user = await db.user.findFirst({ where: { apiKey } });
 
     if (!user) {
@@ -67,6 +77,14 @@ export async function POST(req: NextRequest) {
     if (!title || !url) {
       return NextResponse.json(
         { error: "Title and URL are required" },
+        { status: 400 }
+      );
+    }
+
+    // Input Length Validation
+    if (title.length > 300 || url.length > 2048) {
+      return NextResponse.json(
+        { error: "Title (max 300 chars) or URL (max 2048 chars) length limit exceeded." },
         { status: 400 }
       );
     }
