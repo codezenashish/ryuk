@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useBookmarkStore } from "@/store/useBookmarkStore";
 import { BookmarkGrid } from "@/features/bookmarks/components/bookmark-grid";
 import { CategoryFilter } from "@/features/bookmarks/components/category-filter";
@@ -36,19 +36,21 @@ export default function BookmarksPage() {
   }, []);
 
   // Filter Bookmarks by search query (from nav) and category
-  const filteredBookmarks = bookmarks.filter((b) => {
-    const matchesCategory = selectedCategoryId
-      ? b.category?.id === selectedCategoryId
-      : true;
-    const matchesSearch = searchQuery
-      ? b.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        b.url.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        b.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        b.tags?.some((t) => t.name.toLowerCase().includes(searchQuery.toLowerCase()))
-      : true;
+  const filteredBookmarks = useMemo(() => {
+    return bookmarks.filter((b) => {
+      const matchesCategory = selectedCategoryId
+        ? b.category?.id === selectedCategoryId
+        : true;
+      const matchesSearch = searchQuery
+        ? b.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          b.url.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          b.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          b.tags?.some((t) => t.name.toLowerCase().includes(searchQuery.toLowerCase()))
+        : true;
 
-    return matchesCategory && matchesSearch;
-  });
+      return matchesCategory && matchesSearch;
+    });
+  }, [bookmarks, selectedCategoryId, searchQuery]);
 
   const handleSaveBookmark = (data: {
     title: string;

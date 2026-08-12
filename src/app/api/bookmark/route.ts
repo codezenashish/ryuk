@@ -4,18 +4,15 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import * as cheerio from "cheerio";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
-    let userId = session?.user?.id;
-    if (!userId) {
-      const firstUser = await db.user.findFirst();
-      if (firstUser) userId = firstUser.id;
-    }
-
+    const userId = session?.user?.id;
     if (!userId) {
       return NextResponse.json({ bookmarks: [], isGuest: true });
     }
@@ -45,11 +42,7 @@ export async function POST(req: NextRequest) {
       headers: await headers(),
     });
 
-    let userId = session?.user?.id;
-    if (!userId) {
-      const firstUser = await db.user.findFirst();
-      if (firstUser) userId = firstUser.id;
-    }
+    const userId = session?.user?.id;
 
     if (!userId) {
       return NextResponse.json(
@@ -102,21 +95,36 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Auto-fetch description if missing
+    // Stream & Auto-fetch description if missing (max 30KB)
     let finalDescription = description ? description.trim() : null;
     if (!finalDescription) {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 1500);
+        const timeoutId = setTimeout(() => controller.abort(), 1800);
         const res = await fetch(formattedUrl, {
           signal: controller.signal,
           headers: { "User-Agent": "Mozilla/5.0" },
         });
         clearTimeout(timeoutId);
 
-        if (res.ok) {
-          const text = await res.text();
-          const $ = cheerio.load(text.slice(0, 30000));
+        if (res.ok && res.body) {
+          const reader = res.body.getReader();
+          let chunks = "";
+          let receivedBytes = 0;
+          const maxBytes = 30000;
+
+          while (receivedBytes < maxBytes) {
+            const { done, value } = await reader.read();
+            if (done || !value) break;
+            chunks += new TextDecoder().decode(value);
+            receivedBytes += value.byteLength;
+            if (chunks.includes("</head>") || chunks.includes("</HEAD>")) {
+              reader.cancel();
+              break;
+            }
+          }
+
+          const $ = cheerio.load(chunks);
           const metaDesc =
             $('meta[name="description"]').attr("content") ||
             $('meta[property="og:description"]').attr("content") ||

@@ -4,6 +4,8 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { randomBytes } from "crypto";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     const session = await auth.api.getSession({

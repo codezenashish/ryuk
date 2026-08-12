@@ -77,6 +77,8 @@ export function AddBookmarkModal({
       return;
     }
 
+    const abortController = new AbortController();
+
     const timer = setTimeout(() => {
       let formatted = url.trim();
       if (!/^https?:\/\//i.test(formatted)) {
@@ -89,17 +91,20 @@ export function AddBookmarkModal({
         if (domain && domain.includes(".")) {
           setFavicon(`https://www.google.com/s2/favicons?domain=${domain}&sz=128`);
           setFavError(false);
-          handleFetchMetadata(formatted);
+          handleFetchMetadata(formatted, abortController.signal);
         }
       } catch {}
     }, 550);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      abortController.abort();
+    };
   }, [url]);
 
   if (!isOpen || !mounted) return null;
 
-  const handleFetchMetadata = async (urlToFetch?: string) => {
+  const handleFetchMetadata = async (urlToFetch?: string, signal?: AbortSignal) => {
     const targetUrl = urlToFetch || url;
     if (!targetUrl || targetUrl.trim().length < 4) return;
 
@@ -111,7 +116,8 @@ export function AddBookmarkModal({
     try {
       setIsFetchingMeta(true);
       const res = await fetch(
-        `/api/bookmark/metadata?url=${encodeURIComponent(formattedUrl)}`
+        `/api/bookmark/metadata?url=${encodeURIComponent(formattedUrl)}`,
+        { signal }
       );
       if (res.ok) {
         const data = await res.json();
@@ -123,7 +129,8 @@ export function AddBookmarkModal({
           setFavError(false);
         }
       }
-    } catch (err) {
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === "AbortError") return;
       console.error("Error fetching metadata:", err);
     } finally {
       setIsFetchingMeta(false);
