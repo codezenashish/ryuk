@@ -120,6 +120,7 @@ model Category {
     updatedAt DateTime @updatedAt
 
     @@index([userId])
+    @@index([userId, name])
     @@map("category")
 }
 
