@@ -99,17 +99,25 @@ export default function AuthModal({
         });
 
         if (res?.error) {
-          setError(res.error.message || "Failed to create account. Email may already exist.");
+          console.error("SignUp error:", res.error);
+          setError(res.error.message || `Sign up failed (${res.error.statusText || res.error.status || "Server error"})`);
           setEmailLoading(false);
           return;
         }
 
         // Auto sign in & redirect using Next.js App Router
-        await signIn.email({
+        const signInRes = await signIn.email({
           email: email.trim(),
           password,
           callbackURL: "/dashboard",
         });
+
+        if (signInRes?.error) {
+          console.error("SignIn after SignUp error:", signInRes.error);
+          setError(signInRes.error.message || "Account created, but auto sign-in failed. Please click Sign In.");
+          setEmailLoading(false);
+          return;
+        }
 
         handleClose();
         router.push("/dashboard");
@@ -122,6 +130,7 @@ export default function AuthModal({
         });
 
         if (res?.error) {
+          console.error("SignIn error:", res.error);
           setError(res.error.message || "Invalid email or password.");
           setEmailLoading(false);
           return;
