@@ -1,0 +1,173 @@
+import {
+  pgTable,
+  text,
+  timestamp,
+  boolean,
+  uniqueIndex,
+  index,
+} from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
+
+// ==========================================
+// USERS TABLE (Synced with Supabase Auth ID)
+// ==========================================
+export const users = pgTable("user", {
+  id: text("id").primaryKey(), // Stores Supabase Auth UUID (e.g., auth.uid())
+  name: text("name"),
+  email: text("email").notNull().unique(),
+  image: text("image"),
+  apiKey: text("apiKey").unique(),
+  createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt", { mode: "date" })
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()),
+});
+
+// ==========================================
+// CATEGORIES TABLE
+// ==========================================
+export const categories = pgTable(
+  "category",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    name: text("name").notNull(),
+    color: text("color").default("#6366F1").notNull(),
+    icon: text("icon").default("RiFolder5Line").notNull(),
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt", { mode: "date" })
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index("category_user_id_idx").on(table.userId),
+    index("category_user_id_name_idx").on(table.userId, table.name),
+  ]
+);
+
+// ==========================================
+// BOOKMARKS TABLE
+// ==========================================
+export const bookmarks = pgTable(
+  "bookmark",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    title: text("title").notNull(),
+    url: text("url").notNull(),
+    description: text("description"),
+    favicon: text("favicon"),
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    categoryId: text("categoryId").references(() => categories.id, {
+      onDelete: "set null",
+    }),
+    createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt", { mode: "date" })
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index("bookmark_user_id_idx").on(table.userId),
+    index("bookmark_category_id_idx").on(table.categoryId),
+  ]
+);
+
+// ==========================================
+// TAGS TABLE
+// ==========================================
+export const tags = pgTable(
+  "tag",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    name: text("name").notNull(),
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
+  },
+  (table) => [
+    uniqueIndex("tag_name_user_id_key").on(table.name, table.userId),
+    index("tag_user_id_idx").on(table.userId),
+  ]
+);
+
+// ==========================================
+// NOTES TABLE
+// ==========================================
+export const notes = pgTable(
+  "note",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    title: text("title").default("Untitled Note").notNull(),
+    content: text("content").notNull(),
+    language: text("language").default("plaintext"),
+    isSnippet: boolean("isSnippet").default(false).notNull(),
+    tags: text("tags").array().default([]).notNull(),
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt", { mode: "date" })
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [index("note_user_id_idx").on(table.userId)]
+);
+
+// ==========================================
+// DRIZZLE RELATIONS
+// ==========================================
+export const usersRelations = relations(users, ({ many }) => ({
+  bookmarks: many(bookmarks),
+  categories: many(categories),
+  tags: many(tags),
+  notes: many(notes),
+}));
+
+export const categoriesRelations = relations(categories, ({ one, many }) => ({
+  user: one(users, {
+    fields: [categories.userId],
+    references: [users.id],
+  }),
+  bookmarks: many(bookmarks),
+}));
+
+export const bookmarksRelations = relations(bookmarks, ({ one }) => ({
+  user: one(users, {
+    fields: [bookmarks.userId],
+    references: [users.id],
+  }),
+  category: one(categories, {
+    fields: [bookmarks.categoryId],
+    references: [categories.id],
+  }),
+}));
+
+export const tagsRelations = relations(tags, ({ one }) => ({
+  user: one(users, {
+    fields: [tags.userId],
+    references: [users.id],
+  }),
+}));
+
+export const notesRelations = relations(notes, ({ one }) => ({
+  user: one(users, {
+    fields: [notes.userId],
+    references: [users.id],
+  }),
+}));

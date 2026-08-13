@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
+import { useUser } from "@/providers/auth-provider";
 import { UserAvatar } from "@/components/common/user-avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SearchBar } from "@/components/common/search-bar";
