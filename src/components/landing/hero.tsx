@@ -6,7 +6,7 @@ import SVGComponent from "./svg";
 import { InstallCopy } from "../client/install-copy";
 import AuthModal from "../common/AuthModal";
 import { useState, useEffect } from "react";
-import { useAuth } from "@clerk/nextjs";
+import { useAuth } from "@/providers/auth-provider";
 import { useRouter } from "next/navigation";
 
 const stats = [
@@ -24,7 +24,7 @@ export function Hero() {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       if (params.get("auth") === "required" && !isSignedIn) {
-        setIsAuthOpen(true);
+        setTimeout(() => setIsAuthOpen(true), 0);
       }
     }
   }, [isSignedIn]);

@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useSession, updateUser, useSignOut } from "@/lib/auth-client";
 import { Avatar } from "@avatune/react";
 import theme from "@avatune/yanliu-theme/react";
-import { useRouter } from "next/navigation";
 import {
   User,
   RefreshCw,
@@ -25,7 +24,6 @@ const avatarPresets = {
 };
 
 export default function SettingPage() {
-  const router = useRouter();
   const { data: session, isPending } = useSession();
   const signOut = useSignOut();
 
@@ -41,25 +39,30 @@ export default function SettingPage() {
 
   useEffect(() => {
     if (session?.user) {
-      setName(session.user.name || "");
+      setName((prev) => prev || session.user.name || "");
       setAvatarSeed(
-        session.user.image || session.user.email || session.user.name || "ryuk-seed"
+        (prev) =>
+          prev ||
+          session.user.image ||
+          session.user.email ||
+          session.user.name ||
+          "ryuk-seed"
       );
-      fetchApiKey();
-    }
-  }, [session]);
 
-  const fetchApiKey = async () => {
-    try {
-      const res = await fetch("/api/user/api-key");
-      if (res.ok) {
-        const data = await res.json();
-        setApiKey(data.apiKey);
-      }
-    } catch {
-      // Ignore error
+      const loadKey = async () => {
+        try {
+          const res = await fetch("/api/user/api-key");
+          if (res.ok) {
+            const data = await res.json();
+            setApiKey(data.apiKey);
+          }
+        } catch {
+          // Ignore error
+        }
+      };
+      loadKey();
     }
-  };
+  }, [session?.user?.id, session?.user?.name, session?.user?.image, session?.user?.email]);
 
   const handleGenerateKey = async () => {
     setIsGeneratingKey(true);
