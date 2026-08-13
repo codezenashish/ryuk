@@ -68,7 +68,7 @@ export default function DashboardRightbar() {
 
       {/* Shortcuts */}
       <div className="mt-auto border-t border-line pt-4">
-        <button className="w-full py-2 px-3 rounded-lg border border-line-2 bg-paper-3 hover:bg-paper-card text-ink text-xs font-medium transition flex items-center justify-center gap-2">
+        <button className="w-full py-2 px-3 rounded-lg border border-line-2 bg-paper-3 hover:bg-paper-card text-ink text-xs font-medium transition flex items-center justify-center gap-2 cursor-pointer">
           <span>+ Quick Action</span>
         </button>
       </div>

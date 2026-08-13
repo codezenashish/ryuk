@@ -57,7 +57,7 @@ export default function NotesRightbar() {
 
       {/* Create Note */}
       <div className="mt-auto border-t border-line pt-4">
-        <button className="w-full py-2 px-3 rounded-lg border border-purple-500/40 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 text-xs font-medium transition flex items-center justify-center gap-2">
+        <button className="w-full py-2 px-3 rounded-lg border border-purple-500/40 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 text-xs font-medium transition flex items-center justify-center gap-2 cursor-pointer">
           <span>+ Create New Note</span>
         </button>
       </div>

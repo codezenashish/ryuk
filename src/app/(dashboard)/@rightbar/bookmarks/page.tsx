@@ -66,7 +66,7 @@ export default function BookmarksRightbar() {
 
       {/* Quick Add */}
       <div className="mt-auto border-t border-line pt-4">
-        <button className="w-full py-2 px-3 rounded-lg border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs font-medium transition flex items-center justify-center gap-2">
+        <button className="w-full py-2 px-3 rounded-lg border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs font-medium transition flex items-center justify-center gap-2 cursor-pointer">
           <span>+ Add Bookmark URL</span>
         </button>
       </div>
