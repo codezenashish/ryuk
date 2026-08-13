@@ -47,6 +47,9 @@ importers:
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
+      cli-spinners:
+        specifier: ^3.4.0
+        version: 3.4.0
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -92,6 +95,9 @@ importers:
       next-themes:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      ora:
+        specifier: ^5.4.1
+        version: 5.4.1
       pg:
         specifier: ^8.22.0
         version: 8.22.0
@@ -150,6 +156,9 @@ importers:
       drizzle-kit:
         specifier: ^0.31.10
         version: 0.31.10
+      esbuild:
+        specifier: ^0.28.2
+        version: 0.28.2
       eslint:
         specifier: ^9
         version: 9.39.5(jiti@2.7.0)
@@ -2541,6 +2550,10 @@ packages:
   cli-spinners@2.9.2:
     resolution: {integrity: sha512-ywqV+5MmyL4E7ybXgKys4DugZbX0FC6LnwrhjuykIjnK9k8OQacQ7axGKnjDXWNhns0xot3bZI5h55H8yo9cJg==}
     engines: {node: '>=6'}
+
+  cli-spinners@3.4.0:
+    resolution: {integrity: sha512-bXfOC4QcT1tKXGorxL3wbJm6XJPDqEnij2gQ2m7ESQuE+/z9YFIWnl/5RpTiKWbMq3EVKR4fRLJGn6DVfu0mpw==}
+    engines: {node: '>=18.20'}
 
   cli-width@3.0.0:
     resolution: {integrity: sha512-FxqpkPPwu1HjuN93Omfm4h8uIanXofW0RxVEW3k5RKx+mJJYSthzNhp32Kzxxy3YAEZ/Dc/EWN1vZRY0+kOhbw==}
@@ -7690,6 +7703,8 @@ snapshots:
       restore-cursor: 5.1.0
 
   cli-spinners@2.9.2: {}
+
+  cli-spinners@3.4.0: {}
 
   cli-width@3.0.0: {}
 

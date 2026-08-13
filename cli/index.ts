@@ -3,12 +3,22 @@ import inquirer from "inquirer";
 import autocompletePrompt from "inquirer-autocomplete-prompt";
 import fuzzy from "fuzzy";
 import chalk from "chalk";
+import ora from "ora";
+import cliSpinners from "cli-spinners";
 import fs from "fs";
 import path from "path";
 import os from "os";
 import { exec } from "child_process";
 
 inquirer.registerPrompt("autocomplete", autocompletePrompt);
+
+function createSpinner(text: string) {
+  return ora({
+    text,
+    spinner: cliSpinners.dots,
+    color: "cyan",
+  });
+}
 
 interface RyukConfig {
   apiKey?: string;
@@ -194,6 +204,7 @@ async function handleBookmarkSearch(initialQuery?: string) {
   if (cache.bookmarks && Date.now() - cache.bookmarks.timestamp < CACHE_TTL_MS) {
     data = cache.bookmarks.data;
   } else {
+    const spinner = createSpinner("Fetching bookmarks...").start();
     try {
       const res = await fetch(`${host}/api/bookmark/external`, {
         headers: { Authorization: `Bearer ${config.apiKey}` },
@@ -201,8 +212,12 @@ async function handleBookmarkSearch(initialQuery?: string) {
       if (res.ok) {
         data = (await res.json()) as BookmarkListResponse;
         saveCache({ bookmarks: { timestamp: Date.now(), data } });
+        spinner.stop();
+      } else {
+        spinner.fail("Failed to fetch bookmarks.");
       }
     } catch {
+      spinner.stop();
       data = cache.bookmarks?.data || null;
     }
   }
@@ -305,6 +320,7 @@ async function handleNotesSearch(initialQuery?: string) {
   if (cache.notes && Date.now() - cache.notes.timestamp < CACHE_TTL_MS) {
     data = cache.notes.data;
   } else {
+    const spinner = createSpinner("Fetching notes...").start();
     try {
       const res = await fetch(`${host}/api/note/external`, {
         headers: { Authorization: `Bearer ${config.apiKey}` },
@@ -312,8 +328,12 @@ async function handleNotesSearch(initialQuery?: string) {
       if (res.ok) {
         data = (await res.json()) as NoteListResponse;
         saveCache({ notes: { timestamp: Date.now(), data } });
+        spinner.stop();
+      } else {
+        spinner.fail("Failed to fetch notes.");
       }
     } catch {
+      spinner.stop();
       data = cache.notes?.data || null;
     }
   }
@@ -433,11 +453,14 @@ program
       const apiKey = answers.apiKey.trim();
       const serverUrl = answers.serverUrl.trim().replace(/\/$/, "");
 
+      const spinner = createSpinner("Validating API key...").start();
+
       const valRes = await fetch(`${serverUrl}/api/bookmark/external`, {
         headers: { Authorization: `Bearer ${apiKey}` },
       });
 
       if (!valRes.ok) {
+        spinner.fail(chalk.red("Authentication failed"));
         const valData = (await valRes.json().catch(() => ({}))) as { error?: string };
         throw new Error(valData.error || "Invalid API Key or server unreachable.");
       }
@@ -447,10 +470,10 @@ program
       const userName = valData.user?.name || "User";
 
       saveConfig({ apiKey, serverUrl, email: userEmail, name: userName });
+      invalidateCache();
 
-      console.log(
-        chalk.green.bold(`\n✔ Authenticated as ${chalk.cyan(userEmail)}\n`)
-      );
+      spinner.succeed(chalk.green.bold(`Authenticated as ${chalk.cyan(userEmail)}`));
+      console.log("");
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : String(err);
       console.error(chalk.red("\n✖ Login failed:"), errorMsg, "\n");
