@@ -20,7 +20,9 @@ import {
   SecurityIcon,
 } from "@hugeicons/core-free-icons";
 
-export const iconRegistry: Record<string, any> = {
+type IconType = typeof Folder01Icon;
+
+export const iconRegistry: Record<string, IconType> = {
   Folder01Icon,
   CodeIcon,
   Code: CodeIcon,
@@ -45,7 +47,7 @@ export const iconRegistry: Record<string, any> = {
   SecurityIcon,
 };
 
-export function getIconComponent(iconName?: string) {
+export function getIconComponent(iconName?: string): IconType {
   if (!iconName) return Folder01Icon;
   return iconRegistry[iconName] || Folder01Icon;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { BookmarkItem, BookmarkCategory } from "../components/bookmark-card";
 import { bookmarkSchema } from "@/lib/validations/bookmark";
@@ -48,10 +48,16 @@ export function AddBookmarkModal({
   const addCategory = useBookmarkStore((state) => state.addCategory);
 
   useEffect(() => {
-    setMounted(true);
+    const timer = setTimeout(() => setMounted(true), 0);
+    return () => clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
+  const [prevInitialData, setPrevInitialData] = useState(initialData);
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+
+  if (initialData !== prevInitialData || isOpen !== prevIsOpen) {
+    setPrevInitialData(initialData);
+    setPrevIsOpen(isOpen);
     if (initialData) {
       setTitle(initialData.title || "");
       setUrl(initialData.url || "");
@@ -69,11 +75,49 @@ export function AddBookmarkModal({
     }
     setFavError(false);
     setErrors({});
-  }, [initialData, isOpen]);
+  }
+
+  const handleFetchMetadata = useCallback(
+    async (urlToFetch?: string, signal?: AbortSignal) => {
+      const targetUrl = urlToFetch || url;
+      if (!targetUrl || targetUrl.trim().length < 4) return;
+
+      let formattedUrl = targetUrl.trim();
+      if (!/^https?:\/\//i.test(formattedUrl)) {
+        formattedUrl = `https://${formattedUrl}`;
+      }
+
+      try {
+        setIsFetchingMeta(true);
+        const res = await fetch(
+          `/api/bookmark/metadata?url=${encodeURIComponent(formattedUrl)}`,
+          { signal }
+        );
+        if (res.ok) {
+          const data = await res.json();
+          if (data.title && (!title || title.trim() === "")) {
+            setTitle(data.title);
+          }
+          if (data.favicon) {
+            setFavicon(data.favicon);
+            setFavError(false);
+          }
+        }
+      } catch (err: unknown) {
+        if (err instanceof Error && err.name === "AbortError") return;
+        console.error("Error fetching metadata:", err);
+      } finally {
+        setIsFetchingMeta(false);
+      }
+    },
+    [url, title]
+  );
 
   useEffect(() => {
     if (!url || url.trim().length < 4) {
-      if (!initialData?.favicon) setFavicon("");
+      if (!initialData?.favicon) {
+        setTimeout(() => setFavicon(""), 0);
+      }
       return;
     }
 
@@ -100,42 +144,9 @@ export function AddBookmarkModal({
       clearTimeout(timer);
       abortController.abort();
     };
-  }, [url]);
+  }, [url, initialData?.favicon, handleFetchMetadata]);
 
   if (!isOpen || !mounted) return null;
-
-  const handleFetchMetadata = async (urlToFetch?: string, signal?: AbortSignal) => {
-    const targetUrl = urlToFetch || url;
-    if (!targetUrl || targetUrl.trim().length < 4) return;
-
-    let formattedUrl = targetUrl.trim();
-    if (!/^https?:\/\//i.test(formattedUrl)) {
-      formattedUrl = `https://${formattedUrl}`;
-    }
-
-    try {
-      setIsFetchingMeta(true);
-      const res = await fetch(
-        `/api/bookmark/metadata?url=${encodeURIComponent(formattedUrl)}`,
-        { signal }
-      );
-      if (res.ok) {
-        const data = await res.json();
-        if (data.title && (!title || title.trim() === "")) {
-          setTitle(data.title);
-        }
-        if (data.favicon) {
-          setFavicon(data.favicon);
-          setFavError(false);
-        }
-      }
-    } catch (err: unknown) {
-      if (err instanceof Error && err.name === "AbortError") return;
-      console.error("Error fetching metadata:", err);
-    } finally {
-      setIsFetchingMeta(false);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
