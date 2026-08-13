@@ -1,5 +1,4 @@
-import { auth as clerkAuth, currentUser } from "@clerk/nextjs/server";
-import { db } from "@/lib/prisma";
+import { getCurrentDbUser } from "@/lib/clerk";
 
 export type SessionUser = {
   id: string;
@@ -13,36 +12,14 @@ export type SessionPayload = {
 } | null;
 
 async function getClerkSessionUser(): Promise<SessionUser | null> {
-  const { userId } = await clerkAuth();
-  if (!userId) return null;
-
-  const clerkUser = await currentUser();
-  if (!clerkUser) return null;
-
-  const email = clerkUser.primaryEmailAddress?.emailAddress ?? null;
-  const name =
-    [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(" ") ||
-    clerkUser.username ||
-    email ||
-    "User";
-
-  const image = clerkUser.imageUrl || null;
-
-  const existingDbUser = await db.user.findUnique({ where: { id: userId } });
-  if (existingDbUser) {
-    return {
-      id: existingDbUser.id,
-      email: existingDbUser.email,
-      name: existingDbUser.name,
-      image: existingDbUser.image,
-    };
-  }
+  const dbUser = await getCurrentDbUser();
+  if (!dbUser) return null;
 
   return {
-    id: userId,
-    email,
-    name,
-    image,
+    id: dbUser.id,
+    email: dbUser.email,
+    name: dbUser.name,
+    image: dbUser.image,
   };
 }
 
