@@ -32,7 +32,7 @@ model User {
 }
 
 // ==========================================
-// BETTER AUTH TABLES
+// AUTH TABLES (legacy — Clerk manages sessions externally)
 // ==========================================
 
 model Session {

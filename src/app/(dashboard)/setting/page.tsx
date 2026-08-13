@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession, updateUser, signOut } from "@/lib/auth-client";
+import { useSession, updateUser, useSignOut } from "@/lib/auth-client";
 import { Avatar } from "@avatune/react";
 import theme from "@avatune/yanliu-theme/react";
 import { useRouter } from "next/navigation";
@@ -27,6 +27,7 @@ const avatarPresets = {
 export default function SettingPage() {
   const router = useRouter();
   const { data: session, isPending } = useSession();
+  const signOut = useSignOut();
 
   const [name, setName] = useState("");
   const [avatarSeed, setAvatarSeed] = useState("");
@@ -110,13 +111,7 @@ export default function SettingPage() {
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
-      await signOut({
-        fetchOptions: {
-          onSuccess: () => {
-            router.push("/");
-          },
-        },
-      });
+      await signOut();
     } catch {
       // Ignore error
     } finally {
