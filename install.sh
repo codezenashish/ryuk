@@ -41,42 +41,48 @@ fi
 NODE_VERSION=$(node -v)
 echo -e "${GREEN}✔ Node.js detected:${NC} ${NODE_VERSION}"
 
-# Install path setup (~/.local/bin is standard on Linux/macOS)
+# Install directories
+RYUK_DIR="$HOME/.ryuk"
 INSTALL_DIR="$HOME/.local/bin"
+
+mkdir -p "$RYUK_DIR"
 mkdir -p "$INSTALL_DIR"
 
-# Also try pnpm link / npm link if inside repository
-if [ -f "package.json" ]; then
-    if command -v pnpm &> /dev/null; then
-        pnpm link --global 2>/dev/null || true
-    elif command -v npm &> /dev/null; then
-        npm link 2>/dev/null || true
-    fi
+RAW_URL="https://raw.githubusercontent.com/codezenashish/ryuk/main/dist/cli.js"
+
+echo -e "${CYAN}ℹ Installing Ryuk executable binary...${NC}"
+if [ -f "./dist/cli.js" ]; then
+    cp "./dist/cli.js" "$RYUK_DIR/cli.js"
+elif command -v curl &> /dev/null; then
+    curl -fsSL "$RAW_URL" -o "$RYUK_DIR/cli.js"
+elif command -v wget &> /dev/null; then
+    wget -qO "$RYUK_DIR/cli.js" "$RAW_URL"
+else
+    echo -e "${RED}✖ Error: curl or wget is required to download Ryuk.${NC}"
+    exit 1
 fi
 
-# Fallback wrapper in ~/.local/bin/ryuk
+chmod +x "$RYUK_DIR/cli.js"
+
+# Create executable wrapper in ~/.local/bin/ryuk
 cat << 'EOF' > "$INSTALL_DIR/ryuk"
 #!/usr/bin/env bash
-if [ -f "$HOME/Desktop/dev-nest/cli/index.ts" ]; then
-    exec npx --quiet tsx "$HOME/Desktop/dev-nest/cli/index.ts" "$@"
-elif [ -f "$HOME/.ryuk/cli/index.js" ]; then
-    exec node "$HOME/.ryuk/cli/index.js" "$@"
-else
-    exec npx --quiet -y ryuk-cli "$@"
-fi
+exec node "$HOME/.ryuk/cli.js" "$@"
 EOF
 
 chmod +x "$INSTALL_DIR/ryuk"
 
-# Try copying symlink to /usr/local/bin if writable
+# Try copying executable to /usr/local/bin if writable
 if [ -w "/usr/local/bin" ]; then
     cp "$INSTALL_DIR/ryuk" /usr/local/bin/ryuk 2>/dev/null || true
 fi
 
 echo -e "\n------------------------------------------------------------"
-echo -e "${BOLD}${GREEN}✨ Ryuk CLI Ready!${NC}"
+echo -e "${BOLD}${GREEN}✨ Ryuk CLI installed successfully!${NC}"
 echo -e "\n1. Authenticate with your Ryuk API Key:"
 echo -e "   ${BOLD}${CYAN}ryuk login${NC}\n"
 echo -e "2. Bookmark web pages directly from terminal:"
 echo -e "   ${BOLD}${CYAN}ryuk add https://nextjs.org${NC}\n"
+echo -e "3. Search bookmarks and notes:"
+echo -e "   ${BOLD}${CYAN}ryuk search${NC}\n"
 echo -e "------------------------------------------------------------"

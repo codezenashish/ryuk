@@ -24,13 +24,34 @@ if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
 $nodeVersion = node -v
 Write-Host "✔ Node.js detected: $nodeVersion" -ForegroundColor Green
 
-# Perform npm global installation
-Write-Host "`n📦 Installing Ryuk CLI globally..." -ForegroundColor Cyan
+# Prepare directories
+$ryukDir = "$env:USERPROFILE\.ryuk"
+$binDir = "$ryukDir\bin"
 
-try {
-    npm install -g ryuk-cli --silent
-} catch {
-    npm install -g landing
+if (-not (Test-Path $binDir)) {
+    New-Item -ItemType Directory -Path $binDir -Force | Out-Null
+}
+
+$rawUrl = "https://raw.githubusercontent.com/codezenashish/ryuk/main/dist/cli.js"
+$cliPath = "$ryukDir\cli.js"
+
+Write-Host "`n📦 Installing Ryuk CLI executable..." -ForegroundColor Cyan
+
+if (Test-Path ".\dist\cli.js") {
+    Copy-Item ".\dist\cli.js" -Destination $cliPath -Force
+} else {
+    Invoke-WebRequest -Uri $rawUrl -OutFile $cliPath -UseBasicParsing
+}
+
+# Create Windows Batch wrapper (ryuk.cmd)
+$cmdContent = "@echo off`r`nnode `"$cliPath`" %*"
+Set-Content -Path "$binDir\ryuk.cmd" -Value $cmdContent -Encoding ASCII
+
+# Add ~/.ryuk/bin to User Environment Path if missing
+$userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+if ($userPath -notlike "*$binDir*") {
+    [Environment]::SetEnvironmentVariable("Path", "$userPath;$binDir", "User")
+    Write-Host "ℹ Added $binDir to User PATH environment variable." -ForegroundColor Cyan
 }
 
 Write-Host "`n------------------------------------------------------------" -ForegroundColor DarkGray
@@ -39,4 +60,6 @@ Write-Host "`n1. Authenticate with your Ryuk API Key:" -ForegroundColor White
 Write-Host "   ryuk login" -ForegroundColor Cyan
 Write-Host "`n2. Bookmark web pages directly from terminal:" -ForegroundColor White
 Write-Host "   ryuk add https://nextjs.org" -ForegroundColor Cyan
+Write-Host "`n3. Search bookmarks & notes:" -ForegroundColor White
+Write-Host "   ryuk search" -ForegroundColor Cyan
 Write-Host "------------------------------------------------------------`n" -ForegroundColor DarkGray

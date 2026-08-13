@@ -34,20 +34,32 @@ if ! command -v node &> /dev/null; then
     exit 1
 fi
 
+NODE_VERSION=$(node -v)
+echo -e "${GREEN}✔ Node.js detected:${NC} ${NODE_VERSION}"
+
 # Prepare Directory
 mkdir -p "$BIN_DIR"
 
-# Download / Clone CLI source into ~/.ryuk
-echo -e "${CYAN}ℹ Installing Ryuk CLI files to ${BIN_DIR}...${NC}"
+RAW_URL="https://raw.githubusercontent.com/codezenashish/ryuk/main/dist/cli.js"
+
+echo -e "${CYAN}ℹ Installing Ryuk CLI binary to ${RYUK_DIR}...${NC}"
+if [ -f "./dist/cli.js" ]; then
+    cp "./dist/cli.js" "$RYUK_DIR/cli.js"
+elif command -v curl &> /dev/null; then
+    curl -fsSL "$RAW_URL" -o "$RYUK_DIR/cli.js"
+elif command -v wget &> /dev/null; then
+    wget -qO "$RYUK_DIR/cli.js" "$RAW_URL"
+else
+    echo -e "${RED}✖ Error: curl or wget is required to download Ryuk.${NC}"
+    exit 1
+fi
+
+chmod +x "$RYUK_DIR/cli.js"
 
 # Create executable wrapper script in ~/.ryuk/bin/ryuk
 cat << 'EOF' > "$BIN_DIR/ryuk"
 #!/usr/bin/env bash
-if command -v npx &> /dev/null; then
-    npx -y tsx "$HOME/.ryuk/cli/index.ts" "$@"
-else
-    node "$HOME/.ryuk/cli/index.js" "$@"
-fi
+exec node "$HOME/.ryuk/cli.js" "$@"
 EOF
 
 chmod +x "$BIN_DIR/ryuk"
@@ -80,4 +92,5 @@ echo -e "  ${BOLD}${CYAN}source ${SHELL_CONFIG:-~/.bashrc}${NC}\n"
 echo -e "Then run:"
 echo -e "  ${BOLD}${CYAN}ryuk login${NC}"
 echo -e "  ${BOLD}${CYAN}ryuk add https://example.com${NC}"
+echo -e "  ${BOLD}${CYAN}ryuk search${NC}"
 echo -e "------------------------------------------------------------"
