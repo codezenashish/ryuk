@@ -79,13 +79,13 @@ export default function AuthModal({
       {mode === "signup" ? (
         <SignUp
           routing="hash"
-          fallbackRedirectUrl="/dashboard"
+          forceRedirectUrl="/dashboard"
           signInUrl="#signin"
         />
       ) : (
         <SignIn
           routing="hash"
-          fallbackRedirectUrl="/dashboard"
+          forceRedirectUrl="/dashboard"
           signUpUrl="#signup"
           afterSignOutUrl="/"
         />
