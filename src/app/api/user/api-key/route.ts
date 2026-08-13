@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
-import { getCurrentDbUser } from "@/lib/clerk";
+import { getOrCreateDbUser } from "@/lib/syncUser";
 import { randomBytes } from "crypto";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
-    const user = await getCurrentDbUser();
+    const user = await getOrCreateDbUser();
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -19,9 +19,9 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(_req: NextRequest) {
   try {
-    const user = await getCurrentDbUser();
+    const user = await getOrCreateDbUser();
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -40,4 +40,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Failed to generate API key" }, { status: 500 });
   }
 }
-

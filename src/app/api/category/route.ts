@@ -1,17 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { getOrCreateDbUser } from "@/lib/syncUser";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
+    const user = await getOrCreateDbUser();
 
-    if (!session?.user?.id) {
+    if (!user) {
       return NextResponse.json(
         { error: "Unauthorized. Please sign in." },
         { status: 401 }
@@ -20,7 +17,7 @@ export async function GET(req: NextRequest) {
 
     const categories = await db.category.findMany({
       where: {
-        userId: session.user.id,
+        userId: user.id,
       },
       orderBy: {
         createdAt: "asc",
@@ -39,11 +36,9 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
+    const user = await getOrCreateDbUser();
 
-    if (!session?.user?.id) {
+    if (!user) {
       return NextResponse.json(
         { error: "Unauthorized. Please sign in." },
         { status: 401 }
@@ -65,7 +60,7 @@ export async function POST(req: NextRequest) {
         name: name.trim(),
         color: color || "#6366F1",
         icon: icon || "Folder01Icon",
-        userId: session.user.id,
+        userId: user.id,
       },
     });
 

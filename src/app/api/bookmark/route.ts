@@ -1,24 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { getOrCreateDbUser } from "@/lib/syncUser";
 import * as cheerio from "cheerio";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    const userId = session?.user?.id;
-    if (!userId) {
+    const user = await getOrCreateDbUser();
+    if (!user) {
       return NextResponse.json({ bookmarks: [], isGuest: true });
     }
 
     const bookmarks = await db.bookmark.findMany({
-      where: { userId },
+      where: { userId: user.id },
       include: {
         category: true,
         tags: true,
@@ -38,13 +33,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    const userId = session?.user?.id;
-
-    if (!userId) {
+    const user = await getOrCreateDbUser();
+    if (!user) {
       return NextResponse.json(
         { error: "Unauthorized. Please sign in or create a user." },
         { status: 401 }
@@ -68,19 +58,19 @@ export async function POST(req: NextRequest) {
 
     // Resolve Category ID (find by ID -> find by Name -> Auto Create)
     let validCategoryId: string | null = null;
-    
+
     if (categoryId) {
       const existingCategory = await db.category.findUnique({
         where: { id: categoryId },
       });
-      if (existingCategory) {
+      if (existingCategory && existingCategory.userId === user.id) {
         validCategoryId = existingCategory.id;
       }
     }
 
     if (!validCategoryId && categoryName) {
       const existingByName = await db.category.findFirst({
-        where: { name: categoryName.trim(), userId },
+        where: { name: categoryName.trim(), userId: user.id },
       });
       if (existingByName) {
         validCategoryId = existingByName.id;
@@ -88,7 +78,7 @@ export async function POST(req: NextRequest) {
         const createdCat = await db.category.create({
           data: {
             name: categoryName.trim(),
-            userId,
+            userId: user.id,
           },
         });
         validCategoryId = createdCat.id;
@@ -145,7 +135,7 @@ export async function POST(req: NextRequest) {
         url: formattedUrl,
         description: finalDescription,
         favicon: favicon || null,
-        userId,
+        userId: user.id,
         categoryId: validCategoryId,
       },
       include: {

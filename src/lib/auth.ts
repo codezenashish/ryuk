@@ -1,4 +1,4 @@
-import { getCurrentDbUser } from "@/lib/clerk";
+import { getOrCreateDbUser } from "@/lib/syncUser";
 
 export type SessionUser = {
   id: string;
@@ -12,7 +12,7 @@ export type SessionPayload = {
 } | null;
 
 async function getClerkSessionUser(): Promise<SessionUser | null> {
-  const dbUser = await getCurrentDbUser();
+  const dbUser = await getOrCreateDbUser();
   if (!dbUser) return null;
 
   return {

@@ -1,18 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { getOrCreateDbUser } from "@/lib/syncUser";
 
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session?.user?.id) {
+    const user = await getOrCreateDbUser();
+    if (!user) {
       return NextResponse.json(
         { error: "Unauthorized. Please sign in." },
         { status: 401 }
@@ -28,7 +24,7 @@ export async function PATCH(
       where: { id },
     });
 
-    if (!existing || existing.userId !== session.user.id) {
+    if (!existing || existing.userId !== user.id) {
       return NextResponse.json(
         { error: "Bookmark not found or access denied" },
         { status: 404 }
@@ -66,15 +62,12 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session?.user?.id) {
+    const user = await getOrCreateDbUser();
+    if (!user) {
       return NextResponse.json(
         { error: "Unauthorized. Please sign in." },
         { status: 401 }
@@ -88,7 +81,7 @@ export async function DELETE(
       where: { id },
     });
 
-    if (!existing || existing.userId !== session.user.id) {
+    if (!existing || existing.userId !== user.id) {
       return NextResponse.json(
         { error: "Bookmark not found or access denied" },
         { status: 404 }

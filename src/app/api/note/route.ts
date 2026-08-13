@@ -1,23 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { getOrCreateDbUser } from "@/lib/syncUser";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    const userId = session?.user?.id;
-    if (!userId) {
+    const user = await getOrCreateDbUser();
+    if (!user) {
       return NextResponse.json({ notes: [], isGuest: true });
     }
 
     const notes = await db.note.findMany({
-      where: { userId },
+      where: { userId: user.id },
       orderBy: { updatedAt: "desc" },
     });
 
@@ -33,12 +28,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    const userId = session?.user?.id;
-    if (!userId) {
+    const user = await getOrCreateDbUser();
+    if (!user) {
       return NextResponse.json(
         { error: "Unauthorized. Please sign in." },
         { status: 401 }
@@ -61,7 +52,7 @@ export async function POST(req: NextRequest) {
         content: content.trim(),
         language: language || "plaintext",
         isSnippet: Boolean(isSnippet),
-        userId,
+        userId: user.id,
       },
     });
 
