@@ -1,5 +1,3 @@
-#!/usr/bin/env tsx
-
 import { program } from "commander";
 import inquirer from "inquirer";
 import autocompletePrompt from "inquirer-autocomplete-prompt";
@@ -103,6 +101,48 @@ function clearConfig(): void {
   }
 }
 
+const CACHE_FILE = path.join(os.homedir(), ".ryuk_cache.json");
+const CACHE_TTL_MS = 60 * 1000;
+
+interface CacheData {
+  bookmarks?: { timestamp: number; data: BookmarkListResponse };
+  notes?: { timestamp: number; data: NoteListResponse };
+}
+
+function getCache(): CacheData {
+  try {
+    if (fs.existsSync(CACHE_FILE)) {
+      return JSON.parse(fs.readFileSync(CACHE_FILE, "utf8")) as CacheData;
+    }
+  } catch {
+    // Ignore parse error
+  }
+  return {};
+}
+
+function saveCache(update: Partial<CacheData>): void {
+  try {
+    const existing = getCache();
+    fs.writeFileSync(
+      CACHE_FILE,
+      JSON.stringify({ ...existing, ...update }),
+      "utf8"
+    );
+  } catch {
+    // Ignore write error
+  }
+}
+
+function invalidateCache(): void {
+  try {
+    if (fs.existsSync(CACHE_FILE)) {
+      fs.unlinkSync(CACHE_FILE);
+    }
+  } catch {
+    // Ignore unlink error
+  }
+}
+
 function printHeader(title?: string): void {
   const config = getConfig();
   const userDisplay = config.email ? chalk.cyan(config.email) : chalk.dim("Not signed in");
@@ -148,16 +188,26 @@ async function handleBookmarkSearch(initialQuery?: string) {
   const config = ensureAuth();
   const host = config.serverUrl || DEFAULT_HOST;
 
-  const res = await fetch(`${host}/api/bookmark/external`, {
-    headers: { Authorization: `Bearer ${config.apiKey}` },
-  });
+  const cache = getCache();
+  let data: BookmarkListResponse | null = null;
 
-  if (!res.ok) {
-    throw new Error(`Server responded with status ${res.status}`);
+  if (cache.bookmarks && Date.now() - cache.bookmarks.timestamp < CACHE_TTL_MS) {
+    data = cache.bookmarks.data;
+  } else {
+    try {
+      const res = await fetch(`${host}/api/bookmark/external`, {
+        headers: { Authorization: `Bearer ${config.apiKey}` },
+      });
+      if (res.ok) {
+        data = (await res.json()) as BookmarkListResponse;
+        saveCache({ bookmarks: { timestamp: Date.now(), data } });
+      }
+    } catch {
+      data = cache.bookmarks?.data || null;
+    }
   }
 
-  const data = (await res.json()) as BookmarkListResponse;
-  const bookmarks = data.bookmarks || [];
+  const bookmarks = data?.bookmarks || [];
 
   if (bookmarks.length === 0) {
     console.log(chalk.yellow("No bookmarks found. Use 'ryuk add [url]' to save bookmarks.\n"));
@@ -198,7 +248,9 @@ async function handleBookmarkSearch(initialQuery?: string) {
       },
     ];
 
-    const { selectedBookmark } = (await inquirer.prompt(searchPrompt as any)) as {
+    const { selectedBookmark } = (await inquirer.prompt(
+      searchPrompt as unknown as Parameters<typeof inquirer.prompt>[0]
+    )) as {
       selectedBookmark: BookmarkItem;
     };
 
@@ -247,16 +299,26 @@ async function handleNotesSearch(initialQuery?: string) {
   const config = ensureAuth();
   const host = config.serverUrl || DEFAULT_HOST;
 
-  const res = await fetch(`${host}/api/note/external`, {
-    headers: { Authorization: `Bearer ${config.apiKey}` },
-  });
+  const cache = getCache();
+  let data: NoteListResponse | null = null;
 
-  if (!res.ok) {
-    throw new Error(`Server responded with status ${res.status}`);
+  if (cache.notes && Date.now() - cache.notes.timestamp < CACHE_TTL_MS) {
+    data = cache.notes.data;
+  } else {
+    try {
+      const res = await fetch(`${host}/api/note/external`, {
+        headers: { Authorization: `Bearer ${config.apiKey}` },
+      });
+      if (res.ok) {
+        data = (await res.json()) as NoteListResponse;
+        saveCache({ notes: { timestamp: Date.now(), data } });
+      }
+    } catch {
+      data = cache.notes?.data || null;
+    }
   }
 
-  const data = (await res.json()) as NoteListResponse;
-  const notes = data.notes || [];
+  const notes = data?.notes || [];
 
   if (notes.length === 0) {
     console.log(chalk.yellow("No notes found. Use 'ryuk notes add' to create notes.\n"));
@@ -294,7 +356,9 @@ async function handleNotesSearch(initialQuery?: string) {
       },
     ];
 
-    const { selectedNote } = (await inquirer.prompt(searchPrompt as any)) as {
+    const { selectedNote } = (await inquirer.prompt(
+      searchPrompt as unknown as Parameters<typeof inquirer.prompt>[0]
+    )) as {
       selectedNote: NoteItem;
     };
 
