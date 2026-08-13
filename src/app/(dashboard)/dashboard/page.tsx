@@ -1,6 +1,6 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
+import { useUser } from "@/providers/auth-provider";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
