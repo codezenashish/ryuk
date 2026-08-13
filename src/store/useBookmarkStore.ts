@@ -49,7 +49,7 @@ const defaultBookmarks: BookmarkItem[] = [];
 
 export const useBookmarkStore = create<BookmarkStore>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       bookmarks: defaultBookmarks,
       categories: defaultCategories,
       isLoadingDb: false,

@@ -2,7 +2,7 @@
 
 import { BookmarkCard, BookmarkItem } from "./bookmark-card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Bookmark, Plus, SearchX } from "lucide-react";
+import { Bookmark, Plus } from "lucide-react";
 
 interface BookmarkGridProps {
   bookmarks: BookmarkItem[];

@@ -17,7 +17,6 @@ export default function BookmarksPage() {
     layoutMode,
     isAddModalOpen,
     editingBookmark,
-    isLoadingDb,
     fetchBookmarksFromDb,
     fetchCategoriesFromDb,
     addBookmark,
@@ -33,7 +32,7 @@ export default function BookmarksPage() {
   useEffect(() => {
     fetchBookmarksFromDb();
     fetchCategoriesFromDb();
-  }, []);
+  }, [fetchBookmarksFromDb, fetchCategoriesFromDb]);
 
   // Filter Bookmarks by search query (from nav) and category
   const filteredBookmarks = useMemo(() => {

@@ -3,8 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Avatar } from "@avatune/react";
-import theme from "@avatune/yanliu-theme/react";
 import { sidebar } from "./side-config";
 import SidebarTag from "./sidebar-tag";
 

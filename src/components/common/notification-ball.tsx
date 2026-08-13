@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Bell, Check, Sparkles } from "lucide-react";
+import { Bell, Check } from "lucide-react";
 
 export function NotificationBall() {
   const [isOpen, setIsOpen] = useState(false);

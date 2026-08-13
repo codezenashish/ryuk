@@ -644,6 +644,7 @@ bookmarkCmd
       }
 
       const result = (await saveRes.json()) as BookmarkSaveResponse;
+      invalidateCache();
 
       console.log(chalk.green.bold("\n✔ Bookmark saved successfully!"));
       console.log(chalk.dim(`  Title: ${result.bookmark?.title || finalTitle}`));
