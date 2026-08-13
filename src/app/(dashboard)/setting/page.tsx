@@ -37,32 +37,32 @@ export default function SettingPage() {
   const [isGeneratingKey, setIsGeneratingKey] = useState(false);
   const [keyCopied, setKeyCopied] = useState(false);
 
-  useEffect(() => {
-    if (session?.user) {
-      setName((prev) => prev || session.user.name || "");
-      setAvatarSeed(
-        (prev) =>
-          prev ||
-          session.user.image ||
-          session.user.email ||
-          session.user.name ||
-          "ryuk-seed"
-      );
+  const [hasInitializedForm, setHasInitializedForm] = useState(false);
+  if (session?.user && !hasInitializedForm) {
+    setHasInitializedForm(true);
+    setName(session.user.name || "");
+    setAvatarSeed(
+      session.user.image || session.user.email || session.user.name || "ryuk-seed"
+    );
+  }
 
-      const loadKey = async () => {
-        try {
-          const res = await fetch("/api/user/api-key");
-          if (res.ok) {
-            const data = await res.json();
-            setApiKey(data.apiKey);
-          }
-        } catch {
-          // Ignore error
+  const userId = session?.user?.id;
+  useEffect(() => {
+    if (!userId) return;
+
+    const loadKey = async () => {
+      try {
+        const res = await fetch("/api/user/api-key");
+        if (res.ok) {
+          const data = await res.json();
+          setApiKey(data.apiKey);
         }
-      };
-      loadKey();
-    }
-  }, [session?.user?.id, session?.user?.name, session?.user?.image, session?.user?.email]);
+      } catch {
+        // Ignore error
+      }
+    };
+    loadKey();
+  }, [userId]);
 
   const handleGenerateKey = async () => {
     setIsGeneratingKey(true);
