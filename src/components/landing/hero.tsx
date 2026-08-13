@@ -6,7 +6,7 @@ import SVGComponent from "./svg";
 import { InstallCopy } from "../client/install-copy";
 import AuthModal from "../common/AuthModal";
 import { useState, useEffect } from "react";
-import { useSession } from "@/lib/auth-client";
+import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
 const stats = [
@@ -17,20 +17,20 @@ const stats = [
 
 export function Hero() {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
-  const { data: session } = useSession();
+  const { isLoaded, isSignedIn } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
-      if (params.get("auth") === "required" && !session) {
+      if (params.get("auth") === "required" && !isSignedIn) {
         setIsAuthOpen(true);
       }
     }
-  }, [session]);
+  }, [isSignedIn]);
 
   const handleStartClick = () => {
-    if (session) {
+    if (isSignedIn) {
       router.push("/dashboard");
     } else {
       setIsAuthOpen(true);
@@ -58,6 +58,7 @@ export function Hero() {
             <div className="mt-9 flex flex-wrap items-center gap-3">
               <button
                 onClick={handleStartClick}
+                disabled={!isLoaded}
                 className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-ink bg-ink px-4 py-2.5 text-sm font-medium whitespace-nowrap text-paper transition hover:border-white hover:bg-white hover:text-ink active:translate-y-px"
               >
                 <span>Get started</span>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSession } from "@/lib/auth-client";
+import { useUser } from "@clerk/nextjs";
 import { UserAvatar } from "@/components/common/user-avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SearchBar } from "@/components/common/search-bar";
@@ -11,7 +11,7 @@ import { useBookmarkStore } from "@/store/useBookmarkStore";
 
 export function Nav() {
   const pathname = usePathname();
-  const { data: session, isPending } = useSession();
+  const { user, isLoaded } = useUser();
   const setSearchQuery = useBookmarkStore((state) => state.setSearchQuery);
 
   const pageTitle =
@@ -22,16 +22,16 @@ export function Nav() {
       : pathname.slice(1).charAt(0).toUpperCase() + pathname.slice(2);
 
   const userSeed =
-    session?.user?.image ||
-    session?.user?.email ||
-    session?.user?.name ||
+    user?.imageUrl ||
+    user?.primaryEmailAddress?.emailAddress ||
+    user?.fullName ||
     "guest@ryuk.dev";
 
   return (
     <div className="h-full w-full">
       {/* Mobile Nav */}
       <nav className="flex h-full items-center justify-between px-4 lg:hidden">
-        {isPending ? (
+        {!isLoaded ? (
           <Skeleton className="h-8 w-8 rounded-full bg-paper-3 border border-line" />
         ) : (
           <Link
@@ -61,7 +61,7 @@ export function Nav() {
         <div className="flex items-center gap-3">
           <NotificationBall />
 
-          {isPending ? (
+          {!isLoaded ? (
             <div className="flex items-center gap-2.5 rounded-full p-1 border border-line bg-paper-3 pr-3">
               <Skeleton className="h-7 w-7 rounded-full bg-paper-card" />
               <Skeleton className="h-3.5 w-20 rounded-md bg-paper-card" />
@@ -74,7 +74,7 @@ export function Nav() {
             >
               <UserAvatar seed={userSeed} size={30} />
               <span className="text-xs font-medium text-ink max-w-30 truncate">
-                {session?.user?.name || "User"}
+                {user?.fullName || user?.primaryEmailAddress?.emailAddress || "User"}
               </span>
             </Link>
           )}

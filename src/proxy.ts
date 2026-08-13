@@ -1,31 +1,24 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { getSessionCookie } from "better-auth/cookies";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-// Protected routes that require authentication
-const protectedRoutes = ["/dashboard", "/bookmarks", "/notes"];
+const isProtectedRoute = createRouteMatcher([
+  "/dashboard(.*)",
+  "/bookmarks(.*)",
+  "/notes(.*)",
+  "/setting(.*)",
+  "/settings(.*)",
+  "/api/bookmark(.*)",
+  "/api/category(.*)",
+  "/api/note(.*)",
+  "/api/user(.*)",
+]);
 
-export function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  const isProtectedRoute = protectedRoutes.some(
-    (route) => pathname === route || pathname.startsWith(`${route}/`)
-  );
-
-  if (isProtectedRoute) {
-    const sessionCookie = getSessionCookie(request);
-    if (!sessionCookie) {
-      const loginUrl = new URL("/", request.url);
-      loginUrl.searchParams.set("auth", "required");
-      return NextResponse.redirect(loginUrl);
-    }
-  }
-
-  return NextResponse.next();
-}
+export default clerkMiddleware(async (auth, request) => {
+  if (isProtectedRoute(request)) await auth.protect();
+});
 
 export const config = {
   matcher: [
    
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js)$).*)",
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
   ],
 };
