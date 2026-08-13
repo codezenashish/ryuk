@@ -2,7 +2,7 @@
 
 import { SignIn, SignUp } from "@clerk/nextjs";
 import { createPortal } from "react-dom";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -18,20 +18,47 @@ export default function AuthModal({
   const [mounted, setMounted] = useState(false);
   const [mode, setMode] = useState<"signin" | "signup">(defaultMode);
 
-  const syncHash = useCallback(() => {
-    const hash = window.location.hash;
-    if (hash.includes("signup")) setMode("signup");
-    else if (hash.includes("signin")) setMode("signin");
-  }, []);
-
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     if (!isOpen) return;
-    syncHash();
-    window.addEventListener("hashchange", syncHash);
-    return () => window.removeEventListener("hashchange", syncHash);
-  }, [isOpen, syncHash]);
+
+    const handleHashCheck = () => {
+      const hash = window.location.hash;
+      if (hash.includes("signup")) {
+        setMode("signup");
+      } else if (hash.includes("signin")) {
+        setMode("signin");
+      }
+    };
+
+    handleHashCheck();
+
+    const originalPush = history.pushState;
+    const originalReplace = history.replaceState;
+
+    history.pushState = function (...args) {
+      originalPush.apply(this, args);
+      handleHashCheck();
+    };
+
+    history.replaceState = function (...args) {
+      originalReplace.apply(this, args);
+      handleHashCheck();
+    };
+
+    window.addEventListener("hashchange", handleHashCheck);
+    window.addEventListener("popstate", handleHashCheck);
+    const timer = setInterval(handleHashCheck, 150);
+
+    return () => {
+      history.pushState = originalPush;
+      history.replaceState = originalReplace;
+      window.removeEventListener("hashchange", handleHashCheck);
+      window.removeEventListener("popstate", handleHashCheck);
+      clearInterval(timer);
+    };
+  }, [isOpen]);
 
   // Clean up hash when modal closes
   useEffect(() => {
