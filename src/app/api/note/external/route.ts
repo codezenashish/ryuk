@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/prisma";
+import { db } from "@/db";
+import { users, notes } from "@/db/schema";
+import { eq, desc } from "drizzle-orm";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
@@ -15,27 +17,29 @@ export async function GET(req: NextRequest) {
     }
 
     const apiKey = authHeader.substring(7).trim();
-    const user = await db.user.findFirst({ where: { apiKey } });
+    const user = await db.query.users.findFirst({
+      where: eq(users.apiKey, apiKey),
+    });
 
     if (!user) {
       return NextResponse.json({ error: "Invalid API key" }, { status: 401 });
     }
 
-    const notes = await db.note.findMany({
-      where: { userId: user.id },
-      orderBy: { updatedAt: "desc" },
+    const userNotes = await db.query.notes.findMany({
+      where: eq(notes.userId, user.id),
+      orderBy: [desc(notes.updatedAt)],
     });
 
     return NextResponse.json({
-      count: notes.length,
+      count: userNotes.length,
       user: {
         id: user.id,
         name: user.name,
         email: user.email,
       },
-      notes,
+      notes: userNotes,
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to fetch notes" }, { status: 500 });
   }
 }
@@ -64,7 +68,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const user = await db.user.findFirst({ where: { apiKey } });
+    const user = await db.query.users.findFirst({
+      where: eq(users.apiKey, apiKey),
+    });
     if (!user) {
       return NextResponse.json({ error: "Invalid API key" }, { status: 401 });
     }
@@ -87,15 +93,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const newNote = await db.note.create({
-      data: {
+    const [newNote] = await db
+      .insert(notes)
+      .values({
         title: title ? title.trim() : "Untitled Note",
         content: content.trim(),
         language: language || "plaintext",
         isSnippet: Boolean(isSnippet),
         userId: user.id,
-      },
-    });
+      })
+      .returning();
 
     return NextResponse.json(
       {
@@ -108,7 +115,7 @@ export async function POST(req: NextRequest) {
       },
       { status: 201 }
     );
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to save note" }, { status: 500 });
   }
 }

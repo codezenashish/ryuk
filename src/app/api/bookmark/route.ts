@@ -1,27 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/prisma";
+import { db } from "@/db";
+import { bookmarks, categories } from "@/db/schema";
+import { eq, and, desc } from "drizzle-orm";
 import { getOrCreateDbUser } from "@/lib/syncUser";
 import * as cheerio from "cheerio";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(_req: NextRequest) {
+export async function GET() {
   try {
     const user = await getOrCreateDbUser();
     if (!user) {
       return NextResponse.json({ bookmarks: [], isGuest: true });
     }
 
-    const bookmarks = await db.bookmark.findMany({
-      where: { userId: user.id },
-      include: {
+    const userBookmarks = await db.query.bookmarks.findMany({
+      where: eq(bookmarks.userId, user.id),
+      with: {
         category: true,
-        tags: true,
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: [desc(bookmarks.createdAt)],
     });
 
-    return NextResponse.json({ bookmarks, isGuest: false });
+    return NextResponse.json({ bookmarks: userBookmarks, isGuest: false });
   } catch (error) {
     console.error("GET /api/bookmark error:", error);
     return NextResponse.json(
@@ -60,8 +61,8 @@ export async function POST(req: NextRequest) {
     let validCategoryId: string | null = null;
 
     if (categoryId) {
-      const existingCategory = await db.category.findUnique({
-        where: { id: categoryId },
+      const existingCategory = await db.query.categories.findFirst({
+        where: eq(categories.id, categoryId),
       });
       if (existingCategory && existingCategory.userId === user.id) {
         validCategoryId = existingCategory.id;
@@ -69,18 +70,22 @@ export async function POST(req: NextRequest) {
     }
 
     if (!validCategoryId && categoryName) {
-      const existingByName = await db.category.findFirst({
-        where: { name: categoryName.trim(), userId: user.id },
+      const existingByName = await db.query.categories.findFirst({
+        where: and(
+          eq(categories.name, categoryName.trim()),
+          eq(categories.userId, user.id)
+        ),
       });
       if (existingByName) {
         validCategoryId = existingByName.id;
       } else {
-        const createdCat = await db.category.create({
-          data: {
+        const [createdCat] = await db
+          .insert(categories)
+          .values({
             name: categoryName.trim(),
             userId: user.id,
-          },
-        });
+          })
+          .returning();
         validCategoryId = createdCat.id;
       }
     }
@@ -129,18 +134,22 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const newBookmark = await db.bookmark.create({
-      data: {
+    const [inserted] = await db
+      .insert(bookmarks)
+      .values({
         title: title.trim(),
         url: formattedUrl,
         description: finalDescription,
         favicon: favicon || null,
         userId: user.id,
         categoryId: validCategoryId,
-      },
-      include: {
+      })
+      .returning();
+
+    const newBookmark = await db.query.bookmarks.findFirst({
+      where: eq(bookmarks.id, inserted.id),
+      with: {
         category: true,
-        tags: true,
       },
     });
 

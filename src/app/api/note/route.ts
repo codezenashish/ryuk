@@ -1,22 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/prisma";
+import { db } from "@/db";
+import { notes } from "@/db/schema";
+import { eq, desc } from "drizzle-orm";
 import { getOrCreateDbUser } from "@/lib/syncUser";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(_req: NextRequest) {
+export async function GET() {
   try {
     const user = await getOrCreateDbUser();
     if (!user) {
       return NextResponse.json({ notes: [], isGuest: true });
     }
 
-    const notes = await db.note.findMany({
-      where: { userId: user.id },
-      orderBy: { updatedAt: "desc" },
+    const userNotes = await db.query.notes.findMany({
+      where: eq(notes.userId, user.id),
+      orderBy: [desc(notes.updatedAt)],
     });
 
-    return NextResponse.json({ notes, isGuest: false });
+    return NextResponse.json({ notes: userNotes, isGuest: false });
   } catch (error) {
     console.error("GET /api/note error:", error);
     return NextResponse.json(
@@ -46,15 +48,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const newNote = await db.note.create({
-      data: {
+    const [newNote] = await db
+      .insert(notes)
+      .values({
         title: title ? title.trim() : "Untitled Note",
         content: content.trim(),
         language: language || "plaintext",
         isSnippet: Boolean(isSnippet),
         userId: user.id,
-      },
-    });
+      })
+      .returning();
 
     return NextResponse.json({ note: newNote }, { status: 201 });
   } catch (error) {

@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/prisma";
+import { db } from "@/db";
+import { categories } from "@/db/schema";
+import { eq, asc } from "drizzle-orm";
 import { getOrCreateDbUser } from "@/lib/syncUser";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(_req: NextRequest) {
+export async function GET() {
   try {
     const user = await getOrCreateDbUser();
 
@@ -15,16 +17,13 @@ export async function GET(_req: NextRequest) {
       );
     }
 
-    const categories = await db.category.findMany({
-      where: {
-        userId: user.id,
-      },
-      orderBy: {
-        createdAt: "asc",
-      },
-    });
+    const categoryList = await db
+      .select()
+      .from(categories)
+      .where(eq(categories.userId, user.id))
+      .orderBy(asc(categories.createdAt));
 
-    return NextResponse.json({ categories }, { status: 200 });
+    return NextResponse.json({ categories: categoryList }, { status: 200 });
   } catch (error) {
     console.error("GET /api/category error:", error);
     return NextResponse.json(
@@ -55,14 +54,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const category = await db.category.create({
-      data: {
+    const [category] = await db
+      .insert(categories)
+      .values({
         name: name.trim(),
         color: color || "#6366F1",
         icon: icon || "Folder01Icon",
         userId: user.id,
-      },
-    });
+      })
+      .returning();
 
     return NextResponse.json({ category }, { status: 201 });
   } catch (error) {

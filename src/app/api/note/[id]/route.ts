@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { db } from "@/db";
+import { notes } from "@/db/schema";
+import { eq } from "drizzle-orm";
+import { getOrCreateDbUser } from "@/lib/syncUser";
 
 export const dynamic = "force-dynamic";
 
@@ -10,11 +11,9 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
+    const user = await getOrCreateDbUser();
 
-    if (!session?.user?.id) {
+    if (!user) {
       return NextResponse.json(
         { error: "Unauthorized. Please sign in." },
         { status: 401 }
@@ -25,23 +24,27 @@ export async function PATCH(
     const body = await req.json();
     const { title, content, language, isSnippet } = body;
 
-    const existing = await db.note.findUnique({ where: { id } });
-    if (!existing || existing.userId !== session.user.id) {
+    const existing = await db.query.notes.findFirst({
+      where: eq(notes.id, id),
+    });
+    if (!existing || existing.userId !== user.id) {
       return NextResponse.json(
         { error: "Note not found or access denied" },
         { status: 404 }
       );
     }
 
-    const updatedNote = await db.note.update({
-      where: { id },
-      data: {
+    const [updatedNote] = await db
+      .update(notes)
+      .set({
         ...(title !== undefined && { title: title.trim() }),
         ...(content !== undefined && { content: content.trim() }),
         ...(language !== undefined && { language }),
         ...(isSnippet !== undefined && { isSnippet: Boolean(isSnippet) }),
-      },
-    });
+        updatedAt: new Date(),
+      })
+      .where(eq(notes.id, id))
+      .returning();
 
     return NextResponse.json({ note: updatedNote });
   } catch (error) {
@@ -58,11 +61,9 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
+    const user = await getOrCreateDbUser();
 
-    if (!session?.user?.id) {
+    if (!user) {
       return NextResponse.json(
         { error: "Unauthorized. Please sign in." },
         { status: 401 }
@@ -71,15 +72,17 @@ export async function DELETE(
 
     const { id } = await params;
 
-    const existing = await db.note.findUnique({ where: { id } });
-    if (!existing || existing.userId !== session.user.id) {
+    const existing = await db.query.notes.findFirst({
+      where: eq(notes.id, id),
+    });
+    if (!existing || existing.userId !== user.id) {
       return NextResponse.json(
         { error: "Note not found or access denied" },
         { status: 404 }
       );
     }
 
-    await db.note.delete({ where: { id } });
+    await db.delete(notes).where(eq(notes.id, id));
 
     return NextResponse.json({ success: true, id });
   } catch (error) {

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/prisma";
+import { db } from "@/db";
+import { users, bookmarks } from "@/db/schema";
+import { eq, desc } from "drizzle-orm";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
@@ -15,28 +17,30 @@ export async function GET(req: NextRequest) {
     }
 
     const apiKey = authHeader.substring(7).trim();
-    const user = await db.user.findFirst({ where: { apiKey } });
+    const user = await db.query.users.findFirst({
+      where: eq(users.apiKey, apiKey),
+    });
 
     if (!user) {
       return NextResponse.json({ error: "Invalid API key" }, { status: 401 });
     }
 
-    const bookmarks = await db.bookmark.findMany({
-      where: { userId: user.id },
-      include: { category: true },
-      orderBy: { createdAt: "desc" },
+    const userBookmarks = await db.query.bookmarks.findMany({
+      where: eq(bookmarks.userId, user.id),
+      with: { category: true },
+      orderBy: [desc(bookmarks.createdAt)],
     });
 
     return NextResponse.json({
-      count: bookmarks.length,
+      count: userBookmarks.length,
       user: {
         id: user.id,
         name: user.name,
         email: user.email,
       },
-      bookmarks,
+      bookmarks: userBookmarks,
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to fetch bookmarks" }, { status: 500 });
   }
 }
@@ -65,7 +69,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const user = await db.user.findFirst({ where: { apiKey } });
+    const user = await db.query.users.findFirst({
+      where: eq(users.apiKey, apiKey),
+    });
 
     if (!user) {
       return NextResponse.json({ error: "Invalid API key" }, { status: 401 });
@@ -94,25 +100,29 @@ export async function POST(req: NextRequest) {
       formattedUrl = `https://${formattedUrl}`;
     }
 
-    const newBookmark = await db.bookmark.create({
-      data: {
+    const [newBookmark] = await db
+      .insert(bookmarks)
+      .values({
         title: title.trim(),
         url: formattedUrl,
         description: description ? description.trim() : null,
         favicon: favicon || null,
         userId: user.id,
-      },
-    });
+      })
+      .returning();
 
-    return NextResponse.json({
-      bookmark: newBookmark,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
+    return NextResponse.json(
+      {
+        bookmark: newBookmark,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+        },
       },
-    }, { status: 201 });
-  } catch (error) {
+      { status: 201 }
+    );
+  } catch {
     return NextResponse.json({ error: "Failed to save bookmark" }, { status: 500 });
   }
 }

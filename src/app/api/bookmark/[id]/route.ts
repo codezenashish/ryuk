@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/prisma";
+import { db } from "@/db";
+import { bookmarks } from "@/db/schema";
+import { eq } from "drizzle-orm";
 import { getOrCreateDbUser } from "@/lib/syncUser";
 
 export async function PATCH(
@@ -20,8 +22,8 @@ export async function PATCH(
     const { title, url, description, categoryId, favicon } = body;
 
     // Check ownership
-    const existing = await db.bookmark.findUnique({
-      where: { id },
+    const existing = await db.query.bookmarks.findFirst({
+      where: eq(bookmarks.id, id),
     });
 
     if (!existing || existing.userId !== user.id) {
@@ -36,18 +38,22 @@ export async function PATCH(
       formattedUrl = `https://${formattedUrl}`;
     }
 
-    const updatedBookmark = await db.bookmark.update({
-      where: { id },
-      data: {
+    await db
+      .update(bookmarks)
+      .set({
         ...(title && { title: title.trim() }),
         ...(formattedUrl && { url: formattedUrl }),
         description: description !== undefined ? description : existing.description,
         favicon: favicon !== undefined ? favicon : existing.favicon,
         categoryId: categoryId !== undefined ? categoryId : existing.categoryId,
-      },
-      include: {
+        updatedAt: new Date(),
+      })
+      .where(eq(bookmarks.id, id));
+
+    const updatedBookmark = await db.query.bookmarks.findFirst({
+      where: eq(bookmarks.id, id),
+      with: {
         category: true,
-        tags: true,
       },
     });
 
@@ -77,8 +83,8 @@ export async function DELETE(
     const { id } = await params;
 
     // Check ownership
-    const existing = await db.bookmark.findUnique({
-      where: { id },
+    const existing = await db.query.bookmarks.findFirst({
+      where: eq(bookmarks.id, id),
     });
 
     if (!existing || existing.userId !== user.id) {
@@ -88,9 +94,7 @@ export async function DELETE(
       );
     }
 
-    await db.bookmark.delete({
-      where: { id },
-    });
+    await db.delete(bookmarks).where(eq(bookmarks.id, id));
 
     return NextResponse.json({ success: true, id });
   } catch (error) {
