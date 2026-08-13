@@ -1,73 +1,43 @@
-import { auth, currentUser } from "@clerk/nextjs/server";
-import { db } from "@/lib/prisma";
-import { randomBytes } from "crypto";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { db } from "@/db";
+import { users } from "@/db/schema";
 
-/**
- * Unified User Sync Helper for Clerk & Prisma PostgreSQL DB.
- * Ensures the logged-in Clerk user exists in the PostgreSQL User table,
- * automatically creating or updating the record with an API key if needed.
- */
 export async function getOrCreateDbUser() {
-  const { userId } = await auth();
-  if (!userId) return null;
+  const supabase = await createServerSupabaseClient();
+  const {
+    data: { user: supabaseUser },
+    error,
+  } = await supabase.auth.getUser();
 
-  // 1. Return existing DB user if already synced by Clerk userId
-  const existingById = await db.user.findUnique({ where: { id: userId } });
-  if (existingById) {
-    if (!existingById.apiKey) {
-      const apiKey = `ryuk_sk_${randomBytes(24).toString("hex")}`;
-      return db.user.update({
-        where: { id: userId },
-        data: { apiKey },
-      });
-    }
-    return existingById;
+  if (error || !supabaseUser) {
+    return null;
   }
-
-  // 2. Fetch active Clerk user details
-  const clerkUser = await currentUser();
-  if (!clerkUser) return null;
-
-  const email = clerkUser.primaryEmailAddress?.emailAddress;
-  if (!email) return null;
 
   const name =
-    [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(" ") ||
-    clerkUser.username ||
-    email;
-  const image = clerkUser.imageUrl || null;
-  const apiKey = `ryuk_sk_${randomBytes(24).toString("hex")}`;
+    supabaseUser.user_metadata?.full_name ||
+    supabaseUser.user_metadata?.name ||
+    supabaseUser.email?.split("@")[0] ||
+    "User";
+  const image = supabaseUser.user_metadata?.avatar_url || null;
+  const email = supabaseUser.email || "";
 
-  // 3. Safely adopt existing legacy user by email if present
-  const legacyUser = await db.user.findUnique({ where: { email } });
-  if (legacyUser) {
-    return db.user.update({
-      where: { email },
-      data: {
-        id: userId,
+  const [dbUser] = await db
+    .insert(users)
+    .values({
+      id: supabaseUser.id,
+      email,
+      name,
+      image,
+    })
+    .onConflictDoUpdate({
+      target: users.id,
+      set: {
+        email,
         name,
         image,
-        apiKey: legacyUser.apiKey || apiKey,
       },
-    });
-  }
+    })
+    .returning();
 
-  // 4. Create new user in PostgreSQL database
-  return db.user.create({
-    data: {
-      id: userId,
-      name,
-      email,
-      image,
-      apiKey,
-    },
-  });
-}
-
-/**
- * Helper to require active DB User ID or return null if unauthenticated.
- */
-export async function requireCurrentUserId(): Promise<string | null> {
-  const user = await getOrCreateDbUser();
-  return user?.id ?? null;
+  return dbUser;
 }

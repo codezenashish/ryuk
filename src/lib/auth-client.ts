@@ -1,60 +1,26 @@
-"use client";
-
-import { useSession as useClerkSession, useClerk } from "@clerk/nextjs";
+import { useAuth } from "@/providers/auth-provider";
+import { createClient } from "@/lib/supabase/client";
 
 export function useSession() {
-  const { isLoaded, session } = useClerkSession();
-
-  const user = session?.user ?? null;
-  const data =
-    isLoaded && user
-      ? {
-          user: {
-            id: user.id,
-            name: user.fullName || user.firstName || "User",
-            email: user.primaryEmailAddress?.emailAddress ?? "",
-            image: user.imageUrl ?? null,
-          },
-        }
-      : null;
-
+  const { user, session, isLoaded } = useAuth();
   return {
-    data,
+    data: session && user ? { user: { id: user.id, email: user.email, name: user.user_metadata?.full_name || user.email?.split("@")[0], image: user.user_metadata?.avatar_url } } : null,
     isPending: !isLoaded,
   };
 }
 
-export async function updateUser(_payload: { name?: string; image?: string } = {}) {
-  return { success: true };
+export async function updateUser(data: { name?: string; image?: string }) {
+  const supabase = createClient();
+  const { error } = await supabase.auth.updateUser({
+    data: {
+      full_name: data.name,
+      avatar_url: data.image,
+    },
+  });
+  if (error) throw error;
 }
 
-/**
- * Sign out using Clerk. Must be called from within a component that
- * has access to the ClerkProvider context (i.e. use the hook version
- * `useSignOut` below for components, or call `clerk.signOut()` directly).
- */
-export { useClerk };
-
-export async function signOut(options?: {
-  fetchOptions?: { onSuccess?: () => void };
-}) {
-  // This is a fallback for non-hook contexts.
-  // For proper Clerk sign-out, use the `useSignOut` hook below.
-  if (typeof window !== "undefined") {
-    window.location.href = "/";
-  }
-  options?.fetchOptions?.onSuccess?.();
-}
-
-/**
- * Hook that returns a proper Clerk-backed signOut function.
- * Use this inside React components instead of the plain `signOut` export.
- */
 export function useSignOut() {
-  const { signOut: clerkSignOut } = useClerk();
-
-  return async (options?: { fetchOptions?: { onSuccess?: () => void } }) => {
-    await clerkSignOut({ redirectUrl: "/" });
-    options?.fetchOptions?.onSuccess?.();
-  };
+  const { signOut } = useAuth();
+  return signOut;
 }
