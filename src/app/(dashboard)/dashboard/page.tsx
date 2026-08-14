@@ -5,13 +5,9 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useBookmarkStore } from "@/store/useBookmarkStore";
-import {
-  useBookmarksQuery,
-  useCategoriesQuery,
-  useCreateBookmarkMutation,
-  useUpdateBookmarkMutation,
-  useDeleteBookmarkMutation,
-} from "@/features/bookmarks/hooks/use-bookmark-queries";
+import { useBookmarks } from "@/hooks/use-bookmarks";
+import { useBookmarksRealtime } from "@/hooks/use-bookmarks-realtime";
+import { useCategoriesQuery } from "@/features/bookmarks/hooks/use-bookmark-queries";
 import { BookmarkGrid } from "@/features/bookmarks/components/bookmark-grid";
 import { CategoryFilter } from "@/features/bookmarks/components/category-filter";
 import { AddBookmarkModal } from "@/features/bookmarks/dialogs/add-bookmark-modal";
@@ -21,13 +17,21 @@ import { Plus, LayoutGrid, List } from "lucide-react";
 export default function DashboardPage() {
   const { isLoaded, isSignedIn, user } = useUser();
   const router = useRouter();
+  const userId = user?.id;
 
-  const { data: queryBookmarks, isLoading: isLoadingBookmarks } = useBookmarksQuery(isSignedIn);
+  // Real-time PC ↔ Mobile sync listener
+  useBookmarksRealtime(userId);
+
+  // Optimistic UI custom hook for instant local updates & Drizzle ORM background sync
+  const {
+    bookmarks: queryBookmarks,
+    isLoading: isLoadingBookmarks,
+    addBookmark,
+    updateBookmark,
+    deleteBookmark,
+  } = useBookmarks(userId);
+
   const { data: queryCategories } = useCategoriesQuery(isSignedIn);
-
-  const createBookmarkMutation = useCreateBookmarkMutation();
-  const updateBookmarkMutation = useUpdateBookmarkMutation();
-  const deleteBookmarkMutation = useDeleteBookmarkMutation();
 
   const {
     bookmarks: storeBookmarks,
@@ -64,7 +68,7 @@ export default function DashboardPage() {
     }
   }, [queryCategories, setCategories]);
 
-  const bookmarks = queryBookmarks || storeBookmarks;
+  const bookmarks = queryBookmarks.length > 0 ? queryBookmarks : storeBookmarks;
   const categories = queryCategories || storeCategories;
 
   const filteredBookmarks = useMemo(() => {
@@ -75,15 +79,14 @@ export default function DashboardPage() {
       const matchesSearch = searchQuery
         ? b.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
           b.url.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          b.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          b.tags?.some((t) => t.name.toLowerCase().includes(searchQuery.toLowerCase()))
+          b.description?.toLowerCase().includes(searchQuery.toLowerCase())
         : true;
 
       return matchesCategory && matchesSearch;
     });
   }, [bookmarks, selectedCategoryId, searchQuery]);
 
-  const handleSaveBookmark = async (data: {
+  const handleSaveBookmark = (data: {
     title: string;
     url: string;
     description?: string;
@@ -92,33 +95,31 @@ export default function DashboardPage() {
     favicon?: string;
   }) => {
     if (editingBookmark) {
-      await updateBookmarkMutation.mutateAsync({
+      updateBookmark({
         id: editingBookmark.id,
-        data: {
+        input: {
           title: data.title,
           url: data.url,
           description: data.description,
           categoryId: data.categoryId,
-          tags: data.tags,
           favicon: data.favicon,
         },
       });
     } else {
-      await createBookmarkMutation.mutateAsync({
+      addBookmark({
         title: data.title,
         url: data.url,
         description: data.description,
         categoryId: data.categoryId,
-        tags: data.tags,
         favicon: data.favicon,
       });
     }
     closeAddModal();
   };
 
-  const handleDeleteBookmark = async (target: string | BookmarkItem) => {
+  const handleDeleteBookmark = (target: string | BookmarkItem) => {
     const id = typeof target === "string" ? target : target.id;
-    await deleteBookmarkMutation.mutateAsync(id);
+    deleteBookmark(id);
   };
 
   // 1. Loading state until Auth and Bookmarks Query complete

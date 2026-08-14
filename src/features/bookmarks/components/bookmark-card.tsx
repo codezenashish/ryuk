@@ -27,9 +27,12 @@ export interface BookmarkItem {
   url: string;
   description?: string | null;
   favicon?: string | null;
+  userId?: string;
+  categoryId?: string | null;
   category?: BookmarkCategory | null;
   tags?: BookmarkTag[];
   createdAt?: string | Date;
+  updatedAt?: string | Date;
   isPinned?: boolean;
 }
 

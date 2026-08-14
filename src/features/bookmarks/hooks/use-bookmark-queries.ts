@@ -1,18 +1,23 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import {
   BookmarkItem,
   BookmarkCategory,
 } from "../components/bookmark-card";
+import { useBookmarks, getBookmarksQueryKey } from "@/hooks/use-bookmarks";
+import { useBookmarksRealtime } from "@/hooks/use-bookmarks-realtime";
+import {
+  createBookmarkAction,
+  updateBookmarkAction,
+  deleteBookmarkAction,
+} from "@/app/actions/bookmarks";
+
+export { useBookmarks, useBookmarksRealtime, getBookmarksQueryKey };
 
 export interface CategoryWithBookmarks extends BookmarkCategory {
   bookmarks: BookmarkItem[];
-}
-
-interface FetchBookmarksResponse {
-  bookmarks: BookmarkItem[];
-  isGuest?: boolean;
 }
 
 interface FetchCategoriesResponse {
@@ -20,17 +25,8 @@ interface FetchCategoriesResponse {
 }
 
 // ----------------------------------------------------
-// API Fetchers
+// Category Fetchers
 // ----------------------------------------------------
-
-async function fetchBookmarks(): Promise<BookmarkItem[]> {
-  const res = await fetch("/api/bookmark");
-  if (!res.ok) {
-    throw new Error("Failed to fetch bookmarks");
-  }
-  const data: FetchBookmarksResponse = await res.json();
-  return data.bookmarks || [];
-}
 
 async function fetchCategories(): Promise<BookmarkCategory[]> {
   const res = await fetch("/api/category");
@@ -39,69 +35,6 @@ async function fetchCategories(): Promise<BookmarkCategory[]> {
   }
   const data: FetchCategoriesResponse = await res.json();
   return data.categories || [];
-}
-
-async function createBookmark(newBookmark: {
-  title: string;
-  url: string;
-  description?: string;
-  categoryId?: string;
-  tags?: string[];
-  favicon?: string;
-}): Promise<BookmarkItem> {
-  const res = await fetch("/api/bookmark", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(newBookmark),
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to create bookmark");
-  }
-
-  const data = await res.json();
-  return data.bookmark;
-}
-
-async function updateBookmark({
-  id,
-  data,
-}: {
-  id: string;
-  data: {
-    title?: string;
-    url?: string;
-    description?: string | null;
-    categoryId?: string | null;
-    tags?: string[];
-    favicon?: string | null;
-    isPinned?: boolean;
-  };
-}): Promise<BookmarkItem> {
-  const res = await fetch(`/api/bookmark/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to update bookmark");
-  }
-
-  const result = await res.json();
-  return result.bookmark;
-}
-
-async function deleteBookmark(id: string): Promise<string> {
-  const res = await fetch(`/api/bookmark/${id}`, {
-    method: "DELETE",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to delete bookmark");
-  }
-
-  return id;
 }
 
 async function createCategory(newCategory: {
@@ -124,68 +57,208 @@ async function createCategory(newCategory: {
 }
 
 // ----------------------------------------------------
-// Custom Hooks with TanStack Query (10 min stale time caching)
+// Unified Query & Mutation Hooks
 // ----------------------------------------------------
 
-export function useBookmarksQuery(enabled: boolean = true) {
-  return useQuery({
-    queryKey: ["bookmarks"],
-    queryFn: fetchBookmarks,
-    staleTime: 1000 * 60 * 10, // 10 Minutes memory cache (prevents DB calls on page navigation)
-    gcTime: 1000 * 60 * 30, // 30 Minutes Garbage Collection Time
-    enabled,
-  });
+export function useBookmarksQuery(userId?: string, enabled: boolean = true) {
+  const { bookmarks, isLoading, isError, error, refetch } = useBookmarks(userId);
+
+  return {
+    data: bookmarks,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  };
 }
 
 export function useCategoriesQuery(enabled: boolean = true) {
   return useQuery({
     queryKey: ["categories"],
     queryFn: fetchCategories,
-    staleTime: 1000 * 60 * 10, // 10 Minutes memory cache
+    staleTime: 1000 * 60 * 10,
     gcTime: 1000 * 60 * 30,
     enabled,
   });
 }
 
-export function useCreateBookmarkMutation() {
+/**
+ * Optimistic Create Bookmark Mutation (0ms perceived latency)
+ */
+export function useCreateBookmarkMutation(userId?: string) {
   const queryClient = useQueryClient();
+  const queryKey = getBookmarksQueryKey(userId);
 
   return useMutation({
-    mutationFn: createBookmark,
-    onSuccess: (newBm) => {
-      queryClient.setQueryData<BookmarkItem[]>(["bookmarks"], (old = []) => [
-        newBm,
+    mutationFn: async (newBookmark: {
+      title: string;
+      url: string;
+      description?: string;
+      categoryId?: string;
+      tags?: string[];
+      favicon?: string;
+    }) => {
+      const result = await createBookmarkAction(newBookmark);
+      return result as unknown as BookmarkItem;
+    },
+    onMutate: async (newBookmark) => {
+      await queryClient.cancelQueries({ queryKey });
+
+      const previousBookmarks =
+        queryClient.getQueryData<BookmarkItem[]>(queryKey) || [];
+
+      const optimisticItem: BookmarkItem = {
+        id: `temp-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+        title: newBookmark.title,
+        url: newBookmark.url,
+        description: newBookmark.description || null,
+        favicon:
+          newBookmark.favicon ||
+          `https://www.google.com/s2/favicons?domain=${
+            newBookmark.url.replace(/^https?:\/\//i, "").split("/")[0]
+          }&sz=128`,
+        userId: userId || "user",
+        categoryId: newBookmark.categoryId || null,
+        category: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      queryClient.setQueryData<BookmarkItem[]>(queryKey, (old = []) => [
+        optimisticItem,
         ...old,
       ]);
-      queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+
+      return { previousBookmarks };
+    },
+    onError: (err, _newBookmark, context) => {
+      if (context?.previousBookmarks) {
+        queryClient.setQueryData(queryKey, context.previousBookmarks);
+      }
+      toast.error(
+        err instanceof Error ? err.message : "Failed to add bookmark. Rolled back state."
+      );
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey });
+      if (userId) {
+        queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+      }
     },
   });
 }
 
-export function useUpdateBookmarkMutation() {
+/**
+ * Optimistic Update Bookmark Mutation
+ */
+export function useUpdateBookmarkMutation(userId?: string) {
   const queryClient = useQueryClient();
+  const queryKey = getBookmarksQueryKey(userId);
 
   return useMutation({
-    mutationFn: updateBookmark,
-    onSuccess: (updatedBm) => {
-      queryClient.setQueryData<BookmarkItem[]>(["bookmarks"], (old = []) =>
-        old.map((bm) => (bm.id === updatedBm.id ? updatedBm : bm))
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: {
+        title?: string;
+        url?: string;
+        description?: string | null;
+        categoryId?: string | null;
+        tags?: string[];
+        favicon?: string | null;
+        isPinned?: boolean;
+      };
+    }) => {
+      const result = await updateBookmarkAction(id, {
+        title: data.title,
+        url: data.url,
+        description: data.description,
+        favicon: data.favicon,
+        categoryId: data.categoryId,
+      });
+      return result as unknown as BookmarkItem;
+    },
+    onMutate: async ({ id, data }) => {
+      await queryClient.cancelQueries({ queryKey });
+
+      const previousBookmarks =
+        queryClient.getQueryData<BookmarkItem[]>(queryKey) || [];
+
+      queryClient.setQueryData<BookmarkItem[]>(queryKey, (old = []) =>
+        old.map((bm) =>
+          bm.id === id
+            ? {
+                ...bm,
+                ...(data.title !== undefined && { title: data.title }),
+                ...(data.url !== undefined && { url: data.url }),
+                ...(data.description !== undefined && { description: data.description }),
+                ...(data.favicon !== undefined && { favicon: data.favicon }),
+                ...(data.categoryId !== undefined && { categoryId: data.categoryId }),
+                ...(data.isPinned !== undefined && { isPinned: data.isPinned }),
+                updatedAt: new Date(),
+              }
+            : bm
+        )
       );
-      queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+
+      return { previousBookmarks };
+    },
+    onError: (err, _vars, context) => {
+      if (context?.previousBookmarks) {
+        queryClient.setQueryData(queryKey, context.previousBookmarks);
+      }
+      toast.error(
+        err instanceof Error ? err.message : "Failed to update bookmark."
+      );
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey });
+      if (userId) {
+        queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+      }
     },
   });
 }
 
-export function useDeleteBookmarkMutation() {
+/**
+ * Optimistic Delete Bookmark Mutation
+ */
+export function useDeleteBookmarkMutation(userId?: string) {
   const queryClient = useQueryClient();
+  const queryKey = getBookmarksQueryKey(userId);
 
   return useMutation({
-    mutationFn: deleteBookmark,
-    onSuccess: (deletedId) => {
-      queryClient.setQueryData<BookmarkItem[]>(["bookmarks"], (old = []) =>
-        old.filter((bm) => bm.id !== deletedId)
+    mutationFn: async (id: string) => {
+      await deleteBookmarkAction(id);
+      return id;
+    },
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey });
+
+      const previousBookmarks =
+        queryClient.getQueryData<BookmarkItem[]>(queryKey) || [];
+
+      queryClient.setQueryData<BookmarkItem[]>(queryKey, (old = []) =>
+        old.filter((bm) => bm.id !== id)
       );
-      queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+
+      return { previousBookmarks };
+    },
+    onError: (err, _id, context) => {
+      if (context?.previousBookmarks) {
+        queryClient.setQueryData(queryKey, context.previousBookmarks);
+      }
+      toast.error(
+        err instanceof Error ? err.message : "Failed to delete bookmark."
+      );
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey });
+      if (userId) {
+        queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+      }
     },
   });
 }
