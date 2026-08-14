@@ -59,7 +59,7 @@ export function Hero() {
               <button
                 onClick={handleStartClick}
                 disabled={!isLoaded}
-                className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-ink bg-ink px-4 py-2.5 text-sm font-medium whitespace-nowrap text-paper transition hover:border-white hover:bg-white hover:text-paper active:translate-y-px"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-ink bg-ink px-4 py-2.5 text-sm font-medium whitespace-nowrap text-paper transition hover:border-white hover:bg-white hover:text-paper active:translate-y-px cursor-pointer"
               >
                 <span>Get started</span>
                 <ArrowRight className="h-4 w-4 shrink-0" />

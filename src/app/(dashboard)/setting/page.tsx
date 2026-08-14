@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useSession, updateUser, useSignOut } from "@/lib/auth-client";
 import { Avatar } from "@avatune/react";
 import theme from "@avatune/yanliu-theme/react";
@@ -24,6 +25,7 @@ const avatarPresets = {
 };
 
 export default function SettingPage() {
+  const router = useRouter();
   const { data: session, isPending } = useSession();
   const signOut = useSignOut();
 
@@ -115,6 +117,8 @@ export default function SettingPage() {
     setIsLoggingOut(true);
     try {
       await signOut();
+      router.push("/");
+      router.refresh();
     } catch {
       // Ignore error
     } finally {
@@ -133,7 +137,7 @@ export default function SettingPage() {
   return (
     <div className="max-w-4xl py-6 space-y-8">
       <div>
-        <h1 className="text-2xl font-display font-bold text-ink tracking-tight">
+        <h1 className="text-2xl font-body  text-ink ">
           Account Settings
         </h1>
         <p className="text-xs text-ink-3 mt-1">
@@ -144,7 +148,7 @@ export default function SettingPage() {
       <form onSubmit={handleSaveProfile} className="space-y-6">
         <div className="rounded-2xl bg-paper-2 border border-line-2 p-6 shadow-sm space-y-6">
           <div className="flex items-center justify-between border-b border-line-2 pb-4">
-            <h2 className="text-sm font-display font-semibold text-ink uppercase tracking-wider font-code flex items-center gap-2">
+            <h2 className="text-sm font-body font-semibold text-ink  tracking-wider  flex items-center gap-2">
               <User className="h-4 w-4 text-ink-3" />
               Profile & Avatar
             </h2>
@@ -180,7 +184,7 @@ export default function SettingPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-ink-2 mb-1.5 uppercase tracking-wider font-code">
+            <label className="block text-xs  text-ink-2 mb-1.5  tracking-wider font-body">
               Display Name
             </label>
             <input
@@ -194,12 +198,12 @@ export default function SettingPage() {
           </div>
 
           <div className="space-y-4 pt-2">
-            <label className="block text-xs font-medium text-ink-2 uppercase tracking-wider font-code">
+            <label className="block text-xs  text-ink-2  tracking-wider font-body">
               Avatar Presets
             </label>
 
             <div>
-              <span className="text-[11px] text-ink-3 font-code mb-2 block">
+              <span className="text-[11px] text-ink-3 font-body mb-2 block">
                 Male Styles
               </span>
               <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
@@ -263,7 +267,7 @@ export default function SettingPage() {
       {/* API Key Management Card */}
       <div className="rounded-2xl bg-paper-2 border border-line-2 p-6 shadow-sm space-y-4">
         <div className="flex items-center justify-between border-b border-line-2 pb-4">
-          <h2 className="text-sm font-display font-semibold text-ink uppercase tracking-wider font-code flex items-center gap-2">
+          <h2 className="text-sm   text-ink   tracking-wider font-body flex items-center gap-2">
             <Key className="h-4 w-4 text-ink-3" />
             CLI & External API Key
           </h2>
@@ -324,14 +328,14 @@ export default function SettingPage() {
       </div>
 
       <div className="rounded-2xl bg-paper-2 border border-line-2 p-6 shadow-sm space-y-4">
-        <h2 className="text-sm font-display font-semibold text-ink uppercase tracking-wider font-code flex items-center gap-2 border-b border-line-2 pb-4">
+        <h2 className="text-sm   text-ink  tracking-wider font-body flex items-center gap-2 border-b border-line-2 pb-4">
           <ShieldCheck className="h-4 w-4 text-ink-3" />
           Account Information
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="p-4 rounded-xl bg-paper-3 border border-line-2 space-y-1">
-            <span className="text-[11px] font-code uppercase text-ink-3 flex items-center gap-1.5">
+            <span className="text-[11px] font-body text-ink-3 flex items-center gap-1.5">
               <Mail className="h-3.5 w-3.5" /> Email Address
             </span>
             <p className="text-sm font-medium text-ink truncate">
@@ -340,7 +344,7 @@ export default function SettingPage() {
           </div>
 
           <div className="p-4 rounded-xl bg-paper-3 border border-line-2 space-y-1">
-            <span className="text-[11px] font-code uppercase text-ink-3 flex items-center gap-1.5">
+            <span className="text-[11px] font-body text-ink-3 flex items-center gap-1.5">
               <ShieldCheck className="h-3.5 w-3.5" /> Authentication Status
             </span>
             <p className="text-sm font-medium text-ink">
@@ -351,7 +355,7 @@ export default function SettingPage() {
       </div>
 
       <div className="rounded-2xl bg-paper-2 border border-line-2 p-6 shadow-sm space-y-4">
-        <h2 className="text-sm font-display font-semibold text-rose-500 uppercase tracking-wider font-code flex items-center gap-2 border-b border-line-2 pb-4">
+        <h2 className="text-sm   text-rose-500 tracking-wider font-body flex items-center gap-2 border-b border-line-2 pb-4">
           <LogOut className="h-4 w-4 text-rose-500" />
           Session & Account Actions
         </h2>

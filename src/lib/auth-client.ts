@@ -1,5 +1,6 @@
 import { useAuth } from "@/providers/auth-provider";
 import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 export function useSession() {
   const { user, session, isLoaded } = useAuth();
@@ -22,5 +23,11 @@ export async function updateUser(data: { name?: string; image?: string }) {
 
 export function useSignOut() {
   const { signOut } = useAuth();
-  return signOut;
+  const router = useRouter();
+
+  return async () => {
+    await signOut();
+    router.push("/");
+    router.refresh();
+  };
 }

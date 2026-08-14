@@ -82,6 +82,7 @@ export default function AuthModal({
         } else {
           onClose();
           router.push("/dashboard");
+          router.refresh();
         }
       } else {
         const { error } = await signUpWithPassword(email, password, name);
@@ -90,6 +91,7 @@ export default function AuthModal({
         } else {
           onClose();
           router.push("/dashboard");
+          router.refresh();
         }
       }
     } catch {

@@ -38,8 +38,20 @@ export async function proxy(request: NextRequest) {
     const { data } = await supabase.auth.getUser();
     const user = data?.user;
 
-    // Protected Routes Handling
-    if (!user && request.nextUrl.pathname.startsWith("/dashboard")) {
+    const protectedRoutes = [
+      "/dashboard",
+      "/bookmarks",
+      "/notes",
+      "/setting",
+      "/settings",
+    ];
+
+    const isProtectedRoute = protectedRoutes.some((path) =>
+      request.nextUrl.pathname.startsWith(path)
+    );
+
+    // Protect dashboard and account routes, redirecting unauthenticated users to landing page
+    if (!user && isProtectedRoute) {
       return NextResponse.redirect(new URL("/", request.url));
     }
   } catch {
