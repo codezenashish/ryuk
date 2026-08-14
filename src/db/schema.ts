@@ -104,6 +104,31 @@ export const tags = pgTable(
 );
 
 // ==========================================
+// FOLDERS TABLE
+// ==========================================
+export const folders = pgTable(
+  "folder",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    name: text("name").notNull(),
+    color: text("color").default("#6366F1").notNull(),
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt", { mode: "date" })
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index("folder_user_id_idx").on(table.userId),
+  ]
+);
+
+// ==========================================
 // NOTES TABLE
 // ==========================================
 export const notes = pgTable(
@@ -116,6 +141,9 @@ export const notes = pgTable(
     content: text("content").notNull(),
     language: text("language").default("plaintext"),
     isSnippet: boolean("isSnippet").default(false).notNull(),
+    isBookmarked: boolean("isBookmarked").default(false).notNull(),
+    isPinned: boolean("isPinned").default(false).notNull(),
+    folderId: text("folderId").references(() => folders.id, { onDelete: "set null" }),
     tags: text("tags").array().default([]).notNull(),
     userId: text("userId")
       .notNull()
@@ -126,7 +154,10 @@ export const notes = pgTable(
       .notNull()
       .$onUpdate(() => new Date()),
   },
-  (table) => [index("note_user_id_idx").on(table.userId)]
+  (table) => [
+    index("note_user_id_idx").on(table.userId),
+    index("note_user_pinned_bookmark_folder_idx").on(table.userId, table.isPinned, table.isBookmarked, table.folderId)
+  ]
 );
 
 // ==========================================
@@ -137,6 +168,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   categories: many(categories),
   tags: many(tags),
   notes: many(notes),
+  folders: many(folders),
 }));
 
 export const categoriesRelations = relations(categories, ({ one, many }) => ({
@@ -170,4 +202,16 @@ export const notesRelations = relations(notes, ({ one }) => ({
     fields: [notes.userId],
     references: [users.id],
   }),
+  folder: one(folders, {
+    fields: [notes.folderId],
+    references: [folders.id],
+  }),
+}));
+
+export const foldersRelations = relations(folders, ({ one, many }) => ({
+  user: one(users, {
+    fields: [folders.userId],
+    references: [users.id],
+  }),
+  notes: many(notes),
 }));

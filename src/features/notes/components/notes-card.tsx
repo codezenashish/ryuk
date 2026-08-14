@@ -1,0 +1,296 @@
+"use client";
+
+import { useState } from "react";
+import {
+  FileText,
+  Tag as TagIcon,
+  Calendar,
+  Edit2,
+  Trash2,
+  Copy,
+  Check,
+  Pin,
+  Star,
+} from "lucide-react";
+import { clsx } from "clsx";
+
+export interface Note {
+  id: string;
+  title: string;
+  content: string;
+  language?: string | null;
+  isSnippet?: boolean;
+  tags?: string[];
+  isPinned?: boolean;
+  isBookmarked?: boolean;
+  folderId?: string | null;
+  userId: string;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+}
+
+interface NotesCardProps {
+  note: Note;
+  onEdit: (note: Note) => void;
+  onDelete: (id: string) => void;
+  onTagClick?: (tag: string) => void;
+  onTogglePin?: (id: string, isPinned: boolean) => void;
+  onToggleBookmark?: (id: string, isBookmarked: boolean) => void;
+  layoutMode?: "grid" | "list";
+}
+
+export function NotesCard({
+  note,
+  onEdit,
+  onDelete,
+  onTagClick,
+  onTogglePin,
+  onToggleBookmark,
+  layoutMode = "grid",
+}: NotesCardProps) {
+  const [copied, setCopied] = useState(false);
+
+  const formattedDate = new Date(
+    note.updatedAt || note.createdAt
+  ).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  const getTextPreview = (html: string) => {
+    if (typeof window === "undefined") return "";
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.body.textContent || "";
+  };
+
+  const textPreview = getTextPreview(note.content);
+
+  const handleCopy = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(textPreview || note.content);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  if (layoutMode === "list") {
+    return (
+      <div
+        onClick={() => onEdit(note)}
+        className={clsx(
+          "group flex items-center justify-between gap-4 rounded-xl border border-line-2 bg-paper-card p-3 shadow-xs hover:border-line-strong hover:bg-paper-3 transition-all duration-200 cursor-pointer",
+          note.isPinned && "border-primary/30 bg-primary/5"
+        )}
+      >
+        <div className="flex items-center gap-3 min-w-0 flex-1">
+          <div className="p-2 rounded-lg bg-paper-2 text-ink-3 group-hover:text-ink shrink-0 transition-colors">
+            {note.isPinned ? (
+              <Pin className="w-4 h-4 text-primary fill-primary/20" />
+            ) : (
+              <FileText className="w-4 h-4 text-ink-2" />
+            )}
+          </div>
+          <div className="min-w-0 flex-1">
+            <h4 className="text-sm font-medium text-ink font-sans truncate group-hover:text-white transition-colors flex items-center gap-1.5">
+              {note.title || "Untitled Note"}
+              {note.isBookmarked && <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />}
+            </h4>
+            <p className="text-xs text-ink-3 font-sans truncate">
+              {textPreview || "Empty content..."}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 shrink-0">
+          {note.tags && note.tags.length > 0 && (
+            <div className="hidden sm:flex items-center gap-1.5">
+              {note.tags.slice(0, 2).map((tag) => (
+                <span
+                  key={tag}
+                  className="px-2 py-0.5 rounded-md text-[11px] font-medium bg-paper-2 text-ink-3 border border-line font-mono"
+                >
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          )}
+          <span className="text-[11px] text-ink-4 font-mono">
+            {formattedDate}
+          </span>
+          <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleBookmark?.(note.id, !note.isBookmarked);
+              }}
+              className={clsx("p-1 transition-colors cursor-pointer", note.isBookmarked ? "text-yellow-500" : "text-ink-4 hover:text-yellow-500")}
+              title={note.isBookmarked ? "Remove Bookmark" : "Bookmark"}
+            >
+              <Star className={clsx("w-3.5 h-3.5", note.isBookmarked && "fill-current")} />
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onTogglePin?.(note.id, !note.isPinned);
+              }}
+              className={clsx("p-1 transition-colors cursor-pointer", note.isPinned ? "text-primary" : "text-ink-4 hover:text-primary")}
+              title={note.isPinned ? "Unpin Note" : "Pin Note"}
+            >
+              <Pin className={clsx("w-3.5 h-3.5", note.isPinned && "fill-current")} />
+            </button>
+            <button
+              type="button"
+              onClick={handleCopy}
+              className="p-1 text-ink-4 hover:text-ink transition-colors cursor-pointer"
+              title="Copy Content"
+            >
+              {copied ? (
+                <Check className="w-3.5 h-3.5 text-emerald-400" />
+              ) : (
+                <Copy className="w-3.5 h-3.5" />
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(note.id);
+              }}
+              className="p-1 text-ink-4 hover:text-rose-400 transition-colors cursor-pointer"
+              title="Delete Note"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      onClick={() => onEdit(note)}
+      className={clsx(
+        "group relative flex flex-col justify-between rounded-xl border border-line-2 bg-paper-card p-4 shadow-xs transition-all duration-200 hover:border-line-strong hover:bg-paper-3 hover:shadow-md cursor-pointer overflow-hidden min-h-[160px]",
+        note.isPinned && "border-primary/30 bg-primary/5"
+      )}
+    >
+      <div>
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <div className="flex items-center gap-2 overflow-hidden">
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[11px] font-medium bg-paper-2 text-ink-2 border border-line">
+              {note.isPinned ? (
+                <>
+                  <Pin className="w-3 h-3 text-primary fill-primary/20" />
+                  Pinned
+                </>
+              ) : (
+                <>
+                  <FileText className="w-3 h-3" />
+                  Note
+                </>
+              )}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleBookmark?.(note.id, !note.isBookmarked);
+              }}
+              className={clsx("p-1 transition-colors cursor-pointer", note.isBookmarked ? "text-yellow-500" : "text-ink-4 hover:text-yellow-500")}
+              title={note.isBookmarked ? "Remove Bookmark" : "Bookmark"}
+            >
+              <Star className={clsx("w-3.5 h-3.5", note.isBookmarked && "fill-current")} />
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onTogglePin?.(note.id, !note.isPinned);
+              }}
+              className={clsx("p-1 transition-colors cursor-pointer", note.isPinned ? "text-primary" : "text-ink-4 hover:text-primary")}
+              title={note.isPinned ? "Unpin Note" : "Pin Note"}
+            >
+              <Pin className={clsx("w-3.5 h-3.5", note.isPinned && "fill-current")} />
+            </button>
+            <button
+              type="button"
+              onClick={handleCopy}
+              className="p-1 text-ink-4 hover:text-ink transition-colors cursor-pointer"
+              title="Copy Content"
+            >
+              {copied ? (
+                <Check className="w-3.5 h-3.5 text-emerald-400" />
+              ) : (
+                <Copy className="w-3.5 h-3.5" />
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(note);
+              }}
+              className="p-1 text-ink-4 hover:text-ink transition-colors cursor-pointer"
+              title="Edit Note"
+            >
+              <Edit2 className="w-3.5 h-3.5" />
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(note.id);
+              }}
+              className="p-1 text-ink-4 hover:text-rose-400 transition-colors cursor-pointer"
+              title="Delete Note"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+
+        <h3 className="text-sm font-semibold text-ink font-sans tracking-tight line-clamp-1 mb-1.5 group-hover:text-white transition-colors">
+          {note.title || "Untitled Note"}
+        </h3>
+
+        <p className="text-xs text-ink-3 font-sans leading-relaxed line-clamp-3 mb-3">
+          {textPreview || "No additional text..."}
+        </p>
+      </div>
+
+      <div className="pt-2.5 border-t border-line flex items-center justify-between gap-2 mt-auto">
+        <div className="flex flex-wrap items-center gap-1 overflow-hidden">
+          {note.tags && note.tags.length > 0 ? (
+            note.tags.slice(0, 2).map((tag) => (
+              <button
+                key={tag}
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onTagClick?.(tag);
+                }}
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium bg-paper-2 text-ink-3 hover:text-ink border border-line transition-colors cursor-pointer font-mono"
+              >
+                <TagIcon className="w-2.5 h-2.5 text-ink-4" />
+                {tag}
+              </button>
+            ))
+          ) : (
+            <span className="text-[10px] text-ink-4 italic">No tags</span>
+          )}
+        </div>
+
+        <div className="flex items-center gap-1 text-[10px] text-ink-4 font-mono shrink-0">
+          <Calendar className="w-3 h-3" />
+          <span>{formattedDate}</span>
+        </div>
+      </div>
+    </div>
+  );
+}

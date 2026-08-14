@@ -217,7 +217,7 @@ function AddBookmarkForm({
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-black/70 backdrop-blur-md p-4 sm:p-6">
+    <div className="fixed inset-0 z-100 flex items-center justify-center overflow-y-auto bg-black/70 backdrop-blur-md p-4 sm:p-6">
       <div className="my-auto w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-paper-2 border border-line-2 p-6 shadow-2xl relative text-ink animate-in fade-in zoom-in-95 duration-200 scrollbar-none">
         <button
           type="button"
