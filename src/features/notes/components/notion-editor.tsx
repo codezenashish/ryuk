@@ -50,32 +50,68 @@ export function NotionEditor({
     true
   );
 
+  const [localNoteId, setLocalNoteId] = useState<string | undefined>(note?.id);
+  const isSavingRef = useRef(false);
+  const pendingDataRef = useRef<any>(null);
+
+  // Sync localNoteId if parent provides it
+  useEffect(() => {
+    if (note?.id && note.id !== localNoteId) {
+      setLocalNoteId(note.id);
+    }
+  }, [note?.id, localNoteId]);
+
   useEffect(() => {
     if (initialRender.current) {
       initialRender.current = false;
       return;
     }
 
-    const timer = setTimeout(async () => {
+    const timer = setTimeout(() => {
       if (!content.trim() && !title.trim()) return;
 
-      try {
-        await onSave({
-          ...(note?.id ? { id: note.id } : {}),
-          title: title.trim() || "Untitled Note",
-          content,
-          tags,
-          isPinned,
-          isBookmarked,
-          folderId: note?.folderId || activeFolderId || null,
-        });
-      } catch (err) {
-        console.error("Autosave error:", err);
+      const dataToSave = {
+        ...(localNoteId ? { id: localNoteId } : {}),
+        title: title.trim() || "Untitled Note",
+        content,
+        tags,
+        isPinned,
+        isBookmarked,
+        folderId: note?.folderId || activeFolderId || null,
+      };
+
+      if (isSavingRef.current) {
+        pendingDataRef.current = dataToSave;
+        return;
       }
+
+      const performSave = async (data: any) => {
+        isSavingRef.current = true;
+        try {
+          const savedNote = await onSave(data);
+          if (savedNote?.id) {
+            setLocalNoteId(savedNote.id);
+            if (pendingDataRef.current && !pendingDataRef.current.id) {
+              pendingDataRef.current.id = savedNote.id;
+            }
+          }
+        } catch (err) {
+          console.error("Autosave error:", err);
+        } finally {
+          isSavingRef.current = false;
+          if (pendingDataRef.current) {
+            const nextData = pendingDataRef.current;
+            pendingDataRef.current = null;
+            performSave(nextData);
+          }
+        }
+      };
+
+      performSave(dataToSave);
     }, 400);
 
     return () => clearTimeout(timer);
-  }, [title, content, tags, isPinned, isBookmarked, activeFolderId, note?.folderId, note?.id, onSave]);
+  }, [title, content, tags, isPinned, isBookmarked, activeFolderId, note?.folderId, localNoteId, onSave]);
 
   const handleAddTag = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === ",") {

@@ -9,6 +9,40 @@ import fs from "fs";
 import path from "path";
 import os from "os";
 import { exec } from "child_process";
+import * as cheerio from "cheerio";
+
+function renderHtmlToCli(html: string): string {
+  const $ = cheerio.load(html);
+  
+  // Style headers
+  $('h1, h2, h3, h4, h5, h6').each((_, el) => {
+    $(el).replaceWith(`\n\n${chalk.bold.blue($(el).text().toUpperCase())}\n`);
+  });
+  
+  // Style code blocks
+  $('pre').each((_, el) => {
+    $(el).replaceWith(`\n${chalk.bgGray.white(" CODE ")}\n${chalk.gray($(el).text())}\n`);
+  });
+  $('code').each((_, el) => {
+    $(el).replaceWith(chalk.yellow($(el).text()));
+  });
+
+  // Blockquotes
+  $('blockquote').each((_, el) => {
+     $(el).replaceWith(`\n${chalk.italic.dim("> " + $(el).text())}\n`);
+  });
+
+  // Lists
+  $('li').each((_, el) => {
+    $(el).replaceWith(`\n  • ${$(el).text()}`);
+  });
+
+  $('p').each((_, el) => {
+    $(el).replaceWith(`\n${$(el).text()}\n`);
+  });
+
+  return $.text().trim().replace(/\n{3,}/g, '\n\n');
+}
 
 inquirer.registerPrompt("autocomplete", autocompletePrompt);
 
@@ -362,16 +396,19 @@ async function handleNotesSearch(initialQuery?: string) {
             ? notes
             : fuzzy
                 .filter(formattedInput, notes, {
-                  extract: (n) => `${n.title} ${n.content} ${n.language || ""}`,
+                  extract: (n) => `${n.title} ${n.content.replace(/<[^>]*>?/gm, '')} ${n.language || ""}`,
                 })
                 .map((res) => res.original);
 
-          return items.map((n) => ({
-            name: `${chalk.bold.white(n.title)} ${chalk.yellow(
-              n.isSnippet ? `[${n.language || "snippet"}]` : "[note]"
-            )} ${chalk.dim(`- ${n.content.replace(/\n/g, " ").slice(0, 45)}`)}`,
-            value: n,
-          }));
+          return items.map((n) => {
+            const plainContent = n.content.replace(/<[^>]*>?/gm, '').replace(/\n/g, " ").slice(0, 45);
+            return {
+              name: `${chalk.bold.white(n.title)} ${chalk.yellow(
+                n.isSnippet ? `[${n.language || "snippet"}]` : "[note]"
+              )} ${chalk.dim(`- ${plainContent}`)}`,
+              value: n,
+            };
+          });
         },
       },
     ];
@@ -389,7 +426,7 @@ async function handleNotesSearch(initialQuery?: string) {
     console.log(chalk.bold.magenta("Type:    ") + (selectedNote.isSnippet ? `Snippet (${selectedNote.language})` : "Note"));
     console.log(chalk.bold.magenta("Content: "));
     console.log(chalk.dim("----------------------------------------"));
-    console.log(chalk.white(selectedNote.content));
+    console.log(renderHtmlToCli(selectedNote.content));
     console.log(chalk.dim("----------------------------------------\n"));
 
     const { action } = await inquirer.prompt<{ action: string }>([
