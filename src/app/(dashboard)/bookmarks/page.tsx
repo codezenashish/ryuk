@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { useAuth } from "@/providers/auth-provider";
 import { useBookmarkStore } from "@/store/useBookmarkStore";
 import { useBookmarks } from "@/hooks/use-bookmarks";
@@ -32,10 +32,7 @@ export default function BookmarksPage() {
   const { data: queryCategories } = useCategoriesQuery();
 
   const {
-    bookmarks: storeBookmarks,
     categories: storeCategories,
-    setBookmarks,
-    setCategories,
     selectedCategoryId,
     searchQuery,
     layoutMode,

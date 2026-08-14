@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useSyncExternalStore } from "react";
 import {
   Bell,
   Check,
@@ -12,6 +12,15 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { useNotificationStore } from "@/store/useNotificationStore";
+
+const emptySubscribe = () => () => {};
+function useIsMounted() {
+  return useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
+}
 
 function formatTimeAgo(isoString: string): string {
   try {
@@ -30,14 +39,10 @@ function formatTimeAgo(isoString: string): string {
 
 export function NotificationBall() {
   const [isOpen, setIsOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const mounted = useIsMounted();
 
   const { notifications, markAsRead, markAllAsRead, clearAll } =
     useNotificationStore();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 

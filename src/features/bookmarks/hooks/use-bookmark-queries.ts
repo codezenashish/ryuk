@@ -60,7 +60,8 @@ async function createCategory(newCategory: {
 // Unified Query & Mutation Hooks
 // ----------------------------------------------------
 
-export function useBookmarksQuery(userId?: string, enabled: boolean = true) {
+export function useBookmarksQuery(userIdOrEnabled?: string | boolean) {
+  const userId = typeof userIdOrEnabled === "string" ? userIdOrEnabled : undefined;
   const { bookmarks, isLoading, isError, error, refetch } = useBookmarks(userId);
 
   return {

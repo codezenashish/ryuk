@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useSyncExternalStore } from "react";
 import Image from "next/image";
 import { createPortal } from "react-dom";
 import { BookmarkItem, BookmarkCategory } from "../components/bookmark-card";
@@ -27,6 +27,15 @@ interface AddBookmarkModalProps {
   initialData?: BookmarkItem | null;
 }
 
+const emptySubscribe = () => () => {};
+function useIsMounted() {
+  return useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
+}
+
 export function AddBookmarkModal({
   isOpen,
   onClose,
@@ -34,47 +43,51 @@ export function AddBookmarkModal({
   categories,
   initialData = null,
 }: AddBookmarkModalProps) {
-  const [mounted, setMounted] = useState(false);
-  const [title, setTitle] = useState("");
-  const [url, setUrl] = useState("");
-  const [favicon, setFavicon] = useState("");
+  const mounted = useIsMounted();
+
+  if (!isOpen || !mounted) return null;
+
+  return (
+    <AddBookmarkForm
+      key={initialData ? initialData.id : "new-bookmark"}
+      onClose={onClose}
+      onSave={onSave}
+      categories={categories}
+      initialData={initialData}
+    />
+  );
+}
+
+function AddBookmarkForm({
+  onClose,
+  onSave,
+  categories,
+  initialData,
+}: {
+  onClose: () => void;
+  onSave: AddBookmarkModalProps["onSave"];
+  categories: BookmarkCategory[];
+  initialData: BookmarkItem | null;
+}) {
+  const [title, setTitle] = useState(initialData?.title || "");
+  const [url, setUrl] = useState(initialData?.url || "");
+  const [favicon, setFavicon] = useState(initialData?.favicon || "");
   const [favError, setFavError] = useState(false);
 
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
-  const [categoryName, setCategoryName] = useState<string>("");
-  const [categoryIcon, setCategoryIcon] = useState<string>("Folder01Icon");
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>(
+    initialData?.category?.id || ""
+  );
+  const [categoryName, setCategoryName] = useState<string>(
+    initialData?.category?.name || ""
+  );
+  const [categoryIcon, setCategoryIcon] = useState<string>(
+    initialData?.category?.icon || "Folder01Icon"
+  );
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isFetchingMeta, setIsFetchingMeta] = useState(false);
 
   const addCategory = useBookmarkStore((state) => state.addCategory);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setMounted(true), 0);
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    if (isOpen) {
-      if (initialData) {
-        setTitle(initialData.title || "");
-        setUrl(initialData.url || "");
-        setFavicon(initialData.favicon || "");
-        setSelectedCategoryId(initialData.category?.id || "");
-        setCategoryName(initialData.category?.name || "");
-        setCategoryIcon(initialData.category?.icon || "Folder01Icon");
-      } else {
-        setTitle("");
-        setUrl("");
-        setFavicon("");
-        setSelectedCategoryId("");
-        setCategoryName("");
-        setCategoryIcon("Folder01Icon");
-      }
-      setFavError(false);
-      setErrors({});
-    }
-  }, [isOpen, initialData]);
 
   const handleFetchMetadata = useCallback(
     async (urlToFetch?: string, signal?: AbortSignal) => {
@@ -115,7 +128,8 @@ export function AddBookmarkModal({
   useEffect(() => {
     if (!url || url.trim().length < 4) {
       if (!initialData?.favicon) {
-        setTimeout(() => setFavicon(""), 0);
+        const timer = setTimeout(() => setFavicon(""), 0);
+        return () => clearTimeout(timer);
       }
       return;
     }
@@ -144,8 +158,6 @@ export function AddBookmarkModal({
       abortController.abort();
     };
   }, [url, initialData?.favicon, handleFetchMetadata]);
-
-  if (!isOpen || !mounted) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

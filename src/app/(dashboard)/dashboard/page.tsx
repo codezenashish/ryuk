@@ -34,10 +34,7 @@ export default function DashboardPage() {
   const { data: queryCategories } = useCategoriesQuery(isSignedIn);
 
   const {
-    bookmarks: storeBookmarks,
     categories: storeCategories,
-    setBookmarks,
-    setCategories,
     selectedCategoryId,
     searchQuery,
     layoutMode,
