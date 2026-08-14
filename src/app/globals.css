@@ -59,4 +59,175 @@ body {
     .body-text {
         @apply text-base md:text-lg lg:text-xl text-gray-700;
     }
+
+    /* TipTap ProseMirror Editor Styling with Tailwind */
+    .ProseMirror {
+        @apply outline-none min-h-[280px] text-ink font-sans leading-relaxed;
+    }
+
+    .ProseMirror p.is-editor-empty:first-child::before {
+        @apply text-ink-4 content-[attr(data-placeholder)] float-left h-0 pointer-events-none;
+    }
+
+    .ProseMirror h1 {
+        @apply text-2xl md:text-3xl font-bold font-sans mt-4 mb-2 text-ink leading-tight;
+    }
+
+    .ProseMirror h2 {
+        @apply text-xl md:text-2xl font-semibold font-sans mt-3.5 mb-1.5 text-ink-2 leading-snug;
+    }
+
+    .ProseMirror h3 {
+        @apply text-lg md:text-xl font-semibold font-sans mt-3 mb-1 text-ink-2 leading-snug;
+    }
+
+    .ProseMirror p {
+        @apply mb-2 leading-relaxed;
+    }
+
+    .ProseMirror ul {
+        @apply list-disc pl-6 mb-3 space-y-1;
+    }
+
+    .ProseMirror ol {
+        @apply list-decimal pl-6 mb-3 space-y-1;
+    }
+
+    .ProseMirror li {
+        @apply mb-1;
+    }
+
+    .ProseMirror blockquote {
+        @apply border-l-2 border-indigo-500 pl-4 py-1 my-2 italic text-ink-2 bg-indigo-500/5 rounded-r-lg;
+    }
+
+    .ProseMirror pre {
+        @apply bg-paper-card text-sky-400 font-mono p-3.5 rounded-xl border border-line-2 my-3 overflow-x-auto text-sm;
+    }
+
+    .ProseMirror code {
+        @apply bg-paper-2 text-rose-400 font-mono px-1.5 py-0.5 rounded text-xs;
+    }
+
+    .ProseMirror pre code {
+        @apply bg-transparent text-inherit p-0 text-sm;
+    }
+
+    .ProseMirror a {
+        @apply text-indigo-400 underline cursor-pointer hover:text-indigo-300;
+    }
 }
+
+.hljs-comment,
+.hljs-quote {
+  color: #5c6370;
+  font-style: italic;
+}
+
+.hljs-doctag,
+.hljs-keyword,
+.hljs-formula {
+  color: #c678dd;
+}
+
+.hljs-section,
+.hljs-name,
+.hljs-selector-tag,
+.hljs-deletion,
+.hljs-subst {
+  color: #e06c75;
+}
+
+.hljs-literal {
+  color: #56b6c2;
+}
+
+.hljs-string,
+.hljs-regexp,
+.hljs-addition,
+.hljs-attribute,
+.hljs-meta .hljs-string {
+  color: #98c379;
+}
+
+.hljs-built_in,
+.hljs-title .hljs-class,
+.hljs-class .hljs-title {
+  color: #e5c07b;
+}
+
+.hljs-attr,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-type,
+.hljs-selector-class,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-number {
+  color: #d19a66;
+}
+
+.hljs-symbol,
+.hljs-bullet,
+.hljs-link,
+.hljs-meta,
+.hljs-selector-id,
+.hljs-title {
+  color: #61afef;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: bold;
+}
+
+ul[data-type="taskList"] {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0.75rem;
+}
+
+ul[data-type="taskList"] li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+ul[data-type="taskList"] li input[type="checkbox"] {
+  accent-color: #6366f1;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.ProseMirror table {
+  border-collapse: collapse;
+  margin: 1rem 0;
+  width: 100%;
+  table-layout: fixed;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  border: 1px solid var(--color-line-2);
+}
+
+.ProseMirror td,
+.ProseMirror th {
+  border: 1px solid var(--color-line-2);
+  padding: 0.5rem 0.75rem;
+  vertical-align: top;
+  box-sizing: border-box;
+}
+
+.ProseMirror th {
+  font-weight: 600;
+  background-color: var(--color-paper-card);
+  color: var(--color-ink);
+}
+
+
+
