@@ -12,10 +12,17 @@ export interface CategoryWithBookmarks extends BookmarkCategory {
 
 interface FetchBookmarksResponse {
   bookmarks: BookmarkItem[];
-  isGuest: boolean;
+  isGuest?: boolean;
 }
 
-// Fetch all bookmarks from API
+interface FetchCategoriesResponse {
+  categories: BookmarkCategory[];
+}
+
+// ----------------------------------------------------
+// API Fetchers
+// ----------------------------------------------------
+
 async function fetchBookmarks(): Promise<BookmarkItem[]> {
   const res = await fetch("/api/bookmark");
   if (!res.ok) {
@@ -25,7 +32,15 @@ async function fetchBookmarks(): Promise<BookmarkItem[]> {
   return data.bookmarks || [];
 }
 
-// Create bookmark via API
+async function fetchCategories(): Promise<BookmarkCategory[]> {
+  const res = await fetch("/api/category");
+  if (!res.ok) {
+    throw new Error("Failed to fetch categories");
+  }
+  const data: FetchCategoriesResponse = await res.json();
+  return data.categories || [];
+}
+
 async function createBookmark(newBookmark: {
   title: string;
   url: string;
@@ -48,13 +63,20 @@ async function createBookmark(newBookmark: {
   return data.bookmark;
 }
 
-// Update bookmark via API
 async function updateBookmark({
   id,
   data,
 }: {
   id: string;
-  data: Partial<BookmarkItem> & { categoryId?: string; tags?: string[] };
+  data: {
+    title?: string;
+    url?: string;
+    description?: string | null;
+    categoryId?: string | null;
+    tags?: string[];
+    favicon?: string | null;
+    isPinned?: boolean;
+  };
 }): Promise<BookmarkItem> {
   const res = await fetch(`/api/bookmark/${id}`, {
     method: "PATCH",
@@ -70,7 +92,6 @@ async function updateBookmark({
   return result.bookmark;
 }
 
-// Delete bookmark via API
 async function deleteBookmark(id: string): Promise<string> {
   const res = await fetch(`/api/bookmark/${id}`, {
     method: "DELETE",
@@ -83,12 +104,46 @@ async function deleteBookmark(id: string): Promise<string> {
   return id;
 }
 
-// --- Hooks Export ---
+async function createCategory(newCategory: {
+  name: string;
+  color?: string;
+  icon?: string;
+}): Promise<BookmarkCategory> {
+  const res = await fetch("/api/category", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(newCategory),
+  });
 
-export function useBookmarksQuery() {
+  if (!res.ok) {
+    throw new Error("Failed to create category");
+  }
+
+  const data = await res.json();
+  return data.category;
+}
+
+// ----------------------------------------------------
+// Custom Hooks with TanStack Query (10 min stale time caching)
+// ----------------------------------------------------
+
+export function useBookmarksQuery(enabled: boolean = true) {
   return useQuery({
     queryKey: ["bookmarks"],
     queryFn: fetchBookmarks,
+    staleTime: 1000 * 60 * 10, // 10 Minutes memory cache (prevents DB calls on page navigation)
+    gcTime: 1000 * 60 * 30, // 30 Minutes Garbage Collection Time
+    enabled,
+  });
+}
+
+export function useCategoriesQuery(enabled: boolean = true) {
+  return useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchCategories,
+    staleTime: 1000 * 60 * 10, // 10 Minutes memory cache
+    gcTime: 1000 * 60 * 30,
+    enabled,
   });
 }
 
@@ -97,7 +152,11 @@ export function useCreateBookmarkMutation() {
 
   return useMutation({
     mutationFn: createBookmark,
-    onSuccess: () => {
+    onSuccess: (newBm) => {
+      queryClient.setQueryData<BookmarkItem[]>(["bookmarks"], (old = []) => [
+        newBm,
+        ...old,
+      ]);
       queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
     },
   });
@@ -108,7 +167,10 @@ export function useUpdateBookmarkMutation() {
 
   return useMutation({
     mutationFn: updateBookmark,
-    onSuccess: () => {
+    onSuccess: (updatedBm) => {
+      queryClient.setQueryData<BookmarkItem[]>(["bookmarks"], (old = []) =>
+        old.map((bm) => (bm.id === updatedBm.id ? updatedBm : bm))
+      );
       queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
     },
   });
@@ -119,8 +181,26 @@ export function useDeleteBookmarkMutation() {
 
   return useMutation({
     mutationFn: deleteBookmark,
-    onSuccess: () => {
+    onSuccess: (deletedId) => {
+      queryClient.setQueryData<BookmarkItem[]>(["bookmarks"], (old = []) =>
+        old.filter((bm) => bm.id !== deletedId)
+      );
       queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+    },
+  });
+}
+
+export function useCreateCategoryMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: createCategory,
+    onSuccess: (newCat) => {
+      queryClient.setQueryData<BookmarkCategory[]>(["categories"], (old = []) => [
+        ...old,
+        newCat,
+      ]);
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
     },
   });
 }

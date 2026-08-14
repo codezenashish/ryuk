@@ -5,6 +5,13 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useBookmarkStore } from "@/store/useBookmarkStore";
+import {
+  useBookmarksQuery,
+  useCategoriesQuery,
+  useCreateBookmarkMutation,
+  useUpdateBookmarkMutation,
+  useDeleteBookmarkMutation,
+} from "@/features/bookmarks/hooks/use-bookmark-queries";
 import { BookmarkGrid } from "@/features/bookmarks/components/bookmark-grid";
 import { CategoryFilter } from "@/features/bookmarks/components/category-filter";
 import { AddBookmarkModal } from "@/features/bookmarks/dialogs/add-bookmark-modal";
@@ -15,20 +22,23 @@ export default function DashboardPage() {
   const { isLoaded, isSignedIn, user } = useUser();
   const router = useRouter();
 
+  const { data: queryBookmarks, isLoading: isLoadingBookmarks } = useBookmarksQuery(isSignedIn);
+  const { data: queryCategories } = useCategoriesQuery(isSignedIn);
+
+  const createBookmarkMutation = useCreateBookmarkMutation();
+  const updateBookmarkMutation = useUpdateBookmarkMutation();
+  const deleteBookmarkMutation = useDeleteBookmarkMutation();
+
   const {
-    bookmarks,
-    categories,
+    bookmarks: storeBookmarks,
+    categories: storeCategories,
+    setBookmarks,
+    setCategories,
     selectedCategoryId,
     searchQuery,
     layoutMode,
     isAddModalOpen,
     editingBookmark,
-    isLoadingDb,
-    fetchBookmarksFromDb,
-    fetchCategoriesFromDb,
-    addBookmark,
-    updateBookmark,
-    deleteBookmark,
     togglePinBookmark,
     setSelectedCategory,
     setLayoutMode,
@@ -43,11 +53,19 @@ export default function DashboardPage() {
   }, [isLoaded, isSignedIn, router]);
 
   useEffect(() => {
-    if (isSignedIn) {
-      fetchBookmarksFromDb();
-      fetchCategoriesFromDb();
+    if (queryBookmarks) {
+      setBookmarks(queryBookmarks);
     }
-  }, [isSignedIn, fetchBookmarksFromDb, fetchCategoriesFromDb]);
+  }, [queryBookmarks, setBookmarks]);
+
+  useEffect(() => {
+    if (queryCategories) {
+      setCategories(queryCategories);
+    }
+  }, [queryCategories, setCategories]);
+
+  const bookmarks = queryBookmarks || storeBookmarks;
+  const categories = queryCategories || storeCategories;
 
   const filteredBookmarks = useMemo(() => {
     return bookmarks.filter((b) => {
@@ -65,7 +83,7 @@ export default function DashboardPage() {
     });
   }, [bookmarks, selectedCategoryId, searchQuery]);
 
-  const handleSaveBookmark = (data: {
+  const handleSaveBookmark = async (data: {
     title: string;
     url: string;
     description?: string;
@@ -73,38 +91,38 @@ export default function DashboardPage() {
     tags: string[];
     favicon?: string;
   }) => {
-    const selectedCat = categories.find((c) => c.id === data.categoryId) || null;
-    const formattedTags = data.tags.map((t) => ({ id: t, name: t }));
-
     if (editingBookmark) {
-      updateBookmark(editingBookmark.id, {
-        title: data.title,
-        url: data.url,
-        description: data.description,
-        category: selectedCat,
-        tags: formattedTags,
-        favicon: data.favicon,
+      await updateBookmarkMutation.mutateAsync({
+        id: editingBookmark.id,
+        data: {
+          title: data.title,
+          url: data.url,
+          description: data.description,
+          categoryId: data.categoryId,
+          tags: data.tags,
+          favicon: data.favicon,
+        },
       });
     } else {
-      addBookmark({
+      await createBookmarkMutation.mutateAsync({
         title: data.title,
         url: data.url,
         description: data.description,
-        category: selectedCat,
-        tags: formattedTags,
+        categoryId: data.categoryId,
+        tags: data.tags,
         favicon: data.favicon,
-        isPinned: false,
       });
     }
+    closeAddModal();
   };
 
-  const handleDeleteBookmark = (target: string | BookmarkItem) => {
+  const handleDeleteBookmark = async (target: string | BookmarkItem) => {
     const id = typeof target === "string" ? target : target.id;
-    deleteBookmark(id);
+    await deleteBookmarkMutation.mutateAsync(id);
   };
 
-  // 1. Loading state until Clerk completes initialization
-  if (!isLoaded || isLoadingDb) {
+  // 1. Loading state until Auth and Bookmarks Query complete
+  if (!isLoaded || (isLoadingBookmarks && bookmarks.length === 0)) {
     return (
       <div className="py-6 space-y-6">
         <div className="flex justify-between items-center">

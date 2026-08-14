@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { createPortal } from "react-dom";
 import { BookmarkItem, BookmarkCategory } from "../components/bookmark-card";
 import { bookmarkSchema } from "@/lib/validations/bookmark";
@@ -230,9 +231,12 @@ export function AddBookmarkModal({
             <div className="relative flex items-center">
               <div className="absolute left-3 flex h-5 w-5 items-center justify-center">
                 {favicon && !favError ? (
-                  <img
+                  <Image
                     src={favicon}
                     alt=""
+                    width={16}
+                    height={16}
+                    unoptimized
                     className="h-4 w-4 object-contain rounded"
                     onError={() => setFavError(true)}
                   />

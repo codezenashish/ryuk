@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   GlobalIcon,
@@ -74,9 +75,12 @@ export function BookmarkCard({
   const content = (
     <>
       {faviconUrl && !imgError ? (
-        <img
+        <Image
           src={faviconUrl}
           alt=""
+          width={20}
+          height={20}
+          unoptimized
           className="h-5 w-5 shrink-0 rounded object-contain"
           onError={() => setImgError(true)}
         />

@@ -2,26 +2,38 @@
 
 import { useEffect, useMemo } from "react";
 import { useBookmarkStore } from "@/store/useBookmarkStore";
+import {
+  useBookmarksQuery,
+  useCategoriesQuery,
+  useCreateBookmarkMutation,
+  useUpdateBookmarkMutation,
+  useDeleteBookmarkMutation,
+} from "@/features/bookmarks/hooks/use-bookmark-queries";
 import { BookmarkGrid } from "@/features/bookmarks/components/bookmark-grid";
 import { CategoryFilter } from "@/features/bookmarks/components/category-filter";
 import { AddBookmarkModal } from "@/features/bookmarks/dialogs/add-bookmark-modal";
 import { BookmarkItem } from "@/features/bookmarks/components/bookmark-card";
 import { Plus, LayoutGrid, List } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function BookmarksPage() {
+  const { data: queryBookmarks, isLoading: isLoadingBookmarks } = useBookmarksQuery();
+  const { data: queryCategories } = useCategoriesQuery();
+
+  const createBookmarkMutation = useCreateBookmarkMutation();
+  const updateBookmarkMutation = useUpdateBookmarkMutation();
+  const deleteBookmarkMutation = useDeleteBookmarkMutation();
+
   const {
-    bookmarks,
-    categories,
+    bookmarks: storeBookmarks,
+    categories: storeCategories,
+    setBookmarks,
+    setCategories,
     selectedCategoryId,
     searchQuery,
     layoutMode,
     isAddModalOpen,
     editingBookmark,
-    fetchBookmarksFromDb,
-    fetchCategoriesFromDb,
-    addBookmark,
-    updateBookmark,
-    deleteBookmark,
     togglePinBookmark,
     setSelectedCategory,
     setLayoutMode,
@@ -30,9 +42,19 @@ export default function BookmarksPage() {
   } = useBookmarkStore();
 
   useEffect(() => {
-    fetchBookmarksFromDb();
-    fetchCategoriesFromDb();
-  }, [fetchBookmarksFromDb, fetchCategoriesFromDb]);
+    if (queryBookmarks) {
+      setBookmarks(queryBookmarks);
+    }
+  }, [queryBookmarks, setBookmarks]);
+
+  useEffect(() => {
+    if (queryCategories) {
+      setCategories(queryCategories);
+    }
+  }, [queryCategories, setCategories]);
+
+  const bookmarks = queryBookmarks || storeBookmarks;
+  const categories = queryCategories || storeCategories;
 
   // Filter Bookmarks by search query (from nav) and category
   const filteredBookmarks = useMemo(() => {
@@ -51,7 +73,7 @@ export default function BookmarksPage() {
     });
   }, [bookmarks, selectedCategoryId, searchQuery]);
 
-  const handleSaveBookmark = (data: {
+  const handleSaveBookmark = async (data: {
     title: string;
     url: string;
     description?: string;
@@ -59,35 +81,51 @@ export default function BookmarksPage() {
     tags: string[];
     favicon?: string;
   }) => {
-    const selectedCat = categories.find((c) => c.id === data.categoryId) || null;
-    const formattedTags = data.tags.map((t) => ({ id: t, name: t }));
-
     if (editingBookmark) {
-      updateBookmark(editingBookmark.id, {
-        title: data.title,
-        url: data.url,
-        description: data.description,
-        category: selectedCat,
-        tags: formattedTags,
-        favicon: data.favicon,
+      await updateBookmarkMutation.mutateAsync({
+        id: editingBookmark.id,
+        data: {
+          title: data.title,
+          url: data.url,
+          description: data.description,
+          categoryId: data.categoryId,
+          tags: data.tags,
+          favicon: data.favicon,
+        },
       });
     } else {
-      addBookmark({
+      await createBookmarkMutation.mutateAsync({
         title: data.title,
         url: data.url,
         description: data.description,
-        category: selectedCat,
-        tags: formattedTags,
+        categoryId: data.categoryId,
+        tags: data.tags,
         favicon: data.favicon,
-        isPinned: false,
       });
     }
+    closeAddModal();
   };
 
-  const handleDeleteBookmark = (target: string | BookmarkItem) => {
+  const handleDeleteBookmark = async (target: string | BookmarkItem) => {
     const id = typeof target === "string" ? target : target.id;
-    deleteBookmark(id);
+    await deleteBookmarkMutation.mutateAsync(id);
   };
+
+  if (isLoadingBookmarks && bookmarks.length === 0) {
+    return (
+      <div className="py-6 space-y-6">
+        <div className="flex justify-between items-center">
+          <Skeleton className="h-8 w-48 bg-paper-3 rounded-lg" />
+          <Skeleton className="h-9 w-32 bg-paper-3 rounded-xl" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <Skeleton className="h-40 w-full bg-paper-3 rounded-xl" />
+          <Skeleton className="h-40 w-full bg-paper-3 rounded-xl" />
+          <Skeleton className="h-40 w-full bg-paper-3 rounded-xl" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="py-6 space-y-6">
