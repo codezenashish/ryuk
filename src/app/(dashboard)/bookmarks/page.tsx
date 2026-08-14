@@ -48,19 +48,7 @@ export default function BookmarksPage() {
     closeAddModal,
   } = useBookmarkStore();
 
-  useEffect(() => {
-    if (queryBookmarks) {
-      setBookmarks(queryBookmarks);
-    }
-  }, [queryBookmarks, setBookmarks]);
-
-  useEffect(() => {
-    if (queryCategories) {
-      setCategories(queryCategories);
-    }
-  }, [queryCategories, setCategories]);
-
-  const bookmarks = queryBookmarks.length > 0 ? queryBookmarks : storeBookmarks;
+  const bookmarks = queryBookmarks;
   const categories = queryCategories || storeCategories;
 
   // Filter Bookmarks by search query and category
@@ -84,6 +72,7 @@ export default function BookmarksPage() {
     url: string;
     description?: string;
     categoryId?: string;
+    categoryName?: string;
     tags: string[];
     favicon?: string;
   }) => {
@@ -104,6 +93,7 @@ export default function BookmarksPage() {
         url: data.url,
         description: data.description,
         categoryId: data.categoryId,
+        categoryName: data.categoryName,
         favicon: data.favicon,
       });
     }

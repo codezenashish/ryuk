@@ -4,12 +4,13 @@ import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { getBookmarksQueryKey } from "./use-bookmarks";
+import { useNotificationStore } from "@/store/useNotificationStore";
 
 /**
  * Real-Time Multi-Device Sync Hook (PC ↔ Mobile)
  * Listens to Supabase Realtime Channel (`postgres_changes`) on the `bookmark` table
  * filtered by the user's `userId`. On INSERT, UPDATE, or DELETE, invalidates
- * the TanStack query cache for instantaneous live sync across all devices.
+ * the TanStack query cache and adds a live notification to the NotificationBall.
  */
 export function useBookmarksRealtime(userId?: string) {
   const queryClient = useQueryClient();
@@ -41,6 +42,20 @@ export function useBookmarksRealtime(userId?: string) {
             queryKey: getBookmarksQueryKey(userId),
           });
           queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+
+          // Add real-time sync notification item
+          const eventLabel =
+            payload.eventType === "INSERT"
+              ? "New bookmark added"
+              : payload.eventType === "UPDATE"
+              ? "Bookmark updated"
+              : "Bookmark deleted";
+
+          useNotificationStore.getState().addNotification({
+            title: `Device Synced ⚡`,
+            message: `${eventLabel} on another device.`,
+            type: "info",
+          });
         }
       )
       .subscribe((status) => {

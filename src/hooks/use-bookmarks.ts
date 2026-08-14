@@ -12,6 +12,8 @@ import {
 } from "@/app/actions/bookmarks";
 import { BookmarkItem } from "@/features/bookmarks/components/bookmark-card";
 
+const EMPTY_BOOKMARKS: BookmarkItem[] = [];
+
 // Helper function to resolve active query key
 export function getBookmarksQueryKey(userId?: string) {
   return userId ? ["bookmarks", userId] : ["bookmarks"];
@@ -195,7 +197,7 @@ export function useBookmarks(userId?: string) {
   });
 
   return {
-    bookmarks: query.data ?? [],
+    bookmarks: query.data ?? EMPTY_BOOKMARKS,
     isLoading: query.isLoading,
     isError: query.isError,
     error: query.error,

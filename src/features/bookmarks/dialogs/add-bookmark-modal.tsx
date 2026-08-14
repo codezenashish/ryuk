@@ -19,6 +19,7 @@ interface AddBookmarkModalProps {
     url: string;
     description?: string;
     categoryId?: string;
+    categoryName?: string;
     tags: string[];
     favicon?: string;
   }) => void;
@@ -53,30 +54,27 @@ export function AddBookmarkModal({
     return () => clearTimeout(timer);
   }, []);
 
-  const [prevInitialData, setPrevInitialData] = useState(initialData);
-  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
-
-  if (initialData !== prevInitialData || isOpen !== prevIsOpen) {
-    setPrevInitialData(initialData);
-    setPrevIsOpen(isOpen);
-    if (initialData) {
-      setTitle(initialData.title || "");
-      setUrl(initialData.url || "");
-      setFavicon(initialData.favicon || "");
-      setSelectedCategoryId(initialData.category?.id || "");
-      setCategoryName(initialData.category?.name || "");
-      setCategoryIcon(initialData.category?.icon || "Folder01Icon");
-    } else {
-      setTitle("");
-      setUrl("");
-      setFavicon("");
-      setSelectedCategoryId("");
-      setCategoryName("");
-      setCategoryIcon("Folder01Icon");
+  useEffect(() => {
+    if (isOpen) {
+      if (initialData) {
+        setTitle(initialData.title || "");
+        setUrl(initialData.url || "");
+        setFavicon(initialData.favicon || "");
+        setSelectedCategoryId(initialData.category?.id || "");
+        setCategoryName(initialData.category?.name || "");
+        setCategoryIcon(initialData.category?.icon || "Folder01Icon");
+      } else {
+        setTitle("");
+        setUrl("");
+        setFavicon("");
+        setSelectedCategoryId("");
+        setCategoryName("");
+        setCategoryIcon("Folder01Icon");
+      }
+      setFavError(false);
+      setErrors({});
     }
-    setFavError(false);
-    setErrors({});
-  }
+  }, [isOpen, initialData]);
 
   const handleFetchMetadata = useCallback(
     async (urlToFetch?: string, signal?: AbortSignal) => {
@@ -198,6 +196,7 @@ export function AddBookmarkModal({
       title: title.trim(),
       url: formattedUrl,
       categoryId: finalCategoryId || undefined,
+      categoryName: categoryName.trim() || undefined,
       tags: [],
       favicon: favicon || undefined,
     });

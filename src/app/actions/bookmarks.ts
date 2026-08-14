@@ -46,6 +46,7 @@ export async function getBookmarksAction(userId?: string) {
 
 /**
  * Create a new bookmark in the database via Drizzle ORM.
+ * Verifies foreign key relations before insertion to prevent invalid category ID crashes.
  */
 export async function createBookmarkAction(input: CreateBookmarkInput) {
   const user = await getOrCreateDbUser();
@@ -58,13 +59,27 @@ export async function createBookmarkAction(input: CreateBookmarkInput) {
     formattedUrl = `https://${formattedUrl}`;
   }
 
-  let validCategoryId: string | null = input.categoryId || null;
+  let validCategoryId: string | null = null;
 
-  // Auto-resolve or create category by name if provided and no categoryId exists
-  if (!validCategoryId && input.categoryName) {
+  // 1. Check if categoryId is provided and exists in DB for this user
+  if (input.categoryId) {
+    const existingCat = await db.query.categories.findFirst({
+      where: and(
+        eq(categories.id, input.categoryId),
+        eq(categories.userId, user.id)
+      ),
+    });
+    if (existingCat) {
+      validCategoryId = existingCat.id;
+    }
+  }
+
+  // 2. If validCategoryId is still null but categoryName was provided, find or auto-create category in DB
+  if (!validCategoryId && input.categoryName?.trim()) {
+    const trimmedName = input.categoryName.trim();
     const existingByName = await db.query.categories.findFirst({
       where: and(
-        eq(categories.name, input.categoryName.trim()),
+        eq(categories.name, trimmedName),
         eq(categories.userId, user.id)
       ),
     });
@@ -75,7 +90,7 @@ export async function createBookmarkAction(input: CreateBookmarkInput) {
       const [newCat] = await db
         .insert(categories)
         .values({
-          name: input.categoryName.trim(),
+          name: trimmedName,
           userId: user.id,
         })
         .returning();
@@ -137,6 +152,21 @@ export async function updateBookmarkAction(
     formattedUrl = `https://${formattedUrl}`;
   }
 
+  let validCategoryId: string | null | undefined = undefined;
+  if (input.categoryId !== undefined) {
+    if (input.categoryId === null) {
+      validCategoryId = null;
+    } else {
+      const existingCat = await db.query.categories.findFirst({
+        where: and(
+          eq(categories.id, input.categoryId),
+          eq(categories.userId, user.id)
+        ),
+      });
+      validCategoryId = existingCat ? existingCat.id : null;
+    }
+  }
+
   await db
     .update(bookmarks)
     .set({
@@ -144,7 +174,7 @@ export async function updateBookmarkAction(
       ...(formattedUrl !== undefined && { url: formattedUrl }),
       ...(input.description !== undefined && { description: input.description }),
       ...(input.favicon !== undefined && { favicon: input.favicon }),
-      ...(input.categoryId !== undefined && { categoryId: input.categoryId }),
+      ...(validCategoryId !== undefined && { categoryId: validCategoryId }),
       updatedAt: new Date(),
     })
     .where(eq(bookmarks.id, id));
