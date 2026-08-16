@@ -43,25 +43,22 @@ export function Hero() {
         <div className="grid grid-cols-1 items-center gap-14 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1fr)] lg:gap-16">
           <div className="min-w-0">
             <h1 className="mb-7 font-display text-[clamp(56px,7.2vw,104px)] leading-[0.96] font-[380] tracking-[-0.035em] [&_.soft]:font-normal [&_.soft]:text-ink-3">
-              Your idea <span className="soft">deserve</span>
+              Your ideas <span className="soft">deserve</span>
               <br />
-              one home.
+              a unified home.
             </h1>
 
             <p className="mt-6 max-w-[56ch] font-body text-[18px] leading-[1.55] text-ink-2">
-              Great ideas deserve a proper home. VYRN is where you save what
-              matters, track what you&apos;re building, and organize your thoughts —
-              without the chaos of switching between five different apps. Simple
-              today, powerful as you grow.
+              Ryuk is a powerful personal knowledge base built for developers. Capture bookmarks, structure your notes, and sync seamlessly across the Web, CLI, and your browser—without the chaos of switching context.
             </p>
 
-            <div className="mt-9 flex flex-wrap items-center gap-3">
+            <div className="mt-9 flex flex-wrap items-end gap-4">
               <button
                 onClick={handleStartClick}
                 disabled={!isLoaded}
                 className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-ink bg-ink px-4 py-2.5 text-sm font-medium whitespace-nowrap text-paper transition hover:border-white hover:bg-white hover:text-paper active:translate-y-px cursor-pointer"
               >
-                <span>Get started</span>
+                <span>Sign In</span>
                 <ArrowRight className="h-4 w-4 shrink-0" />
               </button>
               <InstallCopy />

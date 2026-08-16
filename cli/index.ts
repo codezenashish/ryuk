@@ -108,7 +108,7 @@ interface NoteListResponse {
 }
 
 const CONFIG_FILE = path.join(os.homedir(), ".ryukrc");
-const DEFAULT_HOST = process.env.RYUK_SERVER_URL || "http://localhost:3000";
+const DEFAULT_HOST = process.env.RYUK_SERVER_URL || "https://ryuk-vert.vercel.app";
 
 function getConfig(): RyukConfig {
   try {
@@ -458,6 +458,18 @@ program
 /**
  * Command: ryuk login
  */
+async function isLocalhostRunning(): Promise<boolean> {
+  try {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), 1500);
+    const res = await fetch("http://localhost:3000", { signal: controller.signal });
+    clearTimeout(id);
+    return res.ok || res.status === 404;
+  } catch {
+    return false;
+  }
+}
+
 program
   .command("login")
   .description("Authenticate using your Ryuk API Key")
@@ -466,7 +478,28 @@ program
     console.log(chalk.dim("Get your API Key from your Ryuk Settings page (/setting).\n"));
 
     try {
-      const answers = await inquirer.prompt<{ apiKey: string; serverUrl: string }>([
+      const spinnerLocal = createSpinner("Checking environments...").start();
+      const isLocal = await isLocalhostRunning();
+      spinnerLocal.stop();
+
+      let serverUrl = DEFAULT_HOST;
+
+      if (isLocal) {
+        const envAnswer = await inquirer.prompt<{ serverUrl: string }>([
+          {
+            type: "list",
+            name: "serverUrl",
+            message: "Local server detected! Which environment do you want to connect to?",
+            choices: [
+              { name: "Live Production (https://ryuk-vert.vercel.app)", value: "https://ryuk-vert.vercel.app" },
+              { name: "Local Development (http://localhost:3000)", value: "http://localhost:3000" }
+            ],
+          }
+        ]);
+        serverUrl = envAnswer.serverUrl;
+      }
+
+      const answers = await inquirer.prompt<{ apiKey: string }>([
         {
           type: "password",
           name: "apiKey",
@@ -478,17 +511,11 @@ program
             }
             return true;
           },
-        },
-        {
-          type: "input",
-          name: "serverUrl",
-          message: "Ryuk Server URL:",
-          default: DEFAULT_HOST,
-        },
+        }
       ]);
 
       const apiKey = answers.apiKey.trim();
-      const serverUrl = answers.serverUrl.trim().replace(/\/$/, "");
+      serverUrl = serverUrl.trim().replace(/\/$/, "");
 
       const spinner = createSpinner("Validating API key...").start();
 
