@@ -52,11 +52,12 @@ export function NotionEditor({
 
   const [localNoteId, setLocalNoteId] = useState<string | undefined>(note?.id);
   const isSavingRef = useRef(false);
-  const pendingDataRef = useRef<any>(null);
+  const pendingDataRef = useRef<Parameters<typeof onSave>[0] | null>(null);
 
   // Sync localNoteId if parent provides it
   useEffect(() => {
     if (note?.id && note.id !== localNoteId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLocalNoteId(note.id);
     }
   }, [note?.id, localNoteId]);
@@ -85,7 +86,7 @@ export function NotionEditor({
         return;
       }
 
-      const performSave = async (data: any) => {
+      const performSave = async (data: Parameters<typeof onSave>[0]) => {
         isSavingRef.current = true;
         try {
           const savedNote = await onSave(data);

@@ -17,13 +17,17 @@ export function InstallCopy() {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true)
     const userAgent = window.navigator.userAgent.toLowerCase()
     if (userAgent.includes('win')) {
+       
       setActiveTab('windows')
     } else if (userAgent.includes('linux')) {
+       
       setActiveTab('linux')
     } else {
+       
       setActiveTab('mac')
     }
   }, [])
