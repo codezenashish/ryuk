@@ -35,8 +35,9 @@ export async function proxy(request: NextRequest) {
       },
     });
 
-    const { data } = await supabase.auth.getUser();
-    const user = data?.user;
+    const { data } = await supabase.auth.getSession();
+    const session = data?.session;
+    const user = session?.user;
 
     const protectedRoutes = [
       "/dashboard",

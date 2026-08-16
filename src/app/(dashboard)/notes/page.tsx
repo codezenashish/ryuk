@@ -43,9 +43,7 @@ export default function NotesPage() {
       noteData.folderId = activeFolderId;
     }
     const saved = await saveNote(noteData);
-    if (activeNote) {
-      setActiveNote(saved);
-    }
+    setActiveNote((prev) => (prev ? saved : null));
     return saved;
   };
 

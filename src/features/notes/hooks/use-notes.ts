@@ -14,6 +14,8 @@ export function useNotes() {
       const data = await res.json();
       return (data.notes as Note[]) || [];
     },
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   const saveNoteMutation = useMutation({
@@ -39,6 +41,7 @@ export function useNotes() {
     onMutate: async (newNoteData) => {
       await queryClient.cancelQueries({ queryKey: ["notes"] });
       const previousNotes = queryClient.getQueryData<Note[]>(["notes"]);
+      let tempId = "";
 
       if (previousNotes) {
         if (newNoteData.id) {
@@ -56,8 +59,9 @@ export function useNotes() {
               : []
           );
         } else {
+          tempId = `temp-${Date.now()}`;
           const tempNote: Note = {
-            id: `temp-${Date.now()}`,
+            id: tempId,
             title: newNoteData.title || "Untitled Note",
             content: newNoteData.content,
             tags: newNoteData.tags || [],
@@ -75,15 +79,23 @@ export function useNotes() {
         }
       }
 
-      return { previousNotes };
+      return { previousNotes, tempId };
     },
     onError: (_err, _newNote, context) => {
       if (context?.previousNotes) {
         queryClient.setQueryData(["notes"], context.previousNotes);
       }
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["notes"] });
+    onSuccess: (savedNote, variables, context) => {
+      queryClient.setQueryData<Note[]>(["notes"], (old) => {
+        if (!old) return [savedNote];
+        if (variables.id) {
+          return old.map((n) => (n.id === variables.id ? savedNote : n));
+        } else if (context?.tempId) {
+          return old.map((n) => (n.id === context.tempId ? savedNote : n));
+        }
+        return old;
+      });
     },
   });
 
@@ -146,8 +158,11 @@ export function useNotes() {
     onError: (_err, _variables, context) => {
       if (context?.previousNotes) queryClient.setQueryData(["notes"], context.previousNotes);
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["notes"] });
+    onSuccess: (updatedNote) => {
+      queryClient.setQueryData<Note[]>(["notes"], (old) => {
+        if (!old) return [];
+        return old.map((n) => (n.id === updatedNote.id ? updatedNote : n));
+      });
     },
   });
 

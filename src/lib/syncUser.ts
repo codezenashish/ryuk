@@ -2,15 +2,29 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 
-export async function getOrCreateDbUser() {
+import { cache } from "react";
+import { eq } from "drizzle-orm";
+
+export const getOrCreateDbUser = cache(async () => {
   const supabase = await createServerSupabaseClient();
   const {
-    data: { user: supabaseUser },
+    data: { session },
     error,
-  } = await supabase.auth.getUser();
+  } = await supabase.auth.getSession();
+
+  const supabaseUser = session?.user;
 
   if (error || !supabaseUser) {
     return null;
+  }
+
+  // Check if user already exists to avoid expensive UPSERT
+  const existingUser = await db.query.users.findFirst({
+    where: eq(users.id, supabaseUser.id),
+  });
+
+  if (existingUser) {
+    return existingUser;
   }
 
   const name =
@@ -40,4 +54,4 @@ export async function getOrCreateDbUser() {
     .returning();
 
   return dbUser;
-}
+});

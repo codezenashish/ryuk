@@ -22,6 +22,8 @@ export function useFolders() {
       const data = await res.json();
       return (data.folders as Folder[]) || [];
     },
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   const createFolderMutation = useMutation({
