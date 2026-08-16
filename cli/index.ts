@@ -13,32 +13,100 @@ import * as cheerio from "cheerio";
 
 function renderHtmlToCli(html: string): string {
   const $ = cheerio.load(html);
-  
-  // Style headers
-  $('h1, h2, h3, h4, h5, h6').each((_, el) => {
-    $(el).replaceWith(`\n\n${chalk.bold.blue($(el).text().toUpperCase())}\n`);
+
+  // 1. Tables
+  $('table').each((_, table) => {
+    let tableText = '\n';
+    $(table).find('tr').each((_, tr) => {
+      let rowText = '';
+      $(tr).find('th, td').each((_, cell) => {
+        const rawText = $(cell).text().trim().replace(/\n/g, ' ');
+        const display = rawText.length > 27 ? rawText.substring(0, 24) + '...' : rawText;
+        const padded = display.padEnd(27, ' ');
+        const isHeader = cell.tagName === 'th';
+        rowText += isHeader ? chalk.bold.cyan(padded) + ' | ' : padded + ' | ';
+      });
+      tableText += `  | ${rowText.trim()}\n`;
+      if ($(tr).find('th').length > 0) {
+        tableText += `  |${'-'.repeat(rowText.length + 1)}\n`;
+      }
+    });
+    $(table).replaceWith(tableText + '\n');
   });
-  
-  // Style code blocks
+
+  // 2. Code Blocks
   $('pre').each((_, el) => {
-    $(el).replaceWith(`\n${chalk.bgGray.white(" CODE ")}\n${chalk.gray($(el).text())}\n`);
-  });
-  $('code').each((_, el) => {
-    $(el).replaceWith(chalk.yellow($(el).text()));
-  });
-
-  // Blockquotes
-  $('blockquote').each((_, el) => {
-     $(el).replaceWith(`\n${chalk.italic.dim("> " + $(el).text())}\n`);
+    const codeContent = $(el).find('code').text() || $(el).text();
+    const formattedCode = codeContent
+      .replace(/\n$/, '')
+      .split('\n')
+      .map(line => `  ${chalk.gray(line)}`)
+      .join('\n');
+    $(el).replaceWith(`\n\n${chalk.bgGray.white(" CODE ")}\n${formattedCode}\n\n`);
   });
 
-  // Lists
+  // 3. Task Items (Checkboxes)
+  $('li[data-type="taskItem"]').each((_, el) => {
+    const isChecked = $(el).attr('data-checked') === 'true';
+    const checkStr = isChecked ? chalk.green('[x]') : chalk.dim('[ ]');
+    $(el).find('label').remove();
+    $(el).replaceWith(`\n  ${checkStr} ${$(el).text().trim()}`);
+  });
+
+  // 4. Regular Lists
   $('li').each((_, el) => {
-    $(el).replaceWith(`\n  • ${$(el).text()}`);
+    $(el).replaceWith(`\n  • ${$(el).text().trim()}`);
   });
 
+  // 5. Blockquotes
+  $('blockquote').each((_, el) => {
+    const quote = $(el).text().trim().split('\n').map(l => chalk.italic.dim(`> ${l}`)).join('\n');
+    $(el).replaceWith(`\n\n${quote}\n\n`);
+  });
+
+  // 6. Headers
+  $('h1, h2, h3').each((_, el) => {
+    $(el).replaceWith(`\n\n${chalk.bold.blue.underline($(el).text().trim().toUpperCase())}\n`);
+  });
+  $('h4, h5, h6').each((_, el) => {
+    $(el).replaceWith(`\n\n${chalk.bold.blue($(el).text().trim())}\n`);
+  });
+
+  // 7. Horizontal Rules
+  $('hr').each((_, el) => {
+    $(el).replaceWith(`\n${chalk.dim('----------------------------------------')}\n`);
+  });
+
+  // 8. Inline Styles & Links
+  $('a').each((_, el) => {
+    const href = $(el).attr('href');
+    const text = $(el).text();
+    if (href && href !== text) {
+      $(el).replaceWith(`${chalk.cyan(text)} ${chalk.dim(`(${href})`)}`);
+    } else {
+      $(el).replaceWith(chalk.cyan(text));
+    }
+  });
+
+  $('strong, b').each((_, el) => {
+    $(el).replaceWith(chalk.bold($(el).text()));
+  });
+
+  $('em, i').each((_, el) => {
+    $(el).replaceWith(chalk.italic($(el).text()));
+  });
+
+  $('u').each((_, el) => {
+    $(el).replaceWith(chalk.underline($(el).text()));
+  });
+
+  $('code').each((_, el) => {
+    $(el).replaceWith(chalk.yellow(` \`${$(el).text()}\` `));
+  });
+
+  // 9. Paragraphs
   $('p').each((_, el) => {
-    $(el).replaceWith(`\n${$(el).text()}\n`);
+    $(el).replaceWith(`\n${$(el).text().trim()}\n`);
   });
 
   return $.text().trim().replace(/\n{3,}/g, '\n\n');
