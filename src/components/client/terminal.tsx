@@ -138,30 +138,30 @@ export function TerminalShowcase() {
         ))}
       </div>
 
-      <div className="grid min-h-[320px] grid-cols-1 lg:grid-cols-[1fr_1.2fr]">
-        <div className="flex flex-col justify-center gap-[18px] border-b border-line p-8 lg:border-r lg:border-b-0">
+      <div className="grid min-h-80 grid-cols-1 lg:grid-cols-[1fr_1.2fr]">
+        <div className="flex flex-col justify-center gap-4.5 border-b border-line p-8 lg:border-r lg:border-b-0">
           <div className="font-display text-[32px] leading-tight tracking-[-0.02em]">
             {active.tagline}
           </div>
 
           <div className="flex flex-col gap-2.5 font-code text-[11.5px] text-ink-3">
             <div className="flex items-baseline gap-3.5">
-              <span className="w-[60px] shrink-0 text-ink-4">package</span>
+              <span className="w-15 shrink-0 text-ink-4">package</span>
               <span className="min-w-0 truncate text-ink-2">{active.pkg}</span>
             </div>
             <div className="flex items-baseline gap-3.5">
-              <span className="w-[60px] shrink-0 text-ink-4">size</span>
+              <span className="w-15 shrink-0 text-ink-4">size</span>
               <span className="text-ink-2">
                 {active.size}
                 <span className="text-ink-4"> gzipped</span>
               </span>
             </div>
             <div className="flex items-baseline gap-3.5">
-              <span className="w-[60px] shrink-0 text-ink-4">deps</span>
+              <span className="w-15 shrink-0 text-ink-4">deps</span>
               <span className="text-ink-2">{active.deps}</span>
             </div>
             <div className="flex items-baseline gap-3.5">
-              <span className="w-[60px] shrink-0 text-ink-4">since</span>
+              <span className="w-15 shrink-0 text-ink-4">since</span>
               <span className="text-ink-2">{active.since}</span>
             </div>
           </div>
