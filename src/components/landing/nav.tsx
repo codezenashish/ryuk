@@ -3,7 +3,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { Github } from "@hugeicons/core-free-icons";
 
 
-const navLinks = [
+const navLinks: { href: string; label: string }[] = [
   // { href: "/docs", label: "Docs" },
   // { href: "/playground", label: "Examples" },
   // { href: "/leaderboard", label: "Leaderboard" },
