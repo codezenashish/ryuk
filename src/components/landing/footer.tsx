@@ -35,7 +35,7 @@ const socialButtonClass =
 export function Footer() {
   return (
     <footer className="border-t border-line bg-[#080808] py-20">
-      <div className="mx-auto max-w-[1280px] px-8">
+      <div className="mx-auto max-w-7xl px-8">
         <div className="mb-16 grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
             <Link href="/" className="mb-4 flex items-center gap-3 text-ink">
@@ -46,7 +46,7 @@ export function Footer() {
                 height={32}
                 className="rounded-md"
               />*/}
-              <span className="font-display text-[26px] font-medium tracking-[-0.025em]">
+              <span className="font-display text-[26px] font-medium tracking-tight">
                 Ryuk
               </span>
             </Link>
@@ -54,54 +54,7 @@ export function Footer() {
               One place for everything you build — notes, habits, bookmarks,
               CLI, sketches, and snippets.
             </p>
-            <div className="mt-6 flex gap-2">
-              <a
-                href="https://twitter.com/ryukapp"
-                target="_blank"
-                rel="noreferrer"
-                className={socialButtonClass}
-                aria-label="X (Twitter)"
-              >
-                <svg
-                  aria-hidden="true"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                >
-                  <path d="M18.9 2H22l-7.6 8.7L23.3 22h-7.2l-5.6-7.3L4 22H1l8.1-9.3L.8 2h7.4l5.1 6.7L18.9 2Zm-1.3 18h2L6.5 4h-2l13.1 16Z" />
-                </svg>
-                <span className="sr-only">X (Twitter)</span>
-              </a>
-              <a
-                href="https://instagram.com/ryukapp"
-                target="_blank"
-                rel="noreferrer"
-                className={socialButtonClass}
-                aria-label="Instagram"
-              >
-                <svg
-                  aria-hidden="true"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                >
-                  <rect x="3" y="3" width="18" height="18" rx="5" />
-                  <circle cx="12" cy="12" r="4" />
-                  <circle
-                    cx="17.2"
-                    cy="6.8"
-                    r="1"
-                    fill="currentColor"
-                    stroke="none"
-                  />
-                </svg>
-                <span className="sr-only">Instagram</span>
-              </a>
-            </div>
+           
           </div>
           {columns.map((column) => (
             <div key={column.title}>

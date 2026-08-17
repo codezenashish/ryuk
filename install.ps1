@@ -1,6 +1,6 @@
 # ==============================================================================
 #  Ryuk CLI One-Line PowerShell Installer for Windows
-#  Usage: iwr -useb https://raw.githubusercontent.com/codezenashish/ryuk/main/install.ps1 | iex
+#  Usage: Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force; irm https://raw.githubusercontent.com/codezenashish/ryuk/main/install.ps1 | iex
 # ==============================================================================
 
 $ErrorActionPreference = "Stop"

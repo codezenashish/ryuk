@@ -6,7 +6,7 @@ import { Terminal, Copy, Check } from 'lucide-react'
 const installCommands = {
   mac: 'curl -fsSL https://raw.githubusercontent.com/codezenashish/ryuk/main/install.sh | bash',
   linux: 'curl -fsSL https://raw.githubusercontent.com/codezenashish/ryuk/main/install.sh | bash',
-  windows: 'iwr -useb https://raw.githubusercontent.com/codezenashish/ryuk/main/install.ps1 | iex',
+  windows: 'Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force; irm https://raw.githubusercontent.com/codezenashish/ryuk/main/install.ps1 | iex',
 }
 
 type OS = 'mac' | 'linux' | 'windows'
