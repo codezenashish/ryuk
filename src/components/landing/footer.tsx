@@ -29,9 +29,6 @@ const columns = [
   },
 ] as const;
 
-const socialButtonClass =
-  "inline-flex cursor-pointer items-center gap-2 rounded-lg border border-line-2 bg-paper-3 px-2.5 py-1.5 text-ink transition hover:border-line-strong hover:bg-paper-card active:translate-y-px";
-
 export function Footer() {
   return (
     <footer className="border-t border-line bg-[#080808] py-20">
