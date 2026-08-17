@@ -4,10 +4,10 @@ import { Github } from "@hugeicons/core-free-icons";
 
 
 const navLinks = [
-  { href: "/docs", label: "Docs" },
-  { href: "/playground", label: "Examples" },
-  { href: "/leaderboard", label: "Leaderboard" },
-  { href: "/docs#themes", label: "Themes" },
+  // { href: "/docs", label: "Docs" },
+  // { href: "/playground", label: "Examples" },
+  // { href: "/leaderboard", label: "Leaderboard" },
+  // { href: "/docs#themes", label: "Themes" },
 ];
 
 export function Nav() {

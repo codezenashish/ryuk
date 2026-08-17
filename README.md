@@ -115,7 +115,7 @@ End-users can install the CLI globally without cloning the repository.
 
 - **Windows (PowerShell)**
   ```powershell
-  Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force; irm https://raw.githubusercontent.com/codezenashish/ryuk/main/install.ps1 | iex
+  irm https://raw.githubusercontent.com/codezenashish/ryuk/main/install.ps1 | iex
   ```
 
 #### Local Development Installation
