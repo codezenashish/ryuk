@@ -9,6 +9,9 @@ A unified developer workflow ecosystem featuring a centralized web application, 
 
 ---
 
+![image](/public/landing.png)
+
+
 ## Overview
 
 This project provides a fully integrated toolset across three interfaces:
