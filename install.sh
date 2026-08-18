@@ -2,7 +2,7 @@
 
 # ==============================================================================
 #  Ryuk CLI One-Line Shell Installer for Linux & macOS (Bash, Zsh, Fish)
-#  Usage: curl -fsSL https://raw.githubusercontent.com/codezenashish/ryuk/main/install.sh | bash
+#  Usage: curl -fsSL https://raw.githubusercontent.com/codezenashish/devnest/main/install.sh | bash
 # ==============================================================================
 
 set -e
@@ -48,7 +48,7 @@ INSTALL_DIR="$HOME/.local/bin"
 mkdir -p "$RYUK_DIR"
 mkdir -p "$INSTALL_DIR"
 
-RAW_URL="https://raw.githubusercontent.com/codezenashish/ryuk/main/dist/cli.js"
+RAW_URL="https://raw.githubusercontent.com/codezenashish/devnest/main/dist/cli.js"
 
 echo -e "${CYAN}ℹ Installing Ryuk executable binary...${NC}"
 if [ -f "./dist/cli.js" ]; then

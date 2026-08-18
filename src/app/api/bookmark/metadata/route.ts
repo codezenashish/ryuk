@@ -3,14 +3,21 @@ import * as cheerio from "cheerio";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const targetUrl = searchParams.get("url");
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
 
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders });
+}
+
+async function fetchMetadata(targetUrl: string | null) {
   if (!targetUrl) {
     return NextResponse.json(
       { error: "URL query parameter is required" },
-      { status: 400 }
+      { status: 400, headers: corsHeaders }
     );
   }
 
@@ -29,7 +36,7 @@ export async function GET(req: NextRequest) {
   } catch {
     return NextResponse.json(
       { error: "Invalid URL provided" },
-      { status: 400 }
+      { status: 400, headers: corsHeaders }
     );
   }
 
@@ -60,7 +67,7 @@ export async function GET(req: NextRequest) {
         description: "",
         favicon: googleFavicon,
         domain,
-      });
+      }, { headers: corsHeaders });
     }
 
     // Read only first 30KB of HTML stream (where <title> & <meta> reside)
@@ -120,7 +127,7 @@ export async function GET(req: NextRequest) {
       description: description.trim().replace(/\s+/g, " "),
       favicon,
       domain,
-    });
+    }, { headers: corsHeaders });
   } catch {
     // If request times out or fails, instantly return clean fallback
     return NextResponse.json({
@@ -128,6 +135,24 @@ export async function GET(req: NextRequest) {
       description: "",
       favicon: googleFavicon,
       domain,
-    });
+    }, { headers: corsHeaders });
+  }
+}
+
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const targetUrl = searchParams.get("url");
+  return fetchMetadata(targetUrl);
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+    return fetchMetadata(body.url);
+  } catch {
+    return NextResponse.json(
+      { error: "Invalid JSON body" },
+      { status: 400, headers: corsHeaders }
+    );
   }
 }
