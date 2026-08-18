@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Ryuk — Bookmark Manager",
+  "version": "1.0.0",
+  "description": "1-click tab bookmarking for Ryuk Bookmark Manager.",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting",
+    "tabs"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "action": {
+    "default_title": "Save to Ryuk",
+    "default_popup": "popup.html"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  }
+}
