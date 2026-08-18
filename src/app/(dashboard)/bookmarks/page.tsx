@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useAuth } from "@/providers/auth-provider";
 import { useBookmarkStore } from "@/store/useBookmarkStore";
 import { useBookmarks } from "@/hooks/use-bookmarks";
@@ -9,13 +9,15 @@ import { useCategoriesQuery } from "@/features/bookmarks/hooks/use-bookmark-quer
 import { BookmarkGrid } from "@/features/bookmarks/components/bookmark-grid";
 import { CategoryFilter } from "@/features/bookmarks/components/category-filter";
 import { AddBookmarkModal } from "@/features/bookmarks/dialogs/add-bookmark-modal";
+import { ImportBookmarksModal } from "@/features/bookmarks/dialogs/import-bookmarks-modal";
 import { BookmarkItem } from "@/features/bookmarks/components/bookmark-card";
-import { Plus, LayoutGrid, List } from "lucide-react";
+import { Plus, LayoutGrid, List, Upload } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function BookmarksPage() {
   const { user } = useAuth();
   const userId = user?.id;
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
   // 1. Activate Realtime Subscription for instantaneous PC ↔ Mobile sync
   useBookmarksRealtime(userId);
@@ -128,6 +130,15 @@ export default function BookmarksPage() {
         categories={categories}
         initialData={editingBookmark}
       />
+      <ImportBookmarksModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        onSuccess={() => {
+          setIsImportModalOpen(false);
+          // Allow realtime to sync or just reload to be safe
+          window.location.reload();
+        }}
+      />
 
       {/* Top Bar: Category Filter on left, View Toggle & Add Button on right */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -166,6 +177,15 @@ export default function BookmarksPage() {
           </div>
 
           {/* Add Bookmark Trigger */}
+          <button
+            type="button"
+            onClick={() => setIsImportModalOpen(true)}
+            className="inline-flex items-center gap-2 rounded-xl bg-paper-3 px-4 py-2 text-xs font-medium text-ink hover:bg-line-2 transition shadow-sm cursor-pointer active:translate-y-px border border-line-2"
+          >
+            <Upload className="h-4 w-4" />
+            <span className="hidden sm:inline">Import</span>
+          </button>
+          
           <button
             type="button"
             onClick={() => openAddModal(null)}
