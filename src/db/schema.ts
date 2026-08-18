@@ -64,6 +64,7 @@ export const bookmarks = pgTable(
     url: text("url").notNull(),
     description: text("description"),
     favicon: text("favicon"),
+    isPinned: boolean("isPinned").default(false).notNull(),
     userId: text("userId")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),

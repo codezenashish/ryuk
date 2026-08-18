@@ -19,7 +19,7 @@ export async function PATCH(
 
     const { id } = await params;
     const body = await req.json();
-    const { title, url, description, categoryId, favicon } = body;
+    const { title, url, description, categoryId, favicon, isPinned } = body;
 
     // Check ownership
     const existing = await db.query.bookmarks.findFirst({
@@ -46,6 +46,7 @@ export async function PATCH(
         description: description !== undefined ? description : existing.description,
         favicon: favicon !== undefined ? favicon : existing.favicon,
         categoryId: categoryId !== undefined ? categoryId : existing.categoryId,
+        isPinned: isPinned !== undefined ? isPinned : existing.isPinned,
         updatedAt: new Date(),
       })
       .where(eq(bookmarks.id, id));

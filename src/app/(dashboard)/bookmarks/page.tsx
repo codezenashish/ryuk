@@ -45,7 +45,6 @@ export default function BookmarksPage() {
     selectedTags,
     dateRange,
     filterStatus,
-    togglePinBookmark,
     setSelectedCategory,
     setLayoutMode,
     openAddModal,
@@ -60,7 +59,7 @@ export default function BookmarksPage() {
 
   // Filter Bookmarks by search query and category
   const filteredBookmarks = useMemo(() => {
-    return bookmarks.filter((b) => {
+    const filtered = bookmarks.filter((b) => {
       const matchesCategory = selectedCategoryId
         ? b.category?.id === selectedCategoryId
         : true;
@@ -96,6 +95,12 @@ export default function BookmarksPage() {
 
       return matchesCategory && matchesSearch && matchesStatus && matchesTags && matchesDate;
     });
+
+    return filtered.sort((a, b) => {
+      if (a.isPinned && !b.isPinned) return -1;
+      if (!a.isPinned && b.isPinned) return 1;
+      return 0;
+    });
   }, [bookmarks, selectedCategoryId, debouncedSearch, selectedTags, dateRange, filterStatus]);
 
   const handleSaveBookmark = (data: {
@@ -129,6 +134,13 @@ export default function BookmarksPage() {
       });
     }
     closeAddModal();
+  };
+
+  const handlePinBookmark = (id: string) => {
+    const bookmark = bookmarks.find(b => b.id === id);
+    if (bookmark) {
+      updateBookmark({ id, input: { isPinned: !bookmark.isPinned } });
+    }
   };
 
   const handleDeleteBookmark = (target: string | BookmarkItem) => {
@@ -240,7 +252,7 @@ export default function BookmarksPage() {
         layoutMode={layoutMode}
         onEdit={(bm) => openAddModal(bm)}
         onDelete={handleDeleteBookmark}
-        onPin={togglePinBookmark}
+        onPin={handlePinBookmark}
         onAddClick={() => openAddModal(null)}
       />
     </div>

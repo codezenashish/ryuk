@@ -12,6 +12,7 @@ export interface CreateBookmarkInput {
   favicon?: string | null;
   categoryId?: string | null;
   categoryName?: string | null;
+  isPinned?: boolean;
 }
 
 export interface UpdateBookmarkInput {
@@ -20,6 +21,7 @@ export interface UpdateBookmarkInput {
   description?: string | null;
   favicon?: string | null;
   categoryId?: string | null;
+  isPinned?: boolean;
 }
 
 /**
@@ -106,6 +108,7 @@ export async function createBookmarkAction(input: CreateBookmarkInput) {
       url: formattedUrl,
       description: input.description?.trim() || null,
       favicon: input.favicon || null,
+      isPinned: input.isPinned ?? false,
       userId: user.id,
       categoryId: validCategoryId,
     })
@@ -175,6 +178,7 @@ export async function updateBookmarkAction(
       ...(input.description !== undefined && { description: input.description }),
       ...(input.favicon !== undefined && { favicon: input.favicon }),
       ...(validCategoryId !== undefined && { categoryId: validCategoryId }),
+      ...(input.isPinned !== undefined && { isPinned: input.isPinned }),
       updatedAt: new Date(),
     })
     .where(eq(bookmarks.id, id));

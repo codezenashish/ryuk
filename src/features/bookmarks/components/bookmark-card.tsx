@@ -8,6 +8,7 @@ import {
   ExternalLinkIcon,
   Delete02Icon,
 } from "@hugeicons/core-free-icons";
+import { Star } from "lucide-react";
 
 export interface BookmarkTag {
   id: string;
@@ -47,7 +48,9 @@ interface BookmarkCardProps {
 
 export function BookmarkCard({
   bookmark,
+  onEdit,
   onDelete,
+  onPin,
   isDeleting = false,
 }: BookmarkCardProps) {
   const [imgError, setImgError] = useState(false);
@@ -72,6 +75,14 @@ export function BookmarkCard({
     e.stopPropagation();
     if (onDelete) {
       onDelete(bookmark);
+    }
+  };
+
+  const handlePin = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onPin) {
+      onPin(bookmark.id);
     }
   };
 
@@ -129,6 +140,20 @@ export function BookmarkCard({
         >
           <HugeiconsIcon icon={ExternalLinkIcon} size={15} />
         </a>
+      )}
+      {onPin && (
+        <button
+          type="button"
+          aria-label={bookmark.isPinned ? `Unpin ${bookmark.title}` : `Pin ${bookmark.title}`}
+          onClick={handlePin}
+          className={`transition-colors p-1 cursor-pointer ${
+            bookmark.isPinned 
+              ? "text-yellow-500 hover:text-yellow-600" 
+              : "text-ink-4 hover:text-ink"
+          }`}
+        >
+          <Star className="h-4 w-4" fill={bookmark.isPinned ? "currentColor" : "none"} />
+        </button>
       )}
       {onDelete && (
         <button

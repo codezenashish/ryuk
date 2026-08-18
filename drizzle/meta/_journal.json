@@ -15,6 +15,13 @@
       "when": 1786725445860,
       "tag": "0001_daffy_shadowcat",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1787096188451,
+      "tag": "0002_goofy_pixie",
+      "breakpoints": true
     }
   ]
 }
