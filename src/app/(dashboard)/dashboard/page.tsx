@@ -19,6 +19,10 @@ export default function DashboardPage() {
     }
   };
 
+  const handleInlineEdit = (id: string, newTitle: string) => {
+    updateBookmark({ id, input: { title: newTitle } });
+  };
+
   return (
     <div className="py-6 space-y-8">
       <div>
@@ -43,6 +47,7 @@ export default function DashboardPage() {
           bookmarks={pinnedBookmarks} 
           isLoading={isLoading && bookmarks.length === 0} 
           onPin={handlePinBookmark}
+          onInlineEdit={handleInlineEdit}
           emptyTitle="No pinned bookmarks"
           emptyDescription="Star your most important bookmarks to see them here for quick access."
         />

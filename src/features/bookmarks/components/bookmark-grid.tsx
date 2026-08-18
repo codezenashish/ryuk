@@ -9,6 +9,7 @@ interface BookmarkGridProps {
   isLoading?: boolean;
   layoutMode?: "grid" | "list";
   onEdit?: (bookmark: BookmarkItem) => void;
+  onInlineEdit?: (id: string, newTitle: string) => void;
   onDelete?: (bookmark: BookmarkItem | string) => void;
   onPin?: (id: string) => void;
   onAddClick?: () => void;
@@ -21,6 +22,7 @@ export function BookmarkGrid({
   isLoading = false,
   layoutMode = "grid",
   onEdit,
+  onInlineEdit,
   onDelete,
   onPin,
   onAddClick,
@@ -106,6 +108,7 @@ export function BookmarkGrid({
           bookmark={bookmark}
           layoutMode={layoutMode}
           onEdit={onEdit}
+          onInlineEdit={onInlineEdit}
           onDelete={onDelete}
           onPin={onPin}
         />

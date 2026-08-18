@@ -143,6 +143,10 @@ export default function BookmarksPage() {
     }
   };
 
+  const handleInlineEdit = (id: string, newTitle: string) => {
+    updateBookmark({ id, input: { title: newTitle } });
+  };
+
   const handleDeleteBookmark = (target: string | BookmarkItem) => {
     const id = typeof target === "string" ? target : target.id;
     deleteBookmark(id);
@@ -251,6 +255,7 @@ export default function BookmarksPage() {
         bookmarks={filteredBookmarks}
         layoutMode={layoutMode}
         onEdit={(bm) => openAddModal(bm)}
+        onInlineEdit={handleInlineEdit}
         onDelete={handleDeleteBookmark}
         onPin={handlePinBookmark}
         onAddClick={() => openAddModal(null)}
