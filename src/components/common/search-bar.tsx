@@ -6,24 +6,28 @@ import { Search, X } from "lucide-react";
 interface SearchBarProps {
   placeholder?: string;
   onSearch?: (query: string) => void;
+  value?: string;
   className?: string;
 }
 
 export function SearchBar({
   placeholder = "Search bookmarks, notes, tools...",
   onSearch,
+  value,
   className = "",
 }: SearchBarProps) {
-  const [query, setQuery] = useState("");
+  const [internalQuery, setInternalQuery] = useState("");
+  
+  const query = value !== undefined ? value : internalQuery;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
-    setQuery(val);
+    setInternalQuery(val);
     if (onSearch) onSearch(val);
   };
 
   const handleClear = () => {
-    setQuery("");
+    setInternalQuery("");
     if (onSearch) onSearch("");
   };
 

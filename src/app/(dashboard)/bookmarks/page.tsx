@@ -8,9 +8,12 @@ import { useBookmarksRealtime } from "@/hooks/use-bookmarks-realtime";
 import { useCategoriesQuery } from "@/features/bookmarks/hooks/use-bookmark-queries";
 import { BookmarkGrid } from "@/features/bookmarks/components/bookmark-grid";
 import { CategoryFilter } from "@/features/bookmarks/components/category-filter";
+import { AdvancedFilters } from "@/features/bookmarks/components/advanced-filters";
 import { AddBookmarkModal } from "@/features/bookmarks/dialogs/add-bookmark-modal";
 import { ImportBookmarksModal } from "@/features/bookmarks/dialogs/import-bookmarks-modal";
 import { BookmarkItem } from "@/features/bookmarks/components/bookmark-card";
+import { useSearchStore } from "@/store/useSearchStore";
+import { useDebounce } from "@/hooks/use-debounce";
 import { Plus, LayoutGrid, List, Upload } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -36,16 +39,21 @@ export default function BookmarksPage() {
   const {
     categories: storeCategories,
     selectedCategoryId,
-    searchQuery,
     layoutMode,
     isAddModalOpen,
     editingBookmark,
+    selectedTags,
+    dateRange,
+    filterStatus,
     togglePinBookmark,
     setSelectedCategory,
     setLayoutMode,
     openAddModal,
     closeAddModal,
   } = useBookmarkStore();
+
+  const { query } = useSearchStore();
+  const debouncedSearch = useDebounce(query, 300);
 
   const bookmarks = queryBookmarks;
   const categories = queryCategories || storeCategories;
@@ -56,15 +64,39 @@ export default function BookmarksPage() {
       const matchesCategory = selectedCategoryId
         ? b.category?.id === selectedCategoryId
         : true;
-      const matchesSearch = searchQuery
-        ? b.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          b.url.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          b.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      
+      const queryLower = debouncedSearch.toLowerCase();
+      const matchesSearch = queryLower
+        ? b.title.toLowerCase().includes(queryLower) ||
+          b.url.toLowerCase().includes(queryLower) ||
+          b.description?.toLowerCase().includes(queryLower)
         : true;
 
-      return matchesCategory && matchesSearch;
+      const matchesStatus = filterStatus === "pinned" ? b.isPinned : true;
+
+      const matchesTags = selectedTags.length > 0 
+        ? selectedTags.some(tag => b.tags?.map(t => t.name).includes(tag))
+        : true;
+
+      let matchesDate = true;
+      if (dateRange !== "all" && b.createdAt) {
+        const createdDate = new Date(b.createdAt);
+        const now = new Date();
+        const diffMs = now.getTime() - createdDate.getTime();
+        const diffDays = diffMs / (1000 * 60 * 60 * 24);
+        
+        if (dateRange === "today") {
+          matchesDate = diffDays <= 1;
+        } else if (dateRange === "week") {
+          matchesDate = diffDays <= 7;
+        } else if (dateRange === "month") {
+          matchesDate = diffDays <= 30;
+        }
+      }
+
+      return matchesCategory && matchesSearch && matchesStatus && matchesTags && matchesDate;
     });
-  }, [bookmarks, selectedCategoryId, searchQuery]);
+  }, [bookmarks, selectedCategoryId, debouncedSearch, selectedTags, dateRange, filterStatus]);
 
   const handleSaveBookmark = (data: {
     title: string;
@@ -195,6 +227,11 @@ export default function BookmarksPage() {
             <span>Add Bookmark</span>
           </button>
         </div>
+      </div>
+
+      {/* Advanced Filters */}
+      <div className="mt-2 mb-4">
+        <AdvancedFilters bookmarks={bookmarks} />
       </div>
 
       {/* Bookmark Grid / List */}

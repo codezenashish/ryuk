@@ -7,12 +7,18 @@ import { UserAvatar } from "@/components/common/user-avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SearchBar } from "@/components/common/search-bar";
 import { NotificationBall } from "@/components/common/notification-ball";
-import { useBookmarkStore } from "@/store/useBookmarkStore";
+import { useSearchStore } from "@/store/useSearchStore";
+import { useEffect } from "react";
 
 export function Nav() {
   const pathname = usePathname();
   const { user, isLoaded } = useUser();
-  const setSearchQuery = useBookmarkStore((state) => state.setSearchQuery);
+  const { query, setQuery, clearQuery } = useSearchStore();
+
+  // Clear search when navigating to a different route
+  useEffect(() => {
+    clearQuery();
+  }, [pathname, clearQuery]);
 
   const pageTitle =
     pathname === "/"
@@ -55,7 +61,7 @@ export function Nav() {
         </div>
 
         <div className="flex-1 max-w-md mx-6 flex justify-center">
-          <SearchBar onSearch={setSearchQuery} />
+          <SearchBar onSearch={setQuery} value={query} />
         </div>
 
         <div className="flex items-center gap-3">

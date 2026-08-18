@@ -14,6 +14,9 @@ interface BookmarkStore {
   // Filter & Layout State
   selectedCategoryId: string | null;
   searchQuery: string;
+  selectedTags: string[];
+  dateRange: "all" | "today" | "week" | "month";
+  filterStatus: "all" | "pinned";
   layoutMode: "grid" | "list";
 
   // Modal State
@@ -39,6 +42,9 @@ interface BookmarkStore {
   // Actions - UI Controls
   setSelectedCategory: (categoryId: string | null) => void;
   setSearchQuery: (query: string) => void;
+  setSelectedTags: (tags: string[]) => void;
+  setDateRange: (range: "all" | "today" | "week" | "month") => void;
+  setFilterStatus: (status: "all" | "pinned") => void;
   setLayoutMode: (mode: "grid" | "list") => void;
   openAddModal: (bookmark?: BookmarkItem | null) => void;
   closeAddModal: () => void;
@@ -55,6 +61,9 @@ export const useBookmarkStore = create<BookmarkStore>()(
       isLoadingDb: false,
       selectedCategoryId: null,
       searchQuery: "",
+      selectedTags: [],
+      dateRange: "all",
+      filterStatus: "all",
       layoutMode: "grid",
       isAddModalOpen: false,
       editingBookmark: null,
@@ -239,6 +248,9 @@ export const useBookmarkStore = create<BookmarkStore>()(
       // UI Controls
       setSelectedCategory: (selectedCategoryId) => set({ selectedCategoryId }),
       setSearchQuery: (searchQuery) => set({ searchQuery }),
+      setSelectedTags: (selectedTags) => set({ selectedTags }),
+      setDateRange: (dateRange) => set({ dateRange }),
+      setFilterStatus: (filterStatus) => set({ filterStatus }),
       setLayoutMode: (layoutMode) => set({ layoutMode }),
 
       openAddModal: (bookmark = null) =>
