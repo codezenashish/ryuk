@@ -13,6 +13,7 @@ import {
   updateBookmarkAction,
   deleteBookmarkAction,
 } from "@/app/actions/bookmarks";
+import { deleteCategoryAction } from "@/app/actions/category";
 
 export { useBookmarks, useBookmarksRealtime, getBookmarksQueryKey };
 
@@ -276,5 +277,57 @@ export function useCreateCategoryMutation() {
       ]);
       queryClient.invalidateQueries({ queryKey: ["categories"] });
     },
+  });
+}
+
+export function useDeleteCategoryMutation(userId?: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (categoryId: string) => {
+      await deleteCategoryAction(categoryId);
+      return categoryId;
+    },
+    onMutate: async (categoryId) => {
+      await queryClient.cancelQueries({ queryKey: ["categories"] });
+      
+      const previousCategories = queryClient.getQueryData<BookmarkCategory[]>(["categories"]) || [];
+      const deletedCategory = previousCategories.find(c => c.id === categoryId);
+
+      queryClient.setQueryData<BookmarkCategory[]>(["categories"], (old = []) =>
+        old.filter(c => c.id !== categoryId)
+      );
+
+      // Also optimistically remove all bookmarks that belong to this category
+      const bookmarksKey = getBookmarksQueryKey(userId);
+      await queryClient.cancelQueries({ queryKey: bookmarksKey });
+      const previousBookmarks = queryClient.getQueryData<BookmarkItem[]>(bookmarksKey) || [];
+      const deletedBookmarks = previousBookmarks.filter(bm => bm.categoryId === categoryId || bm.category?.id === categoryId);
+
+      queryClient.setQueryData<BookmarkItem[]>(bookmarksKey, (old = []) =>
+        old.filter(bm => bm.categoryId !== categoryId && bm.category?.id !== categoryId)
+      );
+
+      return { previousCategories, deletedCategory, previousBookmarks, bookmarksKey };
+    },
+    onError: (err, categoryId, context) => {
+      if (context?.deletedCategory) {
+        queryClient.setQueryData<BookmarkCategory[]>(["categories"], (old = []) => {
+          if (old.some(c => c.id === categoryId)) return old;
+          return [...old, context.deletedCategory!];
+        });
+      }
+      if (context?.previousBookmarks && context?.bookmarksKey) {
+        queryClient.setQueryData(context.bookmarksKey, context.previousBookmarks);
+      }
+      toast.error(err instanceof Error ? err.message : "Failed to delete category.");
+    },
+    onSettled: (_data, _error, _variables, context) => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      if (context?.bookmarksKey) {
+        queryClient.invalidateQueries({ queryKey: context.bookmarksKey });
+        queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+      }
+    }
   });
 }

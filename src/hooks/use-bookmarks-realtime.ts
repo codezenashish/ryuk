@@ -45,7 +45,9 @@ export function useBookmarksRealtime(userId?: string) {
                                   queryClient.isMutating({ mutationKey: ["bulkDeleteBookmarks"] }) + 
                                   queryClient.isMutating({ mutationKey: ["bulkUpdateBookmarks"] });
           
-          if (activeMutations === 0) {
+          const pendingDeletes = queryClient.getQueryData<string[]>(["pendingDeletes"]) || [];
+          
+          if (activeMutations === 0 && pendingDeletes.length === 0) {
             queryClient.invalidateQueries({
               queryKey: getBookmarksQueryKey(userId),
             });

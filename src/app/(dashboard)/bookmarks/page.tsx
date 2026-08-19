@@ -6,7 +6,7 @@ import { useAuth } from "@/providers/auth-provider";
 import { useBookmarkStore } from "@/store/useBookmarkStore";
 import { useBookmarks } from "@/hooks/use-bookmarks";
 import { useBookmarksRealtime } from "@/hooks/use-bookmarks-realtime";
-import { useCategoriesQuery } from "@/features/bookmarks/hooks/use-bookmark-queries";
+import { useCategoriesQuery, useDeleteCategoryMutation } from "@/features/bookmarks/hooks/use-bookmark-queries";
 import { BookmarkGrid } from "@/features/bookmarks/components/bookmark-grid";
 import { CategoryFilter } from "@/features/bookmarks/components/category-filter";
 import { AdvancedFilters } from "@/features/bookmarks/components/advanced-filters";
@@ -24,6 +24,7 @@ export default function BookmarksPage() {
   const { user } = useAuth();
   const userId = user?.id;
   const queryClient = useQueryClient();
+  const deleteCategoryMutation = useDeleteCategoryMutation(user?.id);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [shareTargetCategory, setShareTargetCategory] = useState<BookmarkCategory | null>(null);
@@ -241,6 +242,15 @@ export default function BookmarksPage() {
           onShareClick={(category) => {
             setShareTargetCategory(category);
             setIsShareModalOpen(true);
+          }}
+          onDeleteClick={(category) => {
+            if (window.confirm("Are you sure you want to delete this category? All bookmarks in it will also be deleted.")) {
+              deleteCategoryMutation.mutate(category.id, {
+                onSuccess: () => {
+                  if (selectedCategoryId === category.id) setSelectedCategory(null);
+                }
+              });
+            }
           }}
         />
 

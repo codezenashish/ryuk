@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRef, useCallback } from "react";
 import { toast } from "sonner";
 import {
   getBookmarksAction,
@@ -290,6 +291,69 @@ export function useBookmarks(userId?: string) {
     },
   });
 
+  // ----------------------------------------------------
+  // 7. DEBOUNCED QUEUE DELETE LOGIC
+  // ----------------------------------------------------
+  const pendingDeletesRef = useRef<string[]>([]);
+  const snapshotRef = useRef<Map<string, BookmarkItem>>(new Map());
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const debouncedDeleteBookmark = useCallback((id: string) => {
+    // 1. Cancel ongoing fetches
+    queryClient.cancelQueries({ queryKey });
+
+    // 2. Snapshot the item
+    const currentBookmarks = queryClient.getQueryData<BookmarkItem[]>(queryKey) || [];
+    const itemToDel = currentBookmarks.find(b => b.id === id);
+    if (itemToDel) snapshotRef.current.set(id, itemToDel);
+
+    // 3. Optimistically remove instantly (0ms latency)
+    queryClient.setQueryData<BookmarkItem[]>(queryKey, (old = []) => old.filter(b => b.id !== id));
+
+    // 4. Queue the id
+    if (!pendingDeletesRef.current.includes(id)) {
+      pendingDeletesRef.current.push(id);
+    }
+    queryClient.setQueryData(["pendingDeletes"], pendingDeletesRef.current);
+
+    // 5. Debounce the API call
+    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+    debounceTimerRef.current = setTimeout(async () => {
+      const idsToProcess = [...pendingDeletesRef.current];
+      pendingDeletesRef.current = [];
+      queryClient.setQueryData(["pendingDeletes"], []);
+      if (idsToProcess.length === 0) return;
+
+      try {
+        if (idsToProcess.length === 1) {
+          await deleteBookmarkAction(idsToProcess[0]);
+        } else {
+          await bulkDeleteBookmarksAction(idsToProcess);
+        }
+        
+        // Success: clear snapshots
+        idsToProcess.forEach(i => snapshotRef.current.delete(i));
+        
+        // Invalidate if no other deletions are running
+        if (queryClient.isMutating({ mutationKey: ["deleteBookmark"] }) === 0 && 
+            queryClient.isMutating({ mutationKey: ["bulkDeleteBookmarks"] }) === 0) {
+          queryClient.invalidateQueries({ queryKey });
+          if (userId) queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+        }
+      } catch (error) {
+        // Rollback
+        queryClient.setQueryData<BookmarkItem[]>(queryKey, (old = []) => {
+          const restored = idsToProcess.map(i => snapshotRef.current.get(i)).filter(Boolean) as BookmarkItem[];
+          const currentIds = new Set(old.map(b => b.id));
+          const itemsToRestore = restored.filter(bm => !currentIds.has(bm.id));
+          return [...old, ...itemsToRestore];
+        });
+        idsToProcess.forEach(i => snapshotRef.current.delete(i));
+        toast.error("Failed to delete bookmarks. Restored state.");
+      }
+    }, 700);
+  }, [queryClient, queryKey, userId]);
+
   return {
     bookmarks: query.data ?? EMPTY_BOOKMARKS,
     isLoading: query.isLoading,
@@ -301,9 +365,9 @@ export function useBookmarks(userId?: string) {
     updateBookmark: updateMutation.mutate,
     updateBookmarkAsync: updateMutation.mutateAsync,
     isUpdating: updateMutation.isPending,
-    deleteBookmark: deleteMutation.mutate,
-    deleteBookmarkAsync: deleteMutation.mutateAsync,
-    isDeleting: deleteMutation.isPending,
+    deleteBookmark: debouncedDeleteBookmark,
+    deleteBookmarkAsync: deleteMutation.mutateAsync, // Left for fallback/programmatic usage
+    isDeleting: deleteMutation.isPending || pendingDeletesRef.current.length > 0,
     addMutation,
     updateMutation,
     deleteMutation,
