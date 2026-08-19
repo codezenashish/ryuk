@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/providers/auth-provider";
 import { useBookmarkStore } from "@/store/useBookmarkStore";
 import { useBookmarks } from "@/hooks/use-bookmarks";
@@ -11,7 +12,8 @@ import { CategoryFilter } from "@/features/bookmarks/components/category-filter"
 import { AdvancedFilters } from "@/features/bookmarks/components/advanced-filters";
 import { AddBookmarkModal } from "@/features/bookmarks/dialogs/add-bookmark-modal";
 import { ImportBookmarksModal } from "@/features/bookmarks/dialogs/import-bookmarks-modal";
-import { BookmarkItem } from "@/features/bookmarks/components/bookmark-card";
+import { BookmarkItem, BookmarkCategory } from "@/features/bookmarks/components/bookmark-card";
+import { ShareCategoryDialog } from "@/features/bookmarks/dialogs/share-category-dialog";
 import { BulkActionBar } from "@/features/bookmarks/components/bulk-action-bar";
 import { useSearchStore } from "@/store/useSearchStore";
 import { useDebounce } from "@/hooks/use-debounce";
@@ -21,7 +23,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function BookmarksPage() {
   const { user } = useAuth();
   const userId = user?.id;
+  const queryClient = useQueryClient();
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [shareTargetCategory, setShareTargetCategory] = useState<BookmarkCategory | null>(null);
 
   // 1. Activate Realtime Subscription for instantaneous PC ↔ Mobile sync
   useBookmarksRealtime(userId);
@@ -166,6 +171,10 @@ export default function BookmarksPage() {
     clearSelection();
   };
 
+  const selectedCategoryObj = useMemo(() => {
+    return categories.find(c => c.id === selectedCategoryId);
+  }, [categories, selectedCategoryId]);
+
   if (isLoadingBookmarks && bookmarks.length === 0) {
     return (
       <div className="py-6 space-y-6">
@@ -201,6 +210,19 @@ export default function BookmarksPage() {
           window.location.reload();
         }}
       />
+      {(shareTargetCategory || selectedCategoryObj) && (
+        <ShareCategoryDialog
+          isOpen={isShareModalOpen}
+          onClose={() => {
+            setIsShareModalOpen(false);
+            setShareTargetCategory(null);
+          }}
+          category={(shareTargetCategory || selectedCategoryObj)!}
+          onShareUpdate={() => {
+            queryClient.invalidateQueries({ queryKey: ["categories"] });
+          }}
+        />
+      )}
 
       {/* Top Bar: Category Filter on left, View Toggle & Add Button on right */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -209,6 +231,10 @@ export default function BookmarksPage() {
           selectedCategoryId={selectedCategoryId}
           onSelectCategory={setSelectedCategory}
           bookmarks={bookmarks}
+          onShareClick={(category) => {
+            setShareTargetCategory(category);
+            setIsShareModalOpen(true);
+          }}
         />
 
         <div className="flex items-center gap-3 shrink-0">
@@ -237,6 +263,18 @@ export default function BookmarksPage() {
               <List className="h-4 w-4" />
             </button>
           </div>
+
+          {/* Share Category Trigger */}
+          {selectedCategoryObj && (
+            <button
+              type="button"
+              onClick={() => setIsShareModalOpen(true)}
+              className="inline-flex items-center gap-2 rounded-xl bg-paper-3 px-4 py-2 text-xs font-medium text-ink hover:bg-line-2 transition shadow-sm cursor-pointer border border-line-2"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>
+              <span className="hidden sm:inline">Share</span>
+            </button>
+          )}
 
           {/* Add Bookmark Trigger */}
           <button

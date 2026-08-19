@@ -21,6 +21,10 @@ export interface BookmarkCategory {
   name: string;
   color?: string;
   icon?: string;
+  isShared?: boolean;
+  shareToken?: string | null;
+  userId?: string;
+  isCollaborator?: boolean;
 }
 
 export interface BookmarkItem {

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { X, History, RotateCcw, AlertCircle, Check, ArrowRightLeft, Loader2 } from "lucide-react";
+import { X, History, RotateCcw, AlertCircle, ArrowRightLeft, Loader2 } from "lucide-react";
 import { diffWords } from "diff";
 import { TipTapEditor } from "./tiptap-editor";
 
@@ -20,7 +20,7 @@ interface NoteHistoryDialogProps {
   isOpen: boolean;
   onClose: () => void;
   noteId: string;
-  onRestore: (restoredNote: any) => void;
+  onRestore: (restoredNote: unknown) => void;
 }
 
 // Function to strip HTML tags for simple text diffing
@@ -55,10 +55,9 @@ function NoteHistoryContent({
 }: {
   onClose: () => void;
   noteId: string;
-  onRestore: (note: any) => void;
+  onRestore: (note: unknown) => void;
 }) {
   const [versions, setVersions] = useState<NoteVersion[]>([]);
-  const [currentNoteState, setCurrentNoteState] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedVersionId, setSelectedVersionId] = useState<string | null>(null);
@@ -75,16 +74,15 @@ function NoteHistoryContent({
         if (!res.ok) throw new Error("Failed to fetch versions");
         const data = await res.json();
         
-        // Let's also fetch current note to compare against
-        const currentRes = await fetch(`/api/note`); // Wait, we don't have a GET /api/note/[id] easily available?
+        
         // We can just get it from the dialog's parent or we assume the first version is the previous state.
         
         setVersions(data.versions);
         if (data.versions.length > 0) {
           setSelectedVersionId(data.versions[0].id);
         }
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch");
       } finally {
         setIsLoading(false);
       }
@@ -105,8 +103,8 @@ function NoteHistoryContent({
       if (!res.ok) throw new Error("Failed to restore version");
       const data = await res.json();
       onRestore(data.note);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Restore failed");
       setIsRestoring(false);
     }
   };

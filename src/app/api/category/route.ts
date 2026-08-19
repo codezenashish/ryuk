@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { categories } from "@/db/schema";
-import { eq, asc } from "drizzle-orm";
+import { categories, categoryCollaborators } from "@/db/schema";
+import { eq, asc, or, inArray } from "drizzle-orm";
 import { getOrCreateDbUser } from "@/lib/syncUser";
 
 export const dynamic = "force-dynamic";
@@ -17,13 +17,32 @@ export async function GET() {
       );
     }
 
+    // First find categories the user is collaborating on
+    const sharedCategories = await db
+      .select({ categoryId: categoryCollaborators.categoryId })
+      .from(categoryCollaborators)
+      .where(eq(categoryCollaborators.userId, user.id));
+
+    const sharedIds = sharedCategories.map(sc => sc.categoryId);
+
+    // Fetch owned + shared categories
     const categoryList = await db
       .select()
       .from(categories)
-      .where(eq(categories.userId, user.id))
+      .where(
+        sharedIds.length > 0 
+          ? or(eq(categories.userId, user.id), inArray(categories.id, sharedIds))
+          : eq(categories.userId, user.id)
+      )
       .orderBy(asc(categories.createdAt));
 
-    return NextResponse.json({ categories: categoryList }, { status: 200 });
+    // Append isCollaborator flag
+    const categoriesWithFlag = categoryList.map(cat => ({
+      ...cat,
+      isCollaborator: cat.userId !== user.id
+    }));
+
+    return NextResponse.json({ categories: categoriesWithFlag }, { status: 200 });
   } catch (error) {
     console.error("GET /api/category error:", error);
     return NextResponse.json(

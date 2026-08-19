@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { bookmarks, categories } from "@/db/schema";
-import { eq, and, desc } from "drizzle-orm";
+import { bookmarks, categories, categoryCollaborators } from "@/db/schema";
+import { eq, and, desc, or, inArray } from "drizzle-orm";
 import { getOrCreateDbUser } from "@/lib/syncUser";
 import * as cheerio from "cheerio";
 
@@ -14,8 +14,21 @@ export async function GET() {
       return NextResponse.json({ bookmarks: [], isGuest: true });
     }
 
+    // Find categories the user is collaborating on
+    const sharedCategories = await db
+      .select({ categoryId: categoryCollaborators.categoryId })
+      .from(categoryCollaborators)
+      .where(eq(categoryCollaborators.userId, user.id));
+
+    const sharedIds = sharedCategories.map(sc => sc.categoryId);
+
     const userBookmarks = await db.query.bookmarks.findMany({
-      where: eq(bookmarks.userId, user.id),
+      where: sharedIds.length > 0 
+        ? or(
+            eq(bookmarks.userId, user.id), 
+            inArray(bookmarks.categoryId, sharedIds)
+          )
+        : eq(bookmarks.userId, user.id),
       with: {
         category: true,
       },

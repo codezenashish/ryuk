@@ -1,9 +1,11 @@
 "use client";
 
 import { BookmarkCategory, BookmarkItem } from "./bookmark-card";
-import { Layers } from "lucide-react";
+import { Layers, Users } from "lucide-react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { getIconComponent } from "../utils/category-icon-registry";
+import { useCategoryContextMenu } from "../hooks/use-category-context-menu";
+import { CategoryContextMenu } from "./category-context-menu";
 
 interface CategoryFilterProps {
   categories: BookmarkCategory[];
@@ -11,6 +13,9 @@ interface CategoryFilterProps {
   onSelectCategory: (categoryId: string | null) => void;
   bookmarks?: BookmarkItem[];
   className?: string;
+  onShareClick?: (category: BookmarkCategory) => void;
+  onEditClick?: (category: BookmarkCategory) => void;
+  onDeleteClick?: (category: BookmarkCategory) => void;
 }
 
 export function CategoryFilter({
@@ -19,6 +24,9 @@ export function CategoryFilter({
   onSelectCategory,
   bookmarks = [],
   className = "",
+  onShareClick,
+  onEditClick,
+  onDeleteClick,
 }: CategoryFilterProps) {
   // Calculate count for each category
   const getCategoryCount = (catId: string) => {
@@ -26,6 +34,8 @@ export function CategoryFilter({
   };
 
   const totalCount = bookmarks.length;
+  
+  const { isOpen, position, activeCategory, menuRef, openMenu, closeMenu } = useCategoryContextMenu();
 
   return (
     <div className={`flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none ${className}`}>
@@ -63,6 +73,7 @@ export function CategoryFilter({
             key={cat.id}
             type="button"
             onClick={() => onSelectCategory(cat.id)}
+            onContextMenu={(e) => openMenu(e, cat)}
             className={`inline-flex items-center gap-2 rounded-xl px-3.5 py-1.5 text-xs font-medium transition cursor-pointer shrink-0 ${
               isSelected
                 ? "bg-ink text-paper shadow-sm"
@@ -71,6 +82,9 @@ export function CategoryFilter({
           >
             <HugeiconsIcon icon={CatIcon} size={15} className="shrink-0" />
             <span>{cat.name}</span>
+            {cat.isCollaborator && (
+              <Users className="w-3.5 h-3.5 text-indigo-400 shrink-0 ml-1" />
+            )}
             {count > 0 && (
               <span
                 className={`ml-0.5 rounded-full px-1.5 py-0.2 font-mono text-[10px] ${
@@ -85,6 +99,17 @@ export function CategoryFilter({
           </button>
         );
       })}
+
+      <CategoryContextMenu
+        isOpen={isOpen}
+        position={position}
+        category={activeCategory}
+        menuRef={menuRef}
+        onClose={closeMenu}
+        onShareClick={onShareClick || (() => {})}
+        onEditClick={onEditClick}
+        onDeleteClick={onDeleteClick}
+      />
     </div>
   );
 }

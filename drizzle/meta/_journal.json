@@ -29,6 +29,20 @@
       "when": 1787118662651,
       "tag": "0003_bent_risque",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1787124538500,
+      "tag": "0004_curved_ghost_rider",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1787126884725,
+      "tag": "0005_legal_quentin_quire",
+      "breakpoints": true
     }
   ]
 }

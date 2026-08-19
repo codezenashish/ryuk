@@ -36,6 +36,8 @@ export const categories = pgTable(
     name: text("name").notNull(),
     color: text("color").default("#6366F1").notNull(),
     icon: text("icon").default("RiFolder5Line").notNull(),
+    isShared: boolean("isShared").default(false).notNull(),
+    shareToken: text("shareToken").unique(),
     userId: text("userId")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
@@ -48,6 +50,32 @@ export const categories = pgTable(
   (table) => [
     index("category_user_id_idx").on(table.userId),
     index("category_user_id_name_idx").on(table.userId, table.name),
+    index("category_share_token_idx").on(table.shareToken),
+  ]
+);
+
+// ==========================================
+// CATEGORY COLLABORATORS TABLE
+// ==========================================
+export const categoryCollaborators = pgTable(
+  "category_collaborator",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    categoryId: text("categoryId")
+      .notNull()
+      .references(() => categories.id, { onDelete: "cascade" }),
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    invitedBy: text("invitedBy")
+      .references(() => users.id, { onDelete: "cascade" }),
+    createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
+  },
+  (table) => [
+    uniqueIndex("category_collaborator_unique_idx").on(table.categoryId, table.userId),
+    index("category_collaborator_user_id_idx").on(table.userId),
   ]
 );
 
@@ -194,6 +222,7 @@ export const noteVersions = pgTable(
 export const usersRelations = relations(users, ({ many }) => ({
   bookmarks: many(bookmarks),
   categories: many(categories),
+  categoryCollaborations: many(categoryCollaborators),
   tags: many(tags),
   notes: many(notes),
   folders: many(folders),
@@ -205,6 +234,22 @@ export const categoriesRelations = relations(categories, ({ one, many }) => ({
     references: [users.id],
   }),
   bookmarks: many(bookmarks),
+  collaborators: many(categoryCollaborators),
+}));
+
+export const categoryCollaboratorsRelations = relations(categoryCollaborators, ({ one }) => ({
+  category: one(categories, {
+    fields: [categoryCollaborators.categoryId],
+    references: [categories.id],
+  }),
+  user: one(users, {
+    fields: [categoryCollaborators.userId],
+    references: [users.id],
+  }),
+  inviter: one(users, {
+    fields: [categoryCollaborators.invitedBy],
+    references: [users.id],
+  }),
 }));
 
 export const bookmarksRelations = relations(bookmarks, ({ one }) => ({
