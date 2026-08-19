@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { notes } from "@/db/schema";
+import { notes, noteVersions } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { getOrCreateDbUser } from "@/lib/syncUser";
 
@@ -32,6 +32,22 @@ export async function PATCH(
         { error: "Note not found or access denied" },
         { status: 404 }
       );
+    }
+
+    const isContentChanged = content !== undefined && content.trim() !== existing.content;
+    const isTitleChanged = title !== undefined && title.trim() !== existing.title;
+    const isLanguageChanged = language !== undefined && language !== existing.language;
+    const isSnippetChanged = isSnippet !== undefined && Boolean(isSnippet) !== existing.isSnippet;
+
+    if (isContentChanged || isTitleChanged || isLanguageChanged || isSnippetChanged) {
+      await db.insert(noteVersions).values({
+        noteId: existing.id,
+        title: existing.title,
+        content: existing.content,
+        language: existing.language || "plaintext",
+        isSnippet: existing.isSnippet,
+        userId: user.id,
+      });
     }
 
     const [updatedNote] = await db

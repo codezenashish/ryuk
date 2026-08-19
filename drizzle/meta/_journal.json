@@ -22,6 +22,13 @@
       "when": 1787096188451,
       "tag": "0002_goofy_pixie",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1787118662651,
+      "tag": "0003_bent_risque",
+      "breakpoints": true
     }
   ]
 }

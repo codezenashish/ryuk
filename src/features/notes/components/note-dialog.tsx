@@ -2,8 +2,9 @@
 
 import { useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
-import { X, Tag, Code2, Check, Loader2 } from "lucide-react";
+import { X, Tag, Code2, Check, Loader2, History } from "lucide-react";
 import { TipTapEditor } from "./tiptap-editor";
+import { NoteHistoryDialog } from "./note-history-dialog";
 import { Note } from "./notes-card";
 
 interface NoteDialogProps {
@@ -80,6 +81,7 @@ function NoteDialogForm({
   const [tagInput, setTagInput] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showHistory, setShowHistory] = useState(false);
 
   const handleAddTag = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === ",") {
@@ -139,13 +141,25 @@ function NoteDialogForm({
               Write rich text documents or code snippets
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-full p-2 text-ink-3 hover:text-ink hover:bg-paper-2 transition cursor-pointer"
-          >
-            <X className="h-5 w-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            {initialNote && (
+              <button
+                type="button"
+                onClick={() => setShowHistory(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-ink-3 hover:text-ink hover:bg-paper-2 transition cursor-pointer text-xs font-medium"
+              >
+                <History className="w-4 h-4" />
+                History
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-full p-2 text-ink-3 hover:text-ink hover:bg-paper-2 transition cursor-pointer"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
         </div>
 
         {/* Form Body */}
@@ -274,6 +288,21 @@ function NoteDialogForm({
           </button>
         </div>
       </div>
+
+      {showHistory && initialNote && (
+        <NoteHistoryDialog
+          isOpen={showHistory}
+          onClose={() => setShowHistory(false)}
+          noteId={initialNote.id}
+          onRestore={(restoredNote) => {
+            setTitle(restoredNote.title);
+            setContent(restoredNote.content);
+            setLanguage(restoredNote.language);
+            setIsSnippet(restoredNote.isSnippet);
+            setShowHistory(false);
+          }}
+        />
+      )}
     </div>
   );
 }

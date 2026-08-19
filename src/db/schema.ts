@@ -162,6 +162,33 @@ export const notes = pgTable(
 );
 
 // ==========================================
+// NOTE VERSIONS TABLE
+// ==========================================
+export const noteVersions = pgTable(
+  "note_version",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    noteId: text("noteId")
+      .notNull()
+      .references(() => notes.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    content: text("content").notNull(),
+    language: text("language").default("plaintext"),
+    isSnippet: boolean("isSnippet").default(false).notNull(),
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("note_version_note_id_idx").on(table.noteId),
+    index("note_version_user_id_idx").on(table.userId),
+  ]
+);
+
+// ==========================================
 // DRIZZLE RELATIONS
 // ==========================================
 export const usersRelations = relations(users, ({ many }) => ({
@@ -198,7 +225,7 @@ export const tagsRelations = relations(tags, ({ one }) => ({
   }),
 }));
 
-export const notesRelations = relations(notes, ({ one }) => ({
+export const notesRelations = relations(notes, ({ one, many }) => ({
   user: one(users, {
     fields: [notes.userId],
     references: [users.id],
@@ -206,6 +233,18 @@ export const notesRelations = relations(notes, ({ one }) => ({
   folder: one(folders, {
     fields: [notes.folderId],
     references: [folders.id],
+  }),
+  versions: many(noteVersions),
+}));
+
+export const noteVersionsRelations = relations(noteVersions, ({ one }) => ({
+  note: one(notes, {
+    fields: [noteVersions.noteId],
+    references: [notes.id],
+  }),
+  user: one(users, {
+    fields: [noteVersions.userId],
+    references: [users.id],
   }),
 }));
 

@@ -48,6 +48,7 @@
     "cli-spinners": "^3.4.0",
     "clsx": "^2.1.1",
     "commander": "^15.0.0",
+    "diff": "^9.0.0",
     "drizzle-orm": "^0.45.2",
     "flexsearch": "^0.8.212",
     "framer-motion": "^13.0.0",
@@ -78,6 +79,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/diff": "^8.0.0",
     "@types/flexsearch": "^0.7.42",
     "@types/inquirer": "^9.0.10",
     "@types/node": "^20.19.43",
