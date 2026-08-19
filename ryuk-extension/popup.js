@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
     activeTab = tabs[0];
-  } catch (err) {
+  } catch {
     showStatus("Unable to access current tab info.", "error");
     return;
   }
@@ -121,7 +121,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     } else {
       hideStatus();
     }
-  } catch (err) {
+  } catch {
     hideStatus();
   }
 

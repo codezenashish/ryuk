@@ -159,8 +159,8 @@ function ImportBookmarksForm({ onClose, onSuccess }: { onClose: () => void; onSu
       });
       setStep("success");
       onSuccess();
-    } catch (error: any) {
-      setErrorMessage(error.message || "An unexpected error occurred during import.");
+    } catch (error: unknown) {
+      setErrorMessage(error instanceof Error ? error.message : "An unexpected error occurred during import.");
       setStep("error");
     }
   };
@@ -246,7 +246,7 @@ function ImportBookmarksForm({ onClose, onSuccess }: { onClose: () => void; onSu
                 </div>
                 <div className="flex flex-col">
                   <span className="text-sm font-medium text-ink">Skip Duplicates</span>
-                  <span className="text-xs text-ink-3">Don't import bookmarks with URLs that already exist in your collection.</span>
+                  <span className="text-xs text-ink-3">Don&apos;t import bookmarks with URLs that already exist in your collection.</span>
                 </div>
               </label>
 

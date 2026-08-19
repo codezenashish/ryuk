@@ -61,7 +61,7 @@ export function AdvancedFilters({ bookmarks }: AdvancedFiltersProps) {
       <div className="flex items-center relative">
         <select
           value={dateRange}
-          onChange={(e) => setDateRange(e.target.value as any)}
+          onChange={(e) => setDateRange(e.target.value as "all" | "today" | "week" | "month")}
           className="appearance-none rounded-xl border border-line-2 bg-paper-3 pl-8 pr-8 py-2 text-xs text-ink focus:outline-none focus:border-ink transition cursor-pointer"
         >
           <option value="all">All Time</option>

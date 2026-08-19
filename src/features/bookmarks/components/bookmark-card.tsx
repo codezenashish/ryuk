@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+// import Image from "next/image";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   GlobalIcon,
@@ -53,7 +53,7 @@ interface BookmarkCardProps {
 
 export function BookmarkCard({
   bookmark,
-  onEdit,
+  // onEdit,
   onInlineEdit,
   onDelete,
   onPin,
@@ -116,6 +116,7 @@ export function BookmarkCard({
     <>
       <div className="relative">
         {faviconUrl && !imgError ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
           <img
             src={faviconUrl}
             alt=""
@@ -187,7 +188,7 @@ export function BookmarkCard({
             ? "border-ink/50 bg-ink/5 ring-1 ring-ink/20" 
             : "border-line-2 bg-paper-card hover:border-line-strong hover:bg-paper-3"
         }`}
-        onMouseEnter={(e) => {
+        onMouseEnter={() => {
           // Optional: show checkbox on hover if not in selection mode
         }}
       >
