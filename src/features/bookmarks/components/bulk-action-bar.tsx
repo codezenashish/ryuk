@@ -1,0 +1,97 @@
+"use client";
+
+import React, { useState } from "react";
+import { X, Trash2, FolderInput } from "lucide-react";
+import { BookmarkCategory } from "./bookmark-card";
+
+interface BulkActionBarProps {
+  selectedCount: number;
+  categories: BookmarkCategory[];
+  onClear: () => void;
+  onDelete: () => void;
+  onMoveToCategory: (categoryId: string | null) => void;
+}
+
+export function BulkActionBar({
+  selectedCount,
+  categories,
+  onClear,
+  onDelete,
+  onMoveToCategory,
+}: BulkActionBarProps) {
+  const [showCategoryMenu, setShowCategoryMenu] = useState(false);
+
+  if (selectedCount === 0) return null;
+
+  return (
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-10 fade-in duration-300">
+      <div className="flex items-center gap-2 rounded-full border border-line-strong bg-paper-card shadow-xl p-1.5 px-3">
+        <div className="flex items-center gap-2 px-2 border-r border-line">
+          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-ink text-[10px] font-bold text-paper">
+            {selectedCount}
+          </span>
+          <span className="text-sm font-medium text-ink pr-2">selected</span>
+        </div>
+
+        <div className="relative">
+          <button
+            onClick={() => setShowCategoryMenu(!showCategoryMenu)}
+            className="flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium text-ink hover:bg-paper-3 transition-colors"
+          >
+            <FolderInput className="h-4 w-4" />
+            Move to...
+          </button>
+
+          {showCategoryMenu && (
+            <>
+              <div 
+                className="fixed inset-0 z-40" 
+                onClick={() => setShowCategoryMenu(false)} 
+              />
+              <div className="absolute bottom-full left-0 mb-2 w-48 rounded-xl border border-line bg-paper-card p-1 shadow-lg z-50">
+                <button
+                  onClick={() => {
+                    onMoveToCategory(null);
+                    setShowCategoryMenu(false);
+                  }}
+                  className="w-full text-left rounded-md px-3 py-2 text-sm text-ink hover:bg-paper-3"
+                >
+                  (No category)
+                </button>
+                {categories.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => {
+                      onMoveToCategory(cat.id);
+                      setShowCategoryMenu(false);
+                    }}
+                    className="w-full text-left rounded-md px-3 py-2 text-sm text-ink hover:bg-paper-3 truncate"
+                  >
+                    {cat.name}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+
+        <button
+          onClick={onDelete}
+          className="flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium text-rose-500 hover:bg-rose-500/10 transition-colors"
+        >
+          <Trash2 className="h-4 w-4" />
+          Delete
+        </button>
+
+        <div className="h-4 w-px bg-line mx-1" />
+
+        <button
+          onClick={onClear}
+          className="rounded-full p-1.5 text-ink-3 hover:bg-paper-3 hover:text-ink transition-colors"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+    </div>
+  );
+}

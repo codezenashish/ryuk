@@ -13,6 +13,8 @@ interface BookmarkGridProps {
   onDelete?: (bookmark: BookmarkItem | string) => void;
   onPin?: (id: string) => void;
   onAddClick?: () => void;
+  selectedBookmarkIds?: string[];
+  onToggleSelect?: (id: string, e: React.MouseEvent) => void;
   emptyTitle?: string;
   emptyDescription?: string;
 }
@@ -26,6 +28,8 @@ export function BookmarkGrid({
   onDelete,
   onPin,
   onAddClick,
+  selectedBookmarkIds = [],
+  onToggleSelect,
   emptyTitle = "No bookmarks found",
   emptyDescription = "Save your important links and resources here to access them anytime.",
 }: BookmarkGridProps) {
@@ -107,6 +111,9 @@ export function BookmarkGrid({
           key={bookmark.id}
           bookmark={bookmark}
           layoutMode={layoutMode}
+          isSelected={selectedBookmarkIds.includes(bookmark.id)}
+          onToggleSelect={onToggleSelect}
+          selectionMode={selectedBookmarkIds.length > 0}
           onEdit={onEdit}
           onInlineEdit={onInlineEdit}
           onDelete={onDelete}

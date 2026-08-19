@@ -12,6 +12,7 @@ import { AdvancedFilters } from "@/features/bookmarks/components/advanced-filter
 import { AddBookmarkModal } from "@/features/bookmarks/dialogs/add-bookmark-modal";
 import { ImportBookmarksModal } from "@/features/bookmarks/dialogs/import-bookmarks-modal";
 import { BookmarkItem } from "@/features/bookmarks/components/bookmark-card";
+import { BulkActionBar } from "@/features/bookmarks/components/bulk-action-bar";
 import { useSearchStore } from "@/store/useSearchStore";
 import { useDebounce } from "@/hooks/use-debounce";
 import { Plus, LayoutGrid, List, Upload } from "lucide-react";
@@ -27,11 +28,13 @@ export default function BookmarksPage() {
 
   // 2. Fetch & Mutate Bookmarks with 0ms perceived latency (Optimistic UI)
   const {
-    bookmarks: queryBookmarks,
+    bookmarks,
     isLoading: isLoadingBookmarks,
     addBookmark,
     updateBookmark,
     deleteBookmark,
+    bulkDeleteBookmarks,
+    bulkUpdateBookmarks,
   } = useBookmarks(userId);
 
   const { data: queryCategories } = useCategoriesQuery();
@@ -45,6 +48,9 @@ export default function BookmarksPage() {
     selectedTags,
     dateRange,
     filterStatus,
+    selectedBookmarkIds,
+    toggleSelection,
+    clearSelection,
     setSelectedCategory,
     setLayoutMode,
     openAddModal,
@@ -53,8 +59,6 @@ export default function BookmarksPage() {
 
   const { query } = useSearchStore();
   const debouncedSearch = useDebounce(query, 300);
-
-  const bookmarks = queryBookmarks;
   const categories = queryCategories || storeCategories;
 
   // Filter Bookmarks by search query and category
@@ -150,6 +154,16 @@ export default function BookmarksPage() {
   const handleDeleteBookmark = (target: string | BookmarkItem) => {
     const id = typeof target === "string" ? target : target.id;
     deleteBookmark(id);
+  };
+
+  const handleBulkDelete = () => {
+    bulkDeleteBookmarks(selectedBookmarkIds);
+    clearSelection();
+  };
+
+  const handleBulkMove = (categoryId: string | null) => {
+    bulkUpdateBookmarks({ ids: selectedBookmarkIds, input: { categoryId } });
+    clearSelection();
   };
 
   if (isLoadingBookmarks && bookmarks.length === 0) {
@@ -254,11 +268,21 @@ export default function BookmarksPage() {
       <BookmarkGrid
         bookmarks={filteredBookmarks}
         layoutMode={layoutMode}
+        selectedBookmarkIds={selectedBookmarkIds}
+        onToggleSelect={toggleSelection}
         onEdit={(bm) => openAddModal(bm)}
         onInlineEdit={handleInlineEdit}
         onDelete={handleDeleteBookmark}
         onPin={handlePinBookmark}
         onAddClick={() => openAddModal(null)}
+      />
+
+      <BulkActionBar
+        selectedCount={selectedBookmarkIds.length}
+        categories={categories}
+        onClear={clearSelection}
+        onDelete={handleBulkDelete}
+        onMoveToCategory={handleBulkMove}
       />
     </div>
   );

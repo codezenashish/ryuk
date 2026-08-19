@@ -46,6 +46,9 @@ interface BookmarkCardProps {
   onPin?: (id: string) => void;
   isDeleting?: boolean;
   layoutMode?: "grid" | "list";
+  isSelected?: boolean;
+  onToggleSelect?: (id: string, e: React.MouseEvent) => void;
+  selectionMode?: boolean;
 }
 
 export function BookmarkCard({
@@ -55,6 +58,9 @@ export function BookmarkCard({
   onDelete,
   onPin,
   isDeleting = false,
+  isSelected = false,
+  onToggleSelect,
+  selectionMode = false,
 }: BookmarkCardProps) {
   const [imgError, setImgError] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -108,23 +114,39 @@ export function BookmarkCard({
 
   const content = (
     <>
-      {faviconUrl && !imgError ? (
-        <Image
-          src={faviconUrl}
-          alt=""
-          width={20}
-          height={20}
-          unoptimized
-          className="h-5 w-5 shrink-0 rounded object-contain"
-          onError={() => setImgError(true)}
-        />
-      ) : (
-        <HugeiconsIcon
-          icon={GlobalIcon}
-          size={18}
-          className="shrink-0 text-ink-3"
-        />
-      )}
+      <div className="relative">
+        {faviconUrl && !imgError ? (
+          <img
+            src={faviconUrl}
+            alt=""
+            className="h-10 w-10 shrink-0 rounded-xl object-cover ring-1 ring-line/50 transition-transform group-hover:scale-105"
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-paper-3 ring-1 ring-line/50 transition-transform group-hover:scale-105">
+            <HugeiconsIcon icon={GlobalIcon} size={20} className="text-ink-3" />
+          </div>
+        )}
+        
+        {/* Checkbox for Selection Mode */}
+        {(selectionMode || isSelected) && (
+          <div 
+            className="absolute -top-1.5 -left-1.5 flex h-5 w-5 items-center justify-center rounded bg-paper-card ring-1 ring-line"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (onToggleSelect) onToggleSelect(bookmark.id, e);
+            }}
+          >
+            <input 
+              type="checkbox" 
+              checked={isSelected}
+              readOnly
+              className="h-3.5 w-3.5 cursor-pointer rounded-sm border-line text-ink focus:ring-ink"
+            />
+          </div>
+        )}
+      </div>
       <span className="min-w-0 flex-1">
         {isEditing ? (
           <input
@@ -159,18 +181,61 @@ export function BookmarkCard({
       onEditInline={() => setIsEditing(true)}
       onDelete={handleDelete}
     >
-      <article className="group flex min-w-0 items-center gap-3 rounded-xl border border-line-2 bg-paper-card p-3 shadow-xs transition-all duration-200 hover:border-line-strong hover:bg-paper-3 hover:shadow-md">
+      <article 
+        className={`group flex min-w-0 items-center gap-3 rounded-xl border p-3 shadow-xs transition-all duration-200 hover:shadow-md relative ${
+          isSelected 
+            ? "border-ink/50 bg-ink/5 ring-1 ring-ink/20" 
+            : "border-line-2 bg-paper-card hover:border-line-strong hover:bg-paper-3"
+        }`}
+        onMouseEnter={(e) => {
+          // Optional: show checkbox on hover if not in selection mode
+        }}
+      >
+        {/* Checkbox Overlay on hover (if not in selection mode and not selected) */}
+        {!selectionMode && !isSelected && onToggleSelect && (
+          <div 
+            className="absolute -top-1.5 -left-1.5 flex h-5 w-5 items-center justify-center rounded bg-paper-card ring-1 ring-line opacity-0 group-hover:opacity-100 transition-opacity z-10"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onToggleSelect(bookmark.id, e);
+            }}
+          >
+            <input 
+              type="checkbox" 
+              checked={false}
+              readOnly
+              className="h-3.5 w-3.5 cursor-pointer rounded-sm border-line"
+            />
+          </div>
+        )}
+
         {bookmark.url && !isEditing ? (
           <a
             href={bookmark.url}
             target="_blank"
             rel="noreferrer"
-            className="flex min-w-0 flex-1 items-center gap-3"
+            onClick={(e) => {
+              if (selectionMode) {
+                e.preventDefault();
+                if (onToggleSelect) onToggleSelect(bookmark.id, e);
+              }
+            }}
+            className="flex min-w-0 flex-1 items-center gap-3 cursor-pointer"
           >
             {content}
           </a>
         ) : (
-          <div className="flex min-w-0 flex-1 items-center gap-3">{content}</div>
+          <div 
+            className="flex min-w-0 flex-1 items-center gap-3 cursor-pointer"
+            onClick={(e) => {
+              if (selectionMode && onToggleSelect) {
+                onToggleSelect(bookmark.id, e);
+              }
+            }}
+          >
+            {content}
+          </div>
         )}
         {bookmark.url && (
           <a

@@ -23,6 +23,12 @@ interface BookmarkStore {
   isAddModalOpen: boolean;
   editingBookmark: BookmarkItem | null;
 
+  // Selection State
+  selectedBookmarkIds: string[];
+  toggleSelection: (id: string) => void;
+  selectAll: (ids: string[]) => void;
+  clearSelection: () => void;
+
   // Actions - Sync with DB
   fetchBookmarksFromDb: () => Promise<void>;
   fetchCategoriesFromDb: () => Promise<void>;
@@ -67,6 +73,17 @@ export const useBookmarkStore = create<BookmarkStore>()(
       layoutMode: "grid",
       isAddModalOpen: false,
       editingBookmark: null,
+      selectedBookmarkIds: [],
+
+      // Selection Actions
+      toggleSelection: (id) =>
+        set((state) => ({
+          selectedBookmarkIds: state.selectedBookmarkIds.includes(id)
+            ? state.selectedBookmarkIds.filter((selectedId) => selectedId !== id)
+            : [...state.selectedBookmarkIds, id],
+        })),
+      selectAll: (ids) => set({ selectedBookmarkIds: ids }),
+      clearSelection: () => set({ selectedBookmarkIds: [] }),
 
       // Fetch Bookmarks from Prisma Database
       fetchBookmarksFromDb: async () => {

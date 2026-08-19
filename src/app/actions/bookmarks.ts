@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { bookmarks, categories } from "@/db/schema";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, inArray } from "drizzle-orm";
 import { getOrCreateDbUser } from "@/lib/syncUser";
 
 export interface CreateBookmarkInput {
@@ -216,4 +216,66 @@ export async function deleteBookmarkAction(id: string) {
 
   await db.delete(bookmarks).where(eq(bookmarks.id, id));
   return { id };
+}
+
+/**
+ * Bulk delete bookmarks by IDs.
+ */
+export async function bulkDeleteBookmarksAction(ids: string[]) {
+  const user = await getOrCreateDbUser();
+  if (!user) {
+    throw new Error("Unauthorized. Please sign in.");
+  }
+  
+  if (!ids || ids.length === 0) return { deletedCount: 0 };
+
+  // Only delete bookmarks belonging to the user
+  const result = await db
+    .delete(bookmarks)
+    .where(and(inArray(bookmarks.id, ids), eq(bookmarks.userId, user.id)))
+    .returning({ id: bookmarks.id });
+
+  return { deletedCount: result.length, deletedIds: result.map((r) => r.id) };
+}
+
+/**
+ * Bulk update bookmarks by IDs.
+ */
+export async function bulkUpdateBookmarksAction(
+  ids: string[],
+  input: { categoryId?: string | null; isPinned?: boolean }
+) {
+  const user = await getOrCreateDbUser();
+  if (!user) {
+    throw new Error("Unauthorized. Please sign in.");
+  }
+
+  if (!ids || ids.length === 0) return { updatedCount: 0 };
+
+  let validCategoryId: string | null | undefined = undefined;
+  if (input.categoryId !== undefined) {
+    if (input.categoryId === null) {
+      validCategoryId = null;
+    } else {
+      const existingCat = await db.query.categories.findFirst({
+        where: and(
+          eq(categories.id, input.categoryId),
+          eq(categories.userId, user.id)
+        ),
+      });
+      validCategoryId = existingCat ? existingCat.id : null;
+    }
+  }
+
+  const result = await db
+    .update(bookmarks)
+    .set({
+      ...(validCategoryId !== undefined && { categoryId: validCategoryId }),
+      ...(input.isPinned !== undefined && { isPinned: input.isPinned }),
+      updatedAt: new Date(),
+    })
+    .where(and(inArray(bookmarks.id, ids), eq(bookmarks.userId, user.id)))
+    .returning({ id: bookmarks.id });
+
+  return { updatedCount: result.length, updatedIds: result.map((r) => r.id) };
 }
