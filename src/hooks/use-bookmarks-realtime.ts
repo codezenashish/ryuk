@@ -38,10 +38,19 @@ export function useBookmarksRealtime(userId?: string) {
           );
 
           // Invalidate TanStack Query cache so active devices update in real-time
-          queryClient.invalidateQueries({
-            queryKey: getBookmarksQueryKey(userId),
-          });
-          queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+          // ONLY if we aren't currently mutating, to prevent overwriting optimistic updates
+          const activeMutations = queryClient.isMutating({ mutationKey: ["addBookmark"] }) + 
+                                  queryClient.isMutating({ mutationKey: ["updateBookmark"] }) + 
+                                  queryClient.isMutating({ mutationKey: ["deleteBookmark"] }) + 
+                                  queryClient.isMutating({ mutationKey: ["bulkDeleteBookmarks"] }) + 
+                                  queryClient.isMutating({ mutationKey: ["bulkUpdateBookmarks"] });
+          
+          if (activeMutations === 0) {
+            queryClient.invalidateQueries({
+              queryKey: getBookmarksQueryKey(userId),
+            });
+            queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+          }
 
           // Add real-time sync notification item
           const eventLabel =

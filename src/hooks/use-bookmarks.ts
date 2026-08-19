@@ -46,19 +46,14 @@ export function useBookmarks(userId?: string) {
   // 2. MUTATION: Optimistic Add Bookmark
   // ----------------------------------------------------
   const addMutation = useMutation({
+    mutationKey: ["addBookmark"],
     mutationFn: async (newBookmarkInput: CreateBookmarkInput) => {
       const result = await createBookmarkAction(newBookmarkInput);
       return result as unknown as BookmarkItem;
     },
     onMutate: async (newBookmarkInput) => {
-      // Step A: Cancel any outgoing refetches so they don't overwrite optimistic update
       await queryClient.cancelQueries({ queryKey });
 
-      // Step B: Snapshot the previous bookmarks state for rollback
-      const previousBookmarks =
-        queryClient.getQueryData<BookmarkItem[]>(queryKey) || [];
-
-      // Step C: Construct optimistic bookmark object (0ms UI latency)
       const optimisticBookmark: BookmarkItem = {
         id: `temp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
         title: newBookmarkInput.title.trim(),
@@ -76,29 +71,29 @@ export function useBookmarks(userId?: string) {
         updatedAt: new Date(),
       };
 
-      // Step D: Optimistically update cache instantly
       queryClient.setQueryData<BookmarkItem[]>(queryKey, (old = []) => [
         optimisticBookmark,
         ...old,
       ]);
 
-      // Return context containing snapshot for onError rollback
-      return { previousBookmarks };
+      return { tempId: optimisticBookmark.id };
     },
     onError: (err, _newBookmark, context) => {
-      // Step E: Roll back to previous snapshot state on error
-      if (context?.previousBookmarks) {
-        queryClient.setQueryData(queryKey, context.previousBookmarks);
+      if (context?.tempId) {
+        queryClient.setQueryData<BookmarkItem[]>(queryKey, (old = []) =>
+          old.filter(bm => bm.id !== context.tempId)
+        );
       }
       toast.error(
         err instanceof Error ? err.message : "Failed to add bookmark. Rolled back changes."
       );
     },
     onSettled: () => {
-      // Step F: Always invalidate to ensure cache syncs with exact DB state & returned ID
-      queryClient.invalidateQueries({ queryKey });
-      if (userId) {
-        queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+      if (queryClient.isMutating({ mutationKey: ["addBookmark"] }) <= 1) {
+        queryClient.invalidateQueries({ queryKey });
+        if (userId) {
+          queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+        }
       }
     },
   });
@@ -107,6 +102,7 @@ export function useBookmarks(userId?: string) {
   // 3. MUTATION: Optimistic Update Bookmark
   // ----------------------------------------------------
   const updateMutation = useMutation({
+    mutationKey: ["updateBookmark"],
     mutationFn: async ({
       id,
       input,
@@ -122,8 +118,8 @@ export function useBookmarks(userId?: string) {
 
       const previousBookmarks =
         queryClient.getQueryData<BookmarkItem[]>(queryKey) || [];
+      const previousItem = previousBookmarks.find(bm => bm.id === id);
 
-      // Optimistically update item in cache
       queryClient.setQueryData<BookmarkItem[]>(queryKey, (old = []) =>
         old.map((bm) =>
           bm.id === id
@@ -144,20 +140,24 @@ export function useBookmarks(userId?: string) {
         )
       );
 
-      return { previousBookmarks };
+      return { previousItem };
     },
     onError: (err, _variables, context) => {
-      if (context?.previousBookmarks) {
-        queryClient.setQueryData(queryKey, context.previousBookmarks);
+      if (context?.previousItem) {
+        queryClient.setQueryData<BookmarkItem[]>(queryKey, (old = []) =>
+          old.map(bm => bm.id === context.previousItem!.id ? context.previousItem! : bm)
+        );
       }
       toast.error(
         err instanceof Error ? err.message : "Failed to update bookmark. Changes rolled back."
       );
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey });
-      if (userId) {
-        queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+      if (queryClient.isMutating({ mutationKey: ["updateBookmark"] }) <= 1) {
+        queryClient.invalidateQueries({ queryKey });
+        if (userId) {
+          queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+        }
       }
     },
   });
@@ -166,6 +166,7 @@ export function useBookmarks(userId?: string) {
   // 4. MUTATION: Optimistic Delete Bookmark
   // ----------------------------------------------------
   const deleteMutation = useMutation({
+    mutationKey: ["deleteBookmark"],
     mutationFn: async (id: string) => {
       return await deleteBookmarkAction(id);
     },
@@ -174,26 +175,31 @@ export function useBookmarks(userId?: string) {
 
       const previousBookmarks =
         queryClient.getQueryData<BookmarkItem[]>(queryKey) || [];
+      const deletedItem = previousBookmarks.find(bm => bm.id === id);
 
-      // Optimistically remove item from cache instantly
       queryClient.setQueryData<BookmarkItem[]>(queryKey, (old = []) =>
         old.filter((bm) => bm.id !== id)
       );
 
-      return { previousBookmarks };
+      return { deletedItem };
     },
     onError: (err, _id, context) => {
-      if (context?.previousBookmarks) {
-        queryClient.setQueryData(queryKey, context.previousBookmarks);
+      if (context?.deletedItem) {
+        queryClient.setQueryData<BookmarkItem[]>(queryKey, (old = []) => {
+          if (old.some(bm => bm.id === _id)) return old;
+          return [...old, context.deletedItem!];
+        });
       }
       toast.error(
         err instanceof Error ? err.message : "Failed to delete bookmark. Restored state."
       );
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey });
-      if (userId) {
-        queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+      if (queryClient.isMutating({ mutationKey: ["deleteBookmark"] }) <= 1) {
+        queryClient.invalidateQueries({ queryKey });
+        if (userId) {
+          queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+        }
       }
     },
   });
@@ -202,27 +208,36 @@ export function useBookmarks(userId?: string) {
   // 5. MUTATION: Optimistic Bulk Delete
   // ----------------------------------------------------
   const bulkDeleteMutation = useMutation({
+    mutationKey: ["bulkDeleteBookmarks"],
     mutationFn: async (ids: string[]) => {
       return await bulkDeleteBookmarksAction(ids);
     },
     onMutate: async (ids) => {
       await queryClient.cancelQueries({ queryKey });
       const previousBookmarks = queryClient.getQueryData<BookmarkItem[]>(queryKey) || [];
+      const deletedItems = previousBookmarks.filter(bm => ids.includes(bm.id));
+
       queryClient.setQueryData<BookmarkItem[]>(queryKey, (old = []) =>
         old.filter((bm) => !ids.includes(bm.id))
       );
-      return { previousBookmarks };
+      return { deletedItems };
     },
-    onError: (err, _ids, context) => {
-      if (context?.previousBookmarks) {
-        queryClient.setQueryData(queryKey, context.previousBookmarks);
+    onError: (err, ids, context) => {
+      if (context?.deletedItems) {
+        queryClient.setQueryData<BookmarkItem[]>(queryKey, (old = []) => {
+          const currentIds = new Set(old.map(b => b.id));
+          const itemsToRestore = context.deletedItems!.filter(bm => !currentIds.has(bm.id));
+          return [...old, ...itemsToRestore];
+        });
       }
       toast.error(err instanceof Error ? err.message : "Failed to bulk delete bookmarks.");
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey });
-      if (userId) {
-        queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+      if (queryClient.isMutating({ mutationKey: ["bulkDeleteBookmarks"] }) <= 1) {
+        queryClient.invalidateQueries({ queryKey });
+        if (userId) {
+          queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+        }
       }
     },
   });
@@ -231,12 +246,15 @@ export function useBookmarks(userId?: string) {
   // 6. MUTATION: Optimistic Bulk Update
   // ----------------------------------------------------
   const bulkUpdateMutation = useMutation({
+    mutationKey: ["bulkUpdateBookmarks"],
     mutationFn: async ({ ids, input }: { ids: string[]; input: { categoryId?: string | null; isPinned?: boolean } }) => {
       return await bulkUpdateBookmarksAction(ids, input);
     },
     onMutate: async ({ ids, input }) => {
       await queryClient.cancelQueries({ queryKey });
       const previousBookmarks = queryClient.getQueryData<BookmarkItem[]>(queryKey) || [];
+      const previousItems = previousBookmarks.filter(bm => ids.includes(bm.id));
+
       queryClient.setQueryData<BookmarkItem[]>(queryKey, (old = []) =>
         old.map((bm) =>
           ids.includes(bm.id)
@@ -249,18 +267,25 @@ export function useBookmarks(userId?: string) {
             : bm
         )
       );
-      return { previousBookmarks };
+      return { previousItems };
     },
     onError: (err, _variables, context) => {
-      if (context?.previousBookmarks) {
-        queryClient.setQueryData(queryKey, context.previousBookmarks);
+      if (context?.previousItems) {
+        queryClient.setQueryData<BookmarkItem[]>(queryKey, (old = []) =>
+          old.map(bm => {
+            const prev = context.previousItems!.find(p => p.id === bm.id);
+            return prev ? prev : bm;
+          })
+        );
       }
       toast.error(err instanceof Error ? err.message : "Failed to bulk update bookmarks.");
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey });
-      if (userId) {
-        queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+      if (queryClient.isMutating({ mutationKey: ["bulkUpdateBookmarks"] }) <= 1) {
+        queryClient.invalidateQueries({ queryKey });
+        if (userId) {
+          queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+        }
       }
     },
   });
