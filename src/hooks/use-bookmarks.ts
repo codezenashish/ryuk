@@ -375,7 +375,7 @@ export function useBookmarks(userId?: string) {
     isUpdating: updateMutation.isPending,
     deleteBookmark: debouncedDeleteBookmark,
     deleteBookmarkAsync: deleteMutation.mutateAsync, // Left for fallback/programmatic usage
-    isDeleting: deleteMutation.isPending,
+    isDeleting: deleteMutation.isPending || pendingDeletesRef.current.length > 0,
     addMutation,
     updateMutation,
     deleteMutation,
