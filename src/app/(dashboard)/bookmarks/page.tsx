@@ -15,6 +15,7 @@ import { ImportBookmarksModal } from "@/features/bookmarks/dialogs/import-bookma
 import { BookmarkItem, BookmarkCategory } from "@/features/bookmarks/components/bookmark-card";
 import { ShareCategoryDialog } from "@/features/bookmarks/dialogs/share-category-dialog";
 import { BulkActionBar } from "@/features/bookmarks/components/bulk-action-bar";
+import { gooeyToast as toast } from "@/components/ui/goey-toaster";
 import { useSearchStore } from "@/store/useSearchStore";
 import { useDebounce } from "@/hooks/use-debounce";
 import { Plus, LayoutGrid, List, Upload } from "lucide-react";
@@ -244,13 +245,19 @@ export default function BookmarksPage() {
             setIsShareModalOpen(true);
           }}
           onDeleteClick={(category) => {
-            if (window.confirm("Are you sure you want to delete this category? All bookmarks in it will also be deleted.")) {
-              deleteCategoryMutation.mutate(category.id, {
-                onSuccess: () => {
-                  if (selectedCategoryId === category.id) setSelectedCategory(null);
-                }
-              });
-            }
+            toast.error("Delete this category?", {
+              description: "All bookmarks in it will also be deleted.",
+              action: {
+                label: "Delete",
+                onClick: () => {
+                  deleteCategoryMutation.mutate(category.id, {
+                    onSuccess: () => {
+                      if (selectedCategoryId === category.id) setSelectedCategory(null);
+                    }
+                  });
+                },
+              },
+            });
           }}
         />
 

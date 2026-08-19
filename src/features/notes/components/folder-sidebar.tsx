@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Folder as FolderIcon, Plus, Trash2 } from "lucide-react";
 import { useFolders } from "../hooks/use-folders";
 import { clsx } from "clsx";
+import { gooeyToast as toast } from "@/components/ui/goey-toaster";
 
 interface FolderSidebarProps {
   activeFolderId: string | null;
@@ -74,9 +75,13 @@ export function FolderSidebar({ activeFolderId, onSelectFolder }: FolderSidebarP
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (confirm("Delete this folder? Notes inside will not be deleted.")) {
-                    deleteFolder(folder.id);
-                  }
+                  toast.error("Delete this folder?", {
+                    description: "Notes inside will not be deleted.",
+                    action: {
+                      label: "Delete",
+                      onClick: () => deleteFolder(folder.id),
+                    },
+                  });
                 }}
                 className="absolute right-1 opacity-0 group-hover:opacity-100 p-1.5 text-ink-4 hover:text-rose-400 transition-all rounded-md cursor-pointer"
                 title="Delete Folder"

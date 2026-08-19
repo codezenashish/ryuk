@@ -322,13 +322,19 @@ export function useBookmarks(userId?: string) {
       const idsToProcess = [...pendingDeletesRef.current];
       pendingDeletesRef.current = [];
       queryClient.setQueryData(["pendingDeletes"], []);
-      if (idsToProcess.length === 0) return;
+      
+      const validIds = idsToProcess.filter(id => !id.startsWith("temp-"));
+      if (validIds.length === 0) {
+        // If all were temp IDs, just clear snapshots and we're done
+        idsToProcess.forEach(i => snapshotRef.current.delete(i));
+        return;
+      }
 
       try {
-        if (idsToProcess.length === 1) {
-          await deleteBookmarkAction(idsToProcess[0]);
+        if (validIds.length === 1) {
+          await deleteBookmarkAction(validIds[0]);
         } else {
-          await bulkDeleteBookmarksAction(idsToProcess);
+          await bulkDeleteBookmarksAction(validIds);
         }
         
         // Success: clear snapshots
@@ -341,6 +347,7 @@ export function useBookmarks(userId?: string) {
           if (userId) queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
         }
       } catch (error) {
+        console.error("Delete bookmark failed:", error);
         // Rollback
         queryClient.setQueryData<BookmarkItem[]>(queryKey, (old = []) => {
           const restored = idsToProcess.map(i => snapshotRef.current.get(i)).filter(Boolean) as BookmarkItem[];
@@ -349,7 +356,8 @@ export function useBookmarks(userId?: string) {
           return [...old, ...itemsToRestore];
         });
         idsToProcess.forEach(i => snapshotRef.current.delete(i));
-        toast.error("Failed to delete bookmarks. Restored state.");
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        toast.error(`Failed to delete bookmarks: ${errorMessage}. Restored state.`);
       }
     }, 700);
   }, [queryClient, queryKey, userId]);
@@ -367,7 +375,7 @@ export function useBookmarks(userId?: string) {
     isUpdating: updateMutation.isPending,
     deleteBookmark: debouncedDeleteBookmark,
     deleteBookmarkAsync: deleteMutation.mutateAsync, // Left for fallback/programmatic usage
-    isDeleting: deleteMutation.isPending || pendingDeletesRef.current.length > 0,
+    isDeleting: deleteMutation.isPending,
     addMutation,
     updateMutation,
     deleteMutation,

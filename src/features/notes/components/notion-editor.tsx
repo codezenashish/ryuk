@@ -6,6 +6,7 @@ import { TipTapEditor } from "./tiptap-editor";
 import { Note } from "./notes-card";
 import { clsx } from "clsx";
 import { useKeyboardShortcuts } from "../hooks/use-keyboard-shortcuts";
+import { gooeyToast as toast } from "@/components/ui/goey-toaster";
 
 interface NotionEditorProps {
   note: Note | null;
@@ -132,10 +133,18 @@ export function NotionEditor({
 
   const handleDelete = async () => {
     if (!note?.id || !onDelete) return;
-    if (confirm("Are you sure you want to delete this note?")) {
-      await onDelete(note.id);
-      onBack();
-    }
+    toast.error("Delete this note?", {
+      description: "This action cannot be undone.",
+      action: {
+        label: "Delete",
+        onClick: async () => {
+          if (onDelete && note.id) {
+            await onDelete(note.id);
+            onBack();
+          }
+        },
+      },
+    });
   };
 
   return (

@@ -24,6 +24,22 @@ export interface UpdateBookmarkInput {
   isPinned?: boolean;
 }
 
+async function getAccessibleBookmarksCondition(userId: string) {
+  const sharedCategories = await db
+    .select({ categoryId: categoryCollaborators.categoryId })
+    .from(categoryCollaborators)
+    .where(eq(categoryCollaborators.userId, userId));
+
+  const sharedIds = sharedCategories.map((sc) => sc.categoryId);
+
+  return sharedIds.length > 0
+    ? or(
+        eq(bookmarks.userId, userId),
+        inArray(bookmarks.categoryId, sharedIds)
+      )
+    : eq(bookmarks.userId, userId);
+}
+
 /**
  * Fetch all bookmarks for the authenticated user (or specified userId).
  */
@@ -35,20 +51,10 @@ export async function getBookmarksAction(userId?: string) {
 
   const targetUserId = userId || user.id;
 
-  const sharedCategories = await db
-    .select({ categoryId: categoryCollaborators.categoryId })
-    .from(categoryCollaborators)
-    .where(eq(categoryCollaborators.userId, targetUserId));
-
-  const sharedIds = sharedCategories.map((sc) => sc.categoryId);
+  const accessCondition = await getAccessibleBookmarksCondition(targetUserId);
 
   const data = await db.query.bookmarks.findMany({
-    where: sharedIds.length > 0
-      ? or(
-          eq(bookmarks.userId, targetUserId),
-          inArray(bookmarks.categoryId, sharedIds)
-        )
-      : eq(bookmarks.userId, targetUserId),
+    where: accessCondition,
     with: {
       category: true,
     },
@@ -153,9 +159,11 @@ export async function updateBookmarkAction(
     throw new Error("Unauthorized. Please sign in.");
   }
 
-  // Verify ownership
+  const accessCondition = await getAccessibleBookmarksCondition(user.id);
+
+  // Verify ownership or collaboration access
   const existing = await db.query.bookmarks.findFirst({
-    where: and(eq(bookmarks.id, id), eq(bookmarks.userId, user.id)),
+    where: and(eq(bookmarks.id, id), accessCondition),
   });
 
   if (!existing) {
@@ -218,8 +226,10 @@ export async function deleteBookmarkAction(id: string) {
     throw new Error("Unauthorized. Please sign in.");
   }
 
+  const accessCondition = await getAccessibleBookmarksCondition(user.id);
+
   const existing = await db.query.bookmarks.findFirst({
-    where: and(eq(bookmarks.id, id), eq(bookmarks.userId, user.id)),
+    where: and(eq(bookmarks.id, id), accessCondition),
   });
 
   if (!existing) {
@@ -241,10 +251,12 @@ export async function bulkDeleteBookmarksAction(ids: string[]) {
   
   if (!ids || ids.length === 0) return { deletedCount: 0 };
 
-  // Only delete bookmarks belonging to the user
+  const accessCondition = await getAccessibleBookmarksCondition(user.id);
+
+  // Only delete bookmarks belonging to the user or their shared categories
   const result = await db
     .delete(bookmarks)
-    .where(and(inArray(bookmarks.id, ids), eq(bookmarks.userId, user.id)))
+    .where(and(inArray(bookmarks.id, ids), accessCondition))
     .returning({ id: bookmarks.id });
 
   return { deletedCount: result.length, deletedIds: result.map((r) => r.id) };
@@ -279,6 +291,8 @@ export async function bulkUpdateBookmarksAction(
     }
   }
 
+  const accessCondition = await getAccessibleBookmarksCondition(user.id);
+
   const result = await db
     .update(bookmarks)
     .set({
@@ -286,7 +300,7 @@ export async function bulkUpdateBookmarksAction(
       ...(input.isPinned !== undefined && { isPinned: input.isPinned }),
       updatedAt: new Date(),
     })
-    .where(and(inArray(bookmarks.id, ids), eq(bookmarks.userId, user.id)))
+    .where(and(inArray(bookmarks.id, ids), accessCondition))
     .returning({ id: bookmarks.id });
 
   return { updatedCount: result.length, updatedIds: result.map((r) => r.id) };
