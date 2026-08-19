@@ -1,8 +1,8 @@
 "use server";
 
 import { db } from "@/db";
-import { bookmarks, categories } from "@/db/schema";
-import { eq, and, desc, inArray } from "drizzle-orm";
+import { bookmarks, categories, categoryCollaborators } from "@/db/schema";
+import { eq, and, desc, inArray, or } from "drizzle-orm";
 import { getOrCreateDbUser } from "@/lib/syncUser";
 
 export interface CreateBookmarkInput {
@@ -35,8 +35,20 @@ export async function getBookmarksAction(userId?: string) {
 
   const targetUserId = userId || user.id;
 
+  const sharedCategories = await db
+    .select({ categoryId: categoryCollaborators.categoryId })
+    .from(categoryCollaborators)
+    .where(eq(categoryCollaborators.userId, targetUserId));
+
+  const sharedIds = sharedCategories.map((sc) => sc.categoryId);
+
   const data = await db.query.bookmarks.findMany({
-    where: eq(bookmarks.userId, targetUserId),
+    where: sharedIds.length > 0
+      ? or(
+          eq(bookmarks.userId, targetUserId),
+          inArray(bookmarks.categoryId, sharedIds)
+        )
+      : eq(bookmarks.userId, targetUserId),
     with: {
       category: true,
     },
