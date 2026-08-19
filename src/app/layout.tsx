@@ -3,7 +3,7 @@ import { Geist, Geist_Mono, Newsreader } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/providers/auth-provider";
 import QueryProvider from "@/providers/query-provider";
-import { Toaster } from "sonner";
+import { GooeyToaster } from "@/components/ui/goey-toaster";
 
 const geistSans = Geist({
   variable: "--font-geist",
@@ -37,7 +37,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <AuthProvider>
           <QueryProvider>
             {children}
-            <Toaster position="top-right" richColors theme="dark" />
+            <GooeyToaster position="bottom-right" theme="dark" />
           </QueryProvider>
         </AuthProvider>
       </body>

@@ -3,7 +3,7 @@
 import React from "react";
 import { Copy, Share2, Edit2, Trash2, ShieldOff } from "lucide-react";
 import { BookmarkCategory } from "./bookmark-card";
-import { toast } from "sonner";
+import { gooeyToast as toast } from "@/components/ui/goey-toaster";
 import { createPortal } from "react-dom";
 
 interface CategoryContextMenuProps {

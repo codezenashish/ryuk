@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { gooeyToast as toast } from "@/components/ui/goey-toaster";
 
 export interface Collaborator {
   id: string;

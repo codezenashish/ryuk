@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRef, useCallback } from "react";
-import { toast } from "sonner";
+import { gooeyToast as toast } from "@/components/ui/goey-toaster";
 import {
   getBookmarksAction,
   createBookmarkAction,
