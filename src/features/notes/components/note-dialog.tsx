@@ -295,10 +295,11 @@ function NoteDialogForm({
           onClose={() => setShowHistory(false)}
           noteId={initialNote.id}
           onRestore={(restoredNote) => {
-            setTitle(restoredNote.title);
-            setContent(restoredNote.content);
-            setLanguage(restoredNote.language);
-            setIsSnippet(restoredNote.isSnippet);
+            const note = restoredNote as { title: string; content: string; language: string; isSnippet: boolean };
+            setTitle(note.title);
+            setContent(note.content);
+            setLanguage(note.language);
+            setIsSnippet(note.isSnippet);
             setShowHistory(false);
           }}
         />
