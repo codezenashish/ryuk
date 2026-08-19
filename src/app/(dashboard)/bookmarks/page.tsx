@@ -64,7 +64,14 @@ export default function BookmarksPage() {
 
   const { query } = useSearchStore();
   const debouncedSearch = useDebounce(query, 300);
-  const categories = queryCategories || storeCategories;
+  const fetchedCategories = queryCategories || storeCategories;
+
+  // Only show categories that have at least one bookmark
+  const categories = useMemo(() => {
+    return fetchedCategories.filter((cat) => 
+      bookmarks.some((b) => b.category?.id === cat.id || b.categoryId === cat.id)
+    );
+  }, [fetchedCategories, bookmarks]);
 
   // Filter Bookmarks by search query and category
   const filteredBookmarks = useMemo(() => {

@@ -37,11 +37,15 @@ export function ShareCategoryDialog({
     : "";
 
   const handleToggleShare = async () => {
+    const previousSharedState = isShared;
+    const newSharedState = !isShared;
+    
+    // Optimistic Update
+    setIsShared(newSharedState);
+    setError(null);
+    setIsLoading(true);
+
     try {
-      setIsLoading(true);
-      setError(null);
-      const newSharedState = !isShared;
-      
       const res = await fetch(`/api/category/${category.id}/share`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -53,11 +57,12 @@ export function ShareCategoryDialog({
       }
 
       const data = await res.json();
-      setIsShared(newSharedState);
       setLocalCategory(data.category);
       onShareUpdate(data.category);
     } catch (err) {
       console.error(err);
+      // Revert Optimistic Update
+      setIsShared(previousSharedState);
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setIsLoading(false);

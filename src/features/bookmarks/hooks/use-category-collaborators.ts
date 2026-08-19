@@ -42,12 +42,40 @@ export function useInviteCollaboratorMutation(categoryId: string) {
       }
       return res.json();
     },
+    onMutate: async (email: string) => {
+      await queryClient.cancelQueries({ queryKey: ["collaborators", categoryId] });
+
+      const previousCollaborators = queryClient.getQueryData<Collaborator[]>(["collaborators", categoryId]) || [];
+
+      // Optimistically add placeholder
+      const optimisticCollaborator: Collaborator = {
+        id: `temp-${Date.now()}`,
+        user: {
+          id: `temp-user-${Date.now()}`,
+          name: "Sending invite...",
+          email: email,
+          image: null,
+        },
+      };
+
+      queryClient.setQueryData<Collaborator[]>(["collaborators", categoryId], (old = []) => [
+        ...old,
+        optimisticCollaborator,
+      ]);
+
+      return { previousCollaborators };
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["collaborators", categoryId] });
       toast.success("Collaborator invited successfully!");
     },
-    onError: (error: Error) => {
+    onError: (error: Error, _email, context) => {
+      if (context?.previousCollaborators) {
+        queryClient.setQueryData(["collaborators", categoryId], context.previousCollaborators);
+      }
       toast.error(error.message || "Failed to invite collaborator");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["collaborators", categoryId] });
     },
   });
 }
@@ -66,12 +94,29 @@ export function useRemoveCollaboratorMutation(categoryId: string) {
       }
       return res.json();
     },
+    onMutate: async (userId: string) => {
+      await queryClient.cancelQueries({ queryKey: ["collaborators", categoryId] });
+
+      const previousCollaborators = queryClient.getQueryData<Collaborator[]>(["collaborators", categoryId]) || [];
+
+      // Optimistically remove user
+      queryClient.setQueryData<Collaborator[]>(["collaborators", categoryId], (old = []) => 
+        old.filter((collab) => collab.user.id !== userId)
+      );
+
+      return { previousCollaborators };
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["collaborators", categoryId] });
       toast.success("Collaborator removed.");
     },
-    onError: (error: Error) => {
+    onError: (error: Error, _userId, context) => {
+      if (context?.previousCollaborators) {
+        queryClient.setQueryData(["collaborators", categoryId], context.previousCollaborators);
+      }
       toast.error(error.message || "Failed to remove collaborator");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["collaborators", categoryId] });
     },
   });
 }
