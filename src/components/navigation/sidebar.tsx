@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { RyukLogo } from "@/components/common/ryuk-logo";
 import { usePathname } from "next/navigation";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { sidebar } from "./side-config";
@@ -16,10 +17,8 @@ export default function Sidebar() {
        
         className="flex h-16 items-center gap-3 border-b border-line px-4 shrink-0"
       >
+        <RyukLogo size={45} className="text-ink" />
         
-        <h2 className="font-display text-lg font-medium tracking-tight text-ink">
-          Ryuk
-        </h2>
         
       </div>
 

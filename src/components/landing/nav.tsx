@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { RyukLogo } from "@/components/common/ryuk-logo";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Github } from "@hugeicons/core-free-icons";
 
@@ -12,10 +13,8 @@ export function Nav() {
     <header className="sticky top-0 z-50 border-b border-line bg-paper/70 backdrop-blur-md [-webkit-backdrop-filter:blur(10px)_saturate(140%)] [backdrop-filter:blur(10px)_saturate(140%)]">
       <div className="mx-auto flex h-15 max-w-7xl items-center justify-between px-8">
         <Link href="/" className="flex items-center gap-3 text-ink">
-         
-          <span className="font-display text-[22px] font-medium tracking-tight">
-            Ryuk
-          </span>
+          <RyukLogo size={45} className="text-ink" />
+          
           <span className="ml-1 rounded-full border border-line-2 px-1.75 py-0.5 font-code text-[10.5px] tracking-[0.08em] text-ink-3">
             v1.0
           </span>

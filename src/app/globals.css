@@ -205,13 +205,24 @@ ul[data-type="taskList"] li input[type="checkbox"] {
   cursor: pointer;
 }
 
+.ProseMirror .tableWrapper {
+  overflow-x: auto;
+  margin: 1rem 0;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.ProseMirror .tableWrapper::-webkit-scrollbar {
+  display: none;
+}
+
 .ProseMirror table {
   border-collapse: collapse;
-  margin: 1rem 0;
-  width: 100%;
+  width: max-content;
+  min-width: 100%;
   table-layout: fixed;
+  margin: 0;
   border-radius: 0.5rem;
-  overflow: hidden;
   border: 1px solid var(--color-line-2);
 }
 
@@ -221,6 +232,8 @@ ul[data-type="taskList"] li input[type="checkbox"] {
   padding: 0.5rem 0.75rem;
   vertical-align: top;
   box-sizing: border-box;
+  min-width: 150px;
+  position: relative;
 }
 
 .ProseMirror th {
