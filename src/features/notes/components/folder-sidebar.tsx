@@ -37,7 +37,7 @@ export function FolderSidebar({ activeFolderId, onSelectFolder }: FolderSidebarP
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-2 space-y-0.5">
+      <div className="flex-1 overflow-y-auto p-2 space-y-0.5 scrollbar-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <button
           onClick={() => onSelectFolder(null)}
           className={clsx(

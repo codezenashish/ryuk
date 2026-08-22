@@ -104,7 +104,7 @@ export function TipTapEditor({
     editorProps: {
       attributes: {
         class:
-          "prose prose-invert max-w-none p-0 min-h-[320px] focus:outline-none text-foreground text-base md:text-lg leading-relaxed font-sans",
+          "prose prose-invert max-w-none p-0 min-h-[320px] focus:outline-none text-foreground text-base md:text-lg leading-relaxed font-sans break-words [word-break:break-word] overflow-x-hidden",
       },
       handlePaste: (view, event) => {
         const text = event.clipboardData?.getData("text/plain");

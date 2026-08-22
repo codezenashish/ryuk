@@ -16,6 +16,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import {
   ChevronDown,
   Bookmark,
   FileText,
@@ -29,7 +39,7 @@ import {
   Sparkles,
   Trophy,
   Folder,
-  MoreVertical,
+  SlidersHorizontal,
 } from "lucide-react";
 
 const SECTIONS = [
@@ -176,8 +186,7 @@ export function SecondaryNavbar() {
           {isBookmarksRoute && (
             <span className="inline-flex items-center gap-1.5 text-muted-foreground font-mono text-[11px]">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              <span className="hidden xs:inline">{bookmarks.length} Bookmarks</span>
-              <span className="xs:hidden">{bookmarks.length}</span>
+              <span>{bookmarks.length} Bookmarks</span>
             </span>
           )}
           {isNotesRoute && (
@@ -202,7 +211,6 @@ export function SecondaryNavbar() {
       </div>
 
       <div className="flex items-center gap-2 shrink-0">
-        {/* Desktop View Tools */}
         <div className="hidden md:flex items-center gap-2">
           {isBookmarksRoute && (
             <>
@@ -386,159 +394,214 @@ export function SecondaryNavbar() {
           )}
         </div>
 
-        {/* Mobile 3-Dots Action Menu */}
-        <div className="flex md:hidden items-center">
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              render={
-                <Button
-                  variant="outline"
-                  size="icon-sm"
-                  className="h-7 w-7 border-border bg-background shadow-2xs"
-                  title="More actions"
-                >
-                  <MoreVertical className="h-3.5 w-3.5" />
-                </Button>
-              }
-            />
-            <DropdownMenuContent
-              align="end"
-              side="bottom"
-              sideOffset={6}
-              className="w-56 rounded-xl border border-border bg-card p-1.5 shadow-xl z-50"
-            >
-              <DropdownMenuGroup>
-                <DropdownMenuLabel className="px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                  Tools & Actions
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
+        <div className="flex md:hidden items-center gap-1.5">
+          {isBookmarksRoute && (
+            <>
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => openAddModal(null)}
+                className="h-7 text-xs gap-1 px-2.5 font-medium cursor-pointer"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>Add</span>
+              </Button>
 
-                {isBookmarksRoute && (
-                  <>
-                    <DropdownMenuItem
-                      onClick={() => openAddModal(null)}
-                      className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-primary-foreground bg-primary hover:bg-primary/90 cursor-pointer mb-1"
+              <Drawer showSwipeHandle>
+                <DrawerTrigger
+                  render={
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-xs border-border bg-background shadow-2xs gap-1 px-2.5 font-medium cursor-pointer"
                     >
-                      <Plus className="h-3.5 w-3.5" />
-                      <span>Add Bookmark</span>
-                    </DropdownMenuItem>
+                      <SlidersHorizontal className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                      <span>More</span>
+                    </Button>
+                  }
+                />
+                <DrawerContent className="p-4 bg-card border-t border-border rounded-t-2xl max-h-[85vh] flex flex-col">
+                  <DrawerHeader className="text-left px-0 pb-3">
+                    <DrawerTitle className="text-sm font-semibold">Bookmark Tools & Categories</DrawerTitle>
+                    <DrawerDescription className="text-xs text-muted-foreground">
+                      Filter bookmarks by category or switch layout mode.
+                    </DrawerDescription>
+                  </DrawerHeader>
 
-                    <DropdownMenuItem
-                      onClick={openImportModal}
-                      className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium cursor-pointer"
-                    >
-                      <Upload className="h-3.5 w-3.5 text-muted-foreground" />
-                      <span>Import Bookmarks</span>
-                    </DropdownMenuItem>
+                  <div className="flex-1 overflow-y-auto scrollbar-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden space-y-4 py-2">
+                    <div>
+                      <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
+                        Filter Category
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <DrawerClose
+                          render={
+                            <button
+                              type="button"
+                              onClick={() => setSelectedCategory(null)}
+                              className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition cursor-pointer ${
+                                currentCategoryId === null
+                                  ? "bg-primary/10 text-primary font-semibold"
+                                  : "text-foreground hover:bg-muted"
+                              }`}
+                            >
+                              <div className="flex items-center gap-2">
+                                <Folder className="h-4 w-4 text-muted-foreground" />
+                                <span>All Categories</span>
+                              </div>
+                              <span className="font-mono text-[11px] text-muted-foreground">
+                                {bookmarks.length}
+                              </span>
+                            </button>
+                          }
+                        />
+                        {realCategories.map((cat) => {
+                          const isSelected = currentCategoryId === cat.id;
+                          const count = bookmarks.filter((b) => {
+                            const bCat = typeof b.category === "string" ? b.category : b.category?.name;
+                            return bCat === cat.id || b.categoryId === cat.id || bCat === cat.name;
+                          }).length;
 
-                    <DropdownMenuSeparator />
-
-                    <div className="flex items-center justify-between px-2.5 py-1.5 text-xs text-muted-foreground">
-                      <span>Layout Mode</span>
-                      <div className="flex items-center gap-1">
-                        <button
-                          type="button"
-                          onClick={() => setLayoutMode("grid")}
-                          className={`p-1 rounded ${
-                            layoutMode === "grid" ? "bg-primary text-primary-foreground" : "bg-muted"
-                          }`}
-                        >
-                          <LayoutGrid className="h-3 w-3" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setLayoutMode("list")}
-                          className={`p-1 rounded ${
-                            layoutMode === "list" ? "bg-primary text-primary-foreground" : "bg-muted"
-                          }`}
-                        >
-                          <List className="h-3 w-3" />
-                        </button>
+                          return (
+                            <DrawerClose
+                              key={cat.id}
+                              render={
+                                <button
+                                  type="button"
+                                  onClick={() => setSelectedCategory(cat.id)}
+                                  className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition cursor-pointer ${
+                                    isSelected
+                                      ? "bg-primary/10 text-primary font-semibold"
+                                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-2 truncate">
+                                    {cat.icon ? (
+                                      <span className="text-sm">{cat.icon}</span>
+                                    ) : (
+                                      <span
+                                        className="h-2.5 w-2.5 rounded-full shrink-0"
+                                        style={{ backgroundColor: cat.color || "var(--primary)" }}
+                                      />
+                                    )}
+                                    <span className="truncate">{cat.name}</span>
+                                  </div>
+                                  {count > 0 && (
+                                    <span className="font-mono text-[11px] text-muted-foreground ml-2">
+                                      {count}
+                                    </span>
+                                  )}
+                                </button>
+                              }
+                            />
+                          );
+                        })}
                       </div>
                     </div>
 
-                    <DropdownMenuSeparator />
-                    <DropdownMenuLabel className="px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                      Filter Category
-                    </DropdownMenuLabel>
-
-                    <DropdownMenuItem
-                      onClick={() => setSelectedCategory(null)}
-                      className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium cursor-pointer ${
-                        currentCategoryId === null ? "bg-primary/10 text-primary font-semibold" : ""
-                      }`}
-                    >
-                      <div className="flex items-center gap-2">
-                        <Folder className="h-3.5 w-3.5 text-muted-foreground" />
-                        <span>All Categories</span>
+                    <div className="pt-3 border-t border-border space-y-3">
+                      <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                        Tools & Actions
                       </div>
-                      <span className="font-mono text-[10px] text-muted-foreground">{bookmarks.length}</span>
-                    </DropdownMenuItem>
-
-                    <div className="max-h-36 overflow-y-auto scrollbar-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden flex flex-col gap-0.5">
-                      {realCategories.map((cat) => {
-                        const isSelected = currentCategoryId === cat.id;
-                        return (
-                          <DropdownMenuItem
-                            key={cat.id}
-                            onClick={() => setSelectedCategory(cat.id)}
-                            className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium cursor-pointer ${
-                              isSelected ? "bg-primary/10 text-primary font-semibold" : ""
+                      <div className="flex items-center justify-between px-1">
+                        <span className="text-xs font-medium text-foreground">View Mode</span>
+                        <div className="flex items-center gap-1 bg-muted p-1 rounded-lg">
+                          <button
+                            type="button"
+                            onClick={() => setLayoutMode("grid")}
+                            className={`p-1.5 rounded-md transition cursor-pointer ${
+                              layoutMode === "grid"
+                                ? "bg-background text-foreground shadow-2xs font-semibold"
+                                : "text-muted-foreground"
                             }`}
                           >
-                            <div className="flex items-center gap-2 truncate">
-                              <span
-                                className="h-2 w-2 rounded-full shrink-0"
-                                style={{ backgroundColor: cat.color || "var(--primary)" }}
-                              />
-                              <span className="truncate">{cat.name}</span>
-                            </div>
-                          </DropdownMenuItem>
-                        );
-                      })}
+                            <LayoutGrid className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setLayoutMode("list")}
+                            className={`p-1.5 rounded-md transition cursor-pointer ${
+                              layoutMode === "list"
+                                ? "bg-background text-foreground shadow-2xs font-semibold"
+                                : "text-muted-foreground"
+                            }`}
+                          >
+                            <List className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      </div>
+
+                      <DrawerClose
+                        render={
+                          <button
+                            type="button"
+                            onClick={openImportModal}
+                            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium border border-border bg-background hover:bg-muted transition cursor-pointer"
+                          >
+                            <Upload className="h-4 w-4 text-muted-foreground" />
+                            <span>Import Bookmarks</span>
+                          </button>
+                        }
+                      />
                     </div>
-                  </>
-                )}
-
-                {isNotesRoute && (
-                  <DropdownMenuItem
-                    onClick={() => {
-                      window.dispatchEvent(new CustomEvent("open-new-note"));
-                    }}
-                    className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-primary-foreground bg-primary hover:bg-primary/90 cursor-pointer"
-                  >
-                    <Plus className="h-3.5 w-3.5" />
-                    <span>New Note</span>
-                  </DropdownMenuItem>
-                )}
-
-                {isDashboardRoute && (
-                  <>
-                    <DropdownMenuItem
-                      onClick={() => openAddModal(null)}
-                      className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-primary-foreground bg-primary hover:bg-primary/90 cursor-pointer mb-1"
-                    >
-                      <Plus className="h-3.5 w-3.5" />
-                      <span>Quick Action</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => router.refresh()}
-                      className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium cursor-pointer"
-                    >
-                      <RotateCcw className="h-3.5 w-3.5 text-muted-foreground" />
-                      <span>Sync Overview</span>
-                    </DropdownMenuItem>
-                  </>
-                )}
-
-                {isSettingsRoute && (
-                  <div className="px-2.5 py-1 text-[11px] font-mono text-muted-foreground">
-                    Account Preferences v1.0
                   </div>
-                )}
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
+
+                  <DrawerFooter className="px-0 pt-3 border-t border-border">
+                    <DrawerClose
+                      render={
+                        <Button variant="outline" size="sm" className="w-full h-9 text-xs cursor-pointer">
+                          Done
+                        </Button>
+                      }
+                    />
+                  </DrawerFooter>
+                </DrawerContent>
+              </Drawer>
+            </>
+          )}
+
+          {isNotesRoute && (
+            <Button
+              variant="default"
+              size="sm"
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent("open-new-note"));
+              }}
+              className="h-7 text-xs gap-1 px-2.5 font-medium cursor-pointer"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span>New Note</span>
+            </Button>
+          )}
+
+          {isDashboardRoute && (
+            <div className="flex items-center gap-1.5">
+              <Button
+                variant="outline"
+                size="icon-sm"
+                onClick={() => router.refresh()}
+                className="h-7 w-7 border-border bg-background shadow-2xs cursor-pointer"
+                title="Sync"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+              </Button>
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => openAddModal(null)}
+                className="h-7 text-xs gap-1 px-2.5 font-medium cursor-pointer"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>Action</span>
+              </Button>
+            </div>
+          )}
+
+          {isSettingsRoute && (
+            <ButtonGroupText className="h-7 text-[11px] font-mono text-muted-foreground py-0">
+              v1.0
+            </ButtonGroupText>
+          )}
         </div>
       </div>
     </nav>

@@ -148,7 +148,7 @@ export function NotionEditor({
   };
 
   return (
-    <div className="min-h-[85vh] w-full max-w-4xl mx-auto py-4 px-2 sm:px-6 space-y-6 animate-in fade-in duration-200">
+    <div className="min-h-[85vh] w-full max-w-4xl mx-auto py-4 px-2 sm:px-6 space-y-6 animate-in fade-in duration-200 min-w-0 overflow-x-hidden">
       <div className="flex items-center justify-between gap-4 py-2 border-b border-border">
         <button
           type="button"

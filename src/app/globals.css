@@ -271,11 +271,22 @@
 
   html {
     scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
 
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
   }
 
   button,
@@ -284,6 +295,17 @@
   select {
     font: inherit;
   }
+}
+
+.scrollbar-none {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 
@@ -304,7 +326,15 @@
 
 @layer components {
   .ProseMirror {
-    @apply outline-none min-h-[280px] text-foreground font-sans leading-relaxed;
+    @apply outline-none min-h-[280px] text-foreground font-sans leading-relaxed break-words max-w-full;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .ProseMirror::-webkit-scrollbar {
+    display: none;
   }
 
   .ProseMirror p.is-editor-empty:first-child::before {
@@ -313,39 +343,45 @@
   }
 
   .ProseMirror h1 {
-    @apply text-2xl md:text-3xl font-bold font-sans mt-4 mb-2 text-foreground leading-tight;
+    @apply text-2xl md:text-3xl font-bold font-sans mt-4 mb-2 text-foreground leading-tight break-words;
   }
 
   .ProseMirror h2 {
-    @apply text-xl md:text-2xl font-semibold font-sans mt-3.5 mb-1.5 text-foreground leading-snug;
+    @apply text-xl md:text-2xl font-semibold font-sans mt-3.5 mb-1.5 text-foreground leading-snug break-words;
   }
 
   .ProseMirror h3 {
-    @apply text-lg md:text-xl font-semibold font-sans mt-3 mb-1 text-muted-foreground leading-snug;
+    @apply text-lg md:text-xl font-semibold font-sans mt-3 mb-1 text-muted-foreground leading-snug break-words;
   }
 
   .ProseMirror p {
-    @apply mb-2 leading-relaxed;
+    @apply mb-2 leading-relaxed break-words;
   }
 
   .ProseMirror ul {
-    @apply list-disc pl-6 mb-3 space-y-1;
+    @apply list-disc pl-6 mb-3 space-y-1 max-w-full;
   }
 
   .ProseMirror ol {
-    @apply list-decimal pl-6 mb-3 space-y-1;
+    @apply list-decimal pl-6 mb-3 space-y-1 max-w-full;
   }
 
   .ProseMirror li {
-    @apply mb-1;
+    @apply mb-1 break-words;
   }
 
   .ProseMirror blockquote {
-    @apply border-l-2 border-border pl-4 py-1 my-2 italic text-muted-foreground;
+    @apply border-l-2 border-border pl-4 py-1 my-2 italic text-muted-foreground break-words;
   }
 
   .ProseMirror pre {
-    @apply bg-card text-foreground font-mono p-3.5 border border-border my-3 overflow-x-auto text-sm;
+    @apply bg-card text-foreground font-mono p-3.5 border border-border my-3 overflow-x-auto text-sm max-w-full rounded-xl;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .ProseMirror pre::-webkit-scrollbar {
+    display: none;
   }
 
   .ProseMirror code {

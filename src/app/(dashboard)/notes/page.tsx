@@ -60,7 +60,7 @@ export default function NotesPage() {
   const displayedNotes = activeFolderId ? notes.filter((n) => n.folderId === activeFolderId) : notes;
 
   return (
-    <div className="flex h-full min-h-[calc(100vh-6rem)] -mx-4 md:-mx-8">
+    <div className="flex h-full min-h-[calc(100vh-6rem)] w-full min-w-0 overflow-x-hidden">
       {activeNote === null && (
         <FolderSidebar 
           activeFolderId={activeFolderId} 
@@ -68,7 +68,7 @@ export default function NotesPage() {
         />
       )}
       
-      <div className="flex-1 py-6 px-4 md:px-8 space-y-6 overflow-y-auto">
+      <div className="flex-1 py-6 px-3 sm:px-6 md:px-8 space-y-6 overflow-y-auto min-w-0 overflow-x-hidden scrollbar-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {isError && (
           <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs font-medium">
             {error?.message || "An error occurred loading notes."}
