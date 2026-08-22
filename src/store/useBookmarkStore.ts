@@ -22,6 +22,7 @@ interface BookmarkStore {
   // Modal State
   isAddModalOpen: boolean;
   editingBookmark: BookmarkItem | null;
+  isImportModalOpen: boolean;
 
   // Selection State
   selectedBookmarkIds: string[];
@@ -54,6 +55,8 @@ interface BookmarkStore {
   setLayoutMode: (mode: "grid" | "list") => void;
   openAddModal: (bookmark?: BookmarkItem | null) => void;
   closeAddModal: () => void;
+  openImportModal: () => void;
+  closeImportModal: () => void;
 }
 
 const defaultCategories: BookmarkCategory[] = [];
@@ -73,6 +76,7 @@ export const useBookmarkStore = create<BookmarkStore>()(
       layoutMode: "grid",
       isAddModalOpen: false,
       editingBookmark: null,
+      isImportModalOpen: false,
       selectedBookmarkIds: [],
 
       // Selection Actions
@@ -274,6 +278,8 @@ export const useBookmarkStore = create<BookmarkStore>()(
         set({ isAddModalOpen: true, editingBookmark: bookmark }),
       closeAddModal: () =>
         set({ isAddModalOpen: false, editingBookmark: null }),
+      openImportModal: () => set({ isImportModalOpen: true }),
+      closeImportModal: () => set({ isImportModalOpen: false }),
     }),
     {
       name: "ryuk-bookmark-storage-v3",

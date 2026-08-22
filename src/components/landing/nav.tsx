@@ -35,14 +35,18 @@ export function Nav() {
         <div className="flex items-center gap-2">
           <ModeToggle />
           <a
-            href="https://github.com/codezenashish/ryuk"
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 rounded-md border border-border px-3 py-1.5 font-mono text-xs text-muted-foreground hover:border-foreground/20 hover:text-foreground"
-          >
-            <HugeiconsIcon size={16} icon={Github} />
-            <b className="font-semibold text-foreground">GitHub</b>
-          </a>
+          href="https://github.com/codezenashish/ryuk"
+          target="_blank"
+          rel="noreferrer"
+          className="hidden md:inline-flex items-center gap-1.5 rounded-lg border border-border bg-muted px-2.5 py-1 font-mono text-xs text-muted-foreground hover:border-foreground/20 hover:text-foreground hover:bg-card transition"
+          title="GitHub Repository"
+        >
+          <HugeiconsIcon size={14} icon={Github} />
+          <span className="font-medium text-foreground">GitHub</span>
+          <span className="rounded-md bg-background px-1.5 py-0.5 text-[10px] text-muted-foreground border border-border">
+            v1.0
+          </span>
+        </a>
         </div>
       </div>
     </header>

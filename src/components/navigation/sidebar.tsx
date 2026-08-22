@@ -11,18 +11,8 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="h-full font-sans flex flex-col">
-      {/* App Branding */}
-      <div
-       
-        className="flex h-16 items-center gap-3 border-b border-border px-4 shrink-0"
-      >
-        <RyukLogo size={45} className="text-foreground" />
-        
-        
-      </div>
-
-      <nav className="flex flex-col gap-1 p-3">
+    <aside className="h-full font-sans flex flex-col py-2">
+      <nav className="flex flex-col gap-1 px-3">
 
         {sidebar.map((item) => {
           const isActive = pathname === item.href;

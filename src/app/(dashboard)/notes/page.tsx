@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NotesGrid } from "@/features/notes/components/notes-grid";
 import { NotionEditor } from "@/features/notes/components/notion-editor";
 import { Note } from "@/features/notes/components/notes-card";
@@ -12,6 +12,12 @@ export default function NotesPage() {
   const [activeNote, setActiveNote] = useState<Note | "new" | null>(null);
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
   const { notes, isLoading, isError, error, saveNote, deleteNote, togglePin, toggleBookmark } = useNotes();
+
+  useEffect(() => {
+    const handleOpenNewNote = () => setActiveNote("new");
+    window.addEventListener("open-new-note", handleOpenNewNote);
+    return () => window.removeEventListener("open-new-note", handleOpenNewNote);
+  }, []);
 
   useKeyboardShortcuts(
     {

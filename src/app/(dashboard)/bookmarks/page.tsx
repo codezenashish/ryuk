@@ -26,7 +26,6 @@ export default function BookmarksPage() {
   const userId = user?.id;
   const queryClient = useQueryClient();
   const deleteCategoryMutation = useDeleteCategoryMutation(user?.id);
-  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [shareTargetCategory, setShareTargetCategory] = useState<BookmarkCategory | null>(null);
 
@@ -52,6 +51,7 @@ export default function BookmarksPage() {
     layoutMode,
     isAddModalOpen,
     editingBookmark,
+    isImportModalOpen,
     selectedTags,
     dateRange,
     filterStatus,
@@ -62,6 +62,8 @@ export default function BookmarksPage() {
     setLayoutMode,
     openAddModal,
     closeAddModal,
+    openImportModal,
+    closeImportModal,
   } = useBookmarkStore();
 
   const { query } = useSearchStore();
@@ -212,9 +214,9 @@ export default function BookmarksPage() {
       />
       <ImportBookmarksModal
         isOpen={isImportModalOpen}
-        onClose={() => setIsImportModalOpen(false)}
+        onClose={closeImportModal}
         onSuccess={() => {
-          setIsImportModalOpen(false);
+          closeImportModal();
           // Allow realtime to sync or just reload to be safe
           window.location.reload();
         }}
@@ -303,7 +305,7 @@ export default function BookmarksPage() {
           {/* Add Bookmark Trigger */}
           <button
             type="button"
-            onClick={() => setIsImportModalOpen(true)}
+            onClick={openImportModal}
             className="inline-flex items-center gap-2 rounded-xl bg-muted px-4 py-2 text-xs font-medium text-foreground hover:bg-border transition shadow-sm cursor-pointer active:translate-y-px border border-border"
           >
             <Upload className="h-4 w-4" />
