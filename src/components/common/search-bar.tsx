@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Search, X } from "lucide-react";
 
 interface SearchBarProps {
@@ -13,37 +12,32 @@ interface SearchBarProps {
 export function SearchBar({
   placeholder = "Search bookmarks, notes, tools...",
   onSearch,
-  value,
+  value = "",
   className = "",
 }: SearchBarProps) {
-  const [internalQuery, setInternalQuery] = useState("");
-  
-  const query = value !== undefined ? value : internalQuery;
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    setInternalQuery(val);
-    if (onSearch) onSearch(val);
+  const handleOpenCommand = () => {
+    window.dispatchEvent(new CustomEvent("open-command-menu"));
   };
 
-  const handleClear = () => {
-    setInternalQuery("");
+  const handleClear = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (onSearch) onSearch("");
   };
 
   return (
     <div
-      className={`group relative flex items-center w-full max-w-sm rounded-xl border border-border bg-card px-3 py-1.5 transition-all duration-200 focus-within:border-foreground focus-within:bg-card focus-within:ring-2 focus-within:ring-ring/10 ${className}`}
+      onClick={handleOpenCommand}
+      className={`group relative flex items-center w-full max-w-sm rounded-xl border border-border bg-card px-3 py-1.5 transition-all duration-200 hover:border-foreground/30 focus-within:border-foreground focus-within:bg-card focus-within:ring-2 focus-within:ring-ring/10 cursor-pointer shadow-2xs ${className}`}
     >
-      <Search className="h-4 w-4 text-muted-foreground shrink-0 mr-2.5 transition-colors group-focus-within:text-foreground" />
+      <Search className="h-4 w-4 text-muted-foreground shrink-0 mr-2.5 transition-colors group-hover:text-foreground" />
       <input
         type="text"
-        value={query}
-        onChange={handleChange}
+        readOnly
+        value={value}
         placeholder={placeholder}
-        className="w-full bg-transparent text-xs text-foreground placeholder:text-muted-foreground focus:outline-none"
+        className="w-full bg-transparent text-xs text-foreground placeholder:text-muted-foreground focus:outline-none cursor-pointer"
       />
-      {query ? (
+      {value ? (
         <button
           type="button"
           onClick={handleClear}

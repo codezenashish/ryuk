@@ -5,6 +5,7 @@ import { AuthProvider } from "@/providers/auth-provider";
 import QueryProvider from "@/providers/query-provider";
 import { GooeyToaster } from "@/components/ui/goey-toaster";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { CommandMenu } from "@/components/common/command-menu";
 
 const geistSans = Geist({
   variable: "--font-geist",
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               disableTransitionOnChange
             >
               {children}
+              <CommandMenu />
               <GooeyToaster position="bottom-right" />
             </ThemeProvider>
           </QueryProvider>
