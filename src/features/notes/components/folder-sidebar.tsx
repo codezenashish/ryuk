@@ -25,12 +25,12 @@ export function FolderSidebar({ activeFolderId, onSelectFolder }: FolderSidebarP
   };
 
   return (
-    <div className="w-56 shrink-0 border-r border-line bg-paper flex-col hidden md:flex min-h-[500px]">
-      <div className="p-3 border-b border-line flex items-center justify-between">
-        <h3 className="text-xs font-semibold text-ink-2 uppercase tracking-wider font-code">Folders</h3>
+    <div className="w-56 shrink-0 border-r border-border bg-background flex-col hidden md:flex min-h-[500px]">
+      <div className="p-3 border-b border-border flex items-center justify-between">
+        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider font-mono">Folders</h3>
         <button 
           onClick={() => setIsCreating(true)}
-          className="p-1 hover:bg-paper-2 rounded-lg text-ink-3 hover:text-ink transition-colors cursor-pointer"
+          className="p-1 hover:bg-card rounded-lg text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
           title="New Folder"
         >
           <Plus className="w-4 h-4" />
@@ -44,7 +44,7 @@ export function FolderSidebar({ activeFolderId, onSelectFolder }: FolderSidebarP
             "w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors text-left cursor-pointer",
             activeFolderId === null 
               ? "bg-primary/10 text-primary font-medium" 
-              : "text-ink-2 hover:bg-paper-2 hover:text-ink"
+              : "text-muted-foreground hover:bg-card hover:text-foreground"
           )}
         >
           <FolderIcon className="w-4 h-4" />
@@ -52,7 +52,7 @@ export function FolderSidebar({ activeFolderId, onSelectFolder }: FolderSidebarP
         </button>
 
         {isLoading ? (
-          <div className="px-3 py-2 text-xs text-ink-4">Loading...</div>
+          <div className="px-3 py-2 text-xs text-muted-foreground">Loading...</div>
         ) : (
           folders.map((folder) => (
             <div key={folder.id} className="group relative flex items-center">
@@ -62,7 +62,7 @@ export function FolderSidebar({ activeFolderId, onSelectFolder }: FolderSidebarP
                   "flex-1 flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors text-left cursor-pointer",
                   activeFolderId === folder.id
                     ? "bg-primary/10 text-primary font-medium"
-                    : "text-ink-2 hover:bg-paper-2 hover:text-ink"
+                    : "text-muted-foreground hover:bg-card hover:text-foreground"
                 )}
               >
                 <div 
@@ -83,7 +83,7 @@ export function FolderSidebar({ activeFolderId, onSelectFolder }: FolderSidebarP
                     },
                   });
                 }}
-                className="absolute right-1 opacity-0 group-hover:opacity-100 p-1.5 text-ink-4 hover:text-rose-400 transition-all rounded-md cursor-pointer"
+                className="absolute right-1 opacity-0 group-hover:opacity-100 p-1.5 text-muted-foreground hover:text-rose-400 transition-all rounded-md cursor-pointer"
                 title="Delete Folder"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -101,7 +101,7 @@ export function FolderSidebar({ activeFolderId, onSelectFolder }: FolderSidebarP
               onChange={(e) => setNewFolderName(e.target.value)}
               onBlur={() => setIsCreating(false)}
               placeholder="Folder name..."
-              className="w-full bg-paper-2 border border-line rounded-md px-2 py-1.5 text-sm text-ink focus:outline-none focus:border-primary transition-colors"
+              className="w-full bg-card border border-border rounded-md px-2 py-1.5 text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
             />
           </form>
         )}

@@ -128,16 +128,16 @@ function NoteDialogForm({
   return (
     <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/70 backdrop-blur-md p-4 sm:p-6 overflow-y-auto">
       <div
-        className="my-auto w-full max-w-2xl max-h-[90vh] flex flex-col rounded-2xl bg-paper-2 border border-line-2 shadow-2xl overflow-hidden relative text-ink animate-in fade-in zoom-in-95 duration-200"
+        className="my-auto w-full max-w-2xl max-h-[90vh] flex flex-col rounded-2xl bg-card border border-border shadow-2xl overflow-hidden relative text-foreground animate-in fade-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-line bg-paper-3">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-muted">
           <div>
-            <h2 className="text-lg font-sans font-semibold text-ink">
+            <h2 className="text-lg font-sans font-semibold text-foreground">
               {initialNote ? "Edit Note" : "Create Note"}
             </h2>
-            <p className="text-xs text-ink-3">
+            <p className="text-xs text-muted-foreground">
               Write rich text documents or code snippets
             </p>
           </div>
@@ -146,7 +146,7 @@ function NoteDialogForm({
               <button
                 type="button"
                 onClick={() => setShowHistory(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-ink-3 hover:text-ink hover:bg-paper-2 transition cursor-pointer text-xs font-medium"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-card transition cursor-pointer text-xs font-medium"
               >
                 <History className="w-4 h-4" />
                 History
@@ -155,7 +155,7 @@ function NoteDialogForm({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-full p-2 text-ink-3 hover:text-ink hover:bg-paper-2 transition cursor-pointer"
+              className="rounded-full p-2 text-muted-foreground hover:text-foreground hover:bg-card transition cursor-pointer"
             >
               <X className="h-5 w-5" />
             </button>
@@ -172,7 +172,7 @@ function NoteDialogForm({
 
           {/* Title input */}
           <div>
-            <label className="block text-xs font-medium text-ink-2 mb-1.5 uppercase tracking-wider font-code">
+            <label className="block text-xs font-medium text-muted-foreground mb-1.5 uppercase tracking-wider font-mono">
               Note Title
             </label>
             <input
@@ -180,20 +180,20 @@ function NoteDialogForm({
               placeholder="e.g. System Architecture Notes..."
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-paper-card border border-line-2 text-ink text-sm focus:outline-none focus:border-ink transition"
+              className="w-full px-4 py-2.5 rounded-xl bg-card border border-border text-foreground text-sm focus:outline-none focus:border-foreground transition"
             />
           </div>
 
           {/* Options: Snippet toggle & Language selector */}
-          <div className="flex flex-wrap items-center justify-between gap-4 p-3 rounded-xl border border-line bg-paper-card">
+          <div className="flex flex-wrap items-center justify-between gap-4 p-3 rounded-xl border border-border bg-card">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
                 checked={isSnippet}
                 onChange={(e) => setIsSnippet(e.target.checked)}
-                className="w-4 h-4 rounded border-line-2 bg-paper-2 text-ink focus:ring-ink"
+                className="w-4 h-4 rounded border-border bg-card text-foreground focus:ring-ring"
               />
-              <span className="text-xs font-medium text-ink-2 flex items-center gap-1.5 font-sans">
+              <span className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 font-sans">
                 <Code2 className="w-3.5 h-3.5 text-emerald-mark" />
                 Code Snippet Mode
               </span>
@@ -201,11 +201,11 @@ function NoteDialogForm({
 
             {isSnippet && (
               <div className="flex items-center gap-2">
-                <span className="text-xs text-ink-3 font-mono">Language:</span>
+                <span className="text-xs text-muted-foreground font-mono">Language:</span>
                 <select
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
-                  className="px-3 py-1 rounded-lg bg-paper-2 border border-line-2 text-ink text-xs font-mono focus:outline-none focus:border-ink"
+                  className="px-3 py-1 rounded-lg bg-card border border-border text-foreground text-xs font-mono focus:outline-none focus:border-foreground"
                 >
                   {PROGRAMMING_LANGUAGES.map((lang) => (
                     <option key={lang} value={lang}>
@@ -219,15 +219,15 @@ function NoteDialogForm({
 
           {/* Tags input */}
           <div>
-            <label className="block text-xs font-medium text-ink-2 mb-1.5 uppercase tracking-wider font-code flex items-center gap-1">
-              <Tag className="w-3.5 h-3.5 text-ink-3" />
+            <label className="block text-xs font-medium text-muted-foreground mb-1.5 uppercase tracking-wider font-mono flex items-center gap-1">
+              <Tag className="w-3.5 h-3.5 text-muted-foreground" />
               Tags
             </label>
-            <div className="flex flex-wrap items-center gap-2 p-2 rounded-xl bg-paper-card border border-line-2 min-h-[42px]">
+            <div className="flex flex-wrap items-center gap-2 p-2 rounded-xl bg-card border border-border min-h-[42px]">
               {tags.map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-paper-3 text-ink text-xs border border-line font-mono"
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-muted text-foreground text-xs border border-border font-mono"
                 >
                   #{tag}
                   <button
@@ -245,14 +245,14 @@ function NoteDialogForm({
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={handleAddTag}
-                className="flex-1 bg-transparent border-none text-ink text-xs placeholder-ink-4 focus:outline-none min-w-[120px]"
+                className="flex-1 bg-transparent border-none text-foreground text-xs placeholder-muted-foreground focus:outline-none min-w-[120px]"
               />
             </div>
           </div>
 
           {/* TipTap Rich Text Editor */}
           <div>
-            <label className="block text-xs font-medium text-ink-2 mb-1.5 uppercase tracking-wider font-code">
+            <label className="block text-xs font-medium text-muted-foreground mb-1.5 uppercase tracking-wider font-mono">
               Content
             </label>
             <TipTapEditor
@@ -264,12 +264,12 @@ function NoteDialogForm({
         </form>
 
         {/* Footer Actions */}
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-line bg-paper-3">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-border bg-muted">
           <button
             type="button"
             onClick={onClose}
             disabled={isSaving}
-            className="px-4 py-2 text-xs font-medium text-ink-3 hover:text-ink transition cursor-pointer disabled:opacity-50"
+            className="px-4 py-2 text-xs font-medium text-muted-foreground hover:text-foreground transition cursor-pointer disabled:opacity-50"
           >
             Cancel
           </button>
@@ -277,7 +277,7 @@ function NoteDialogForm({
             type="button"
             onClick={handleSubmit}
             disabled={isSaving}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-ink text-paper font-medium text-xs hover:bg-ink-2 transition shadow-sm active:translate-y-px cursor-pointer disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-primary text-primary-foreground font-medium text-xs hover:bg-primary/80 transition shadow-sm active:translate-y-px cursor-pointer disabled:opacity-50"
           >
             {isSaving ? (
               <Loader2 className="w-3.5 h-3.5 animate-spin" />

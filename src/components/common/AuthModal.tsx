@@ -118,11 +118,11 @@ export default function AuthModal({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-line-2 bg-neutral-900/95 p-6 shadow-2xl backdrop-blur-2xl text-paper">
+      <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-border bg-neutral-900/95 p-6 shadow-2xl backdrop-blur-2xl text-primary-foreground">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 rounded-full text-ink-3 hover:text-paper hover:bg-white/10 transition cursor-pointer"
+          className="absolute top-4 right-4 p-1.5 rounded-full text-muted-foreground hover:text-primary-foreground hover:bg-white/10 transition cursor-pointer"
         >
           <X className="h-4 w-4" />
         </button>
@@ -132,7 +132,7 @@ export default function AuthModal({
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 text-white shadow-lg shadow-indigo-500/20 mb-2">
             <Sparkles className="h-5 w-5" />
           </div>
-          <h2 className="text-xl font-bold font-display tracking-tight text-white">
+          <h2 className="text-xl font-bold font-sans tracking-tight text-white">
             {mode === "signin" ? "Welcome back to DevNest" : "Create your DevNest account"}
           </h2>
           <p className="text-xs text-neutral-400">

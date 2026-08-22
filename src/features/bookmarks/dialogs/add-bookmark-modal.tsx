@@ -218,25 +218,25 @@ function AddBookmarkForm({
 
   return createPortal(
     <div className="fixed inset-0 z-100 flex items-center justify-center overflow-y-auto bg-black/70 backdrop-blur-md p-4 sm:p-6">
-      <div className="my-auto w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-paper-2 border border-line-2 p-6 shadow-2xl relative text-ink animate-in fade-in zoom-in-95 duration-200 scrollbar-none">
+      <div className="my-auto w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-card border border-border p-6 shadow-2xl relative text-foreground animate-in fade-in zoom-in-95 duration-200 scrollbar-none">
         <button
           type="button"
           onClick={() => onClose()}
-          className="absolute top-4 right-4 rounded-full p-2 text-ink-3 hover:text-ink hover:bg-paper-3 transition cursor-pointer"
+          className="absolute top-4 right-4 rounded-full p-2 text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer"
         >
           <X className="h-5 w-5" />
         </button>
 
-        <h2 className="text-xl font-display font-semibold text-ink mb-1">
+        <h2 className="text-xl font-sans font-semibold text-foreground mb-1">
           {initialData ? "Edit Bookmark" : "Add New Bookmark"}
         </h2>
-        <p className="text-xs text-ink-3 mb-6">
+        <p className="text-xs text-muted-foreground mb-6">
           Save a web resource with custom title and category
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-ink-2 mb-1.5 uppercase tracking-wider font-code">
+            <label className="block text-xs font-medium text-muted-foreground mb-1.5 uppercase tracking-wider font-mono">
               Website URL *
             </label>
             <div className="relative flex items-center">
@@ -252,7 +252,7 @@ function AddBookmarkForm({
                     onError={() => setFavError(true)}
                   />
                 ) : (
-                  <Globe className="h-4 w-4 text-ink-3" />
+                  <Globe className="h-4 w-4 text-muted-foreground" />
                 )}
               </div>
 
@@ -261,10 +261,10 @@ function AddBookmarkForm({
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="https://example.com"
-                className={`w-full pl-10 pr-10 py-2.5 rounded-xl bg-paper-card border text-ink text-sm focus:outline-none transition ${
+                className={`w-full pl-10 pr-10 py-2.5 rounded-xl bg-card border text-foreground text-sm focus:outline-none transition ${
                   errors.url
                     ? "border-rose-500/80 focus:border-rose-500"
-                    : "border-line-2 focus:border-ink"
+                    : "border-border focus:border-foreground"
                 }`}
               />
 
@@ -277,7 +277,7 @@ function AddBookmarkForm({
                     onClick={() => handleFetchMetadata()}
                     disabled={!url.trim()}
                     title="Auto-fetch Title"
-                    className="text-ink-4 hover:text-indigo-400 disabled:opacity-30 transition cursor-pointer"
+                    className="text-muted-foreground hover:text-indigo-400 disabled:opacity-30 transition cursor-pointer"
                   >
                     <Sparkles className="h-4 w-4" />
                   </button>
@@ -290,7 +290,7 @@ function AddBookmarkForm({
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-ink-2 mb-1.5 uppercase tracking-wider font-code">
+            <label className="block text-xs font-medium text-muted-foreground mb-1.5 uppercase tracking-wider font-mono">
               Bookmark Title *
             </label>
             <input
@@ -298,10 +298,10 @@ function AddBookmarkForm({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Next.js Documentation"
-              className={`w-full px-4 py-2.5 rounded-xl bg-paper-card border text-ink text-sm focus:outline-none transition ${
+              className={`w-full px-4 py-2.5 rounded-xl bg-card border text-foreground text-sm focus:outline-none transition ${
                 errors.title
                   ? "border-rose-500/80 focus:border-rose-500"
-                  : "border-line-2 focus:border-ink"
+                  : "border-border focus:border-foreground"
               }`}
             />
             {errors.title && (
@@ -310,7 +310,7 @@ function AddBookmarkForm({
           </div>
 
           <div className="space-y-2">
-            <label className="block text-xs font-medium text-ink-2 uppercase tracking-wider font-code">
+            <label className="block text-xs font-medium text-muted-foreground uppercase tracking-wider font-mono">
               Category
             </label>
 
@@ -324,8 +324,8 @@ function AddBookmarkForm({
                   }}
                   className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition cursor-pointer ${
                     selectedCategoryId === "" && categoryName === ""
-                      ? "bg-ink text-paper border-ink"
-                      : "bg-paper-3 text-ink-3 border-line-2 hover:border-ink"
+                      ? "bg-primary text-primary-foreground border-foreground"
+                      : "bg-muted text-muted-foreground border-border hover:border-foreground"
                   }`}
                 >
                   None
@@ -344,8 +344,8 @@ function AddBookmarkForm({
                       }}
                       className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border transition cursor-pointer ${
                         isSelected
-                          ? "bg-ink text-paper border-ink"
-                          : "bg-paper-3 text-ink-3 border-line-2 hover:border-ink"
+                          ? "bg-primary text-primary-foreground border-foreground"
+                          : "bg-muted text-muted-foreground border-border hover:border-foreground"
                       }`}
                     >
                       <HugeiconsIcon icon={CatIcon} size={14} className="shrink-0" />
@@ -364,11 +364,11 @@ function AddBookmarkForm({
                 setSelectedCategoryId("");
               }}
               placeholder="Category name (e.g. Design, Development, Tools)..."
-              className="w-full px-4 py-2.5 rounded-xl bg-paper-card border border-line-2 text-ink text-sm focus:outline-none focus:border-ink transition"
+              className="w-full px-4 py-2.5 rounded-xl bg-card border border-border text-foreground text-sm focus:outline-none focus:border-foreground transition"
             />
 
             <div className="pt-1">
-              <label className="block text-[11px] font-medium text-ink-3 mb-1">
+              <label className="block text-[11px] font-medium text-muted-foreground mb-1">
                 Category Icon
               </label>
               <IconsPicker
@@ -378,17 +378,17 @@ function AddBookmarkForm({
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-line">
+          <div className="flex justify-end gap-3 pt-4 border-t border-border">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs font-medium text-ink-3 hover:text-ink transition cursor-pointer"
+              className="px-4 py-2 text-xs font-medium text-muted-foreground hover:text-foreground transition cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-ink text-paper font-medium text-xs hover:bg-ink-2 transition shadow-sm active:translate-y-px cursor-pointer"
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-primary text-primary-foreground font-medium text-xs hover:bg-primary/80 transition shadow-sm active:translate-y-px cursor-pointer"
             >
               <Check className="h-3.5 w-3.5" />
               <span>{initialData ? "Save Changes" : "Add Bookmark"}</span>

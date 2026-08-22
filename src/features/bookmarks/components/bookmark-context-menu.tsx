@@ -105,7 +105,7 @@ export function BookmarkContextMenu({
       {isOpen && (
         <div
           ref={menuRef}
-          className="fixed z-[100] w-40 rounded-xl border border-line bg-paper-card shadow-lg py-1.5 px-1 animate-in fade-in zoom-in-95 duration-100"
+          className="fixed z-[100] w-40 rounded-xl border border-border bg-card shadow-lg py-1.5 px-1 animate-in fade-in zoom-in-95 duration-100"
           style={{
             top: position.y,
             left: position.x,
@@ -113,7 +113,7 @@ export function BookmarkContextMenu({
         >
           <button
             onClick={handleOpen}
-            className="w-full flex items-center gap-2.5 px-2.5 py-1.5 text-xs text-ink-3 hover:text-ink hover:bg-paper-3 rounded-md transition-colors cursor-pointer"
+            className="w-full flex items-center gap-2.5 px-2.5 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors cursor-pointer"
           >
             <ExternalLink className="h-3.5 w-3.5" />
             Open in new tab
@@ -121,7 +121,7 @@ export function BookmarkContextMenu({
           
           <button
             onClick={handleCopy}
-            className="w-full flex items-center gap-2.5 px-2.5 py-1.5 text-xs text-ink-3 hover:text-ink hover:bg-paper-3 rounded-md transition-colors cursor-pointer"
+            className="w-full flex items-center gap-2.5 px-2.5 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors cursor-pointer"
           >
             <Copy className="h-3.5 w-3.5" />
             Copy URL
@@ -129,17 +129,17 @@ export function BookmarkContextMenu({
 
           <button
             onClick={handleShare}
-            className="w-full flex items-center gap-2.5 px-2.5 py-1.5 text-xs text-ink-3 hover:text-ink hover:bg-paper-3 rounded-md transition-colors cursor-pointer"
+            className="w-full flex items-center gap-2.5 px-2.5 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors cursor-pointer"
           >
             <Share className="h-3.5 w-3.5" />
             Share
           </button>
 
-          <div className="h-px bg-line my-1 w-full" />
+          <div className="h-px bg-border my-1 w-full" />
 
           <button
             onClick={handleRename}
-            className="w-full flex items-center gap-2.5 px-2.5 py-1.5 text-xs text-ink-3 hover:text-ink hover:bg-paper-3 rounded-md transition-colors cursor-pointer"
+            className="w-full flex items-center gap-2.5 px-2.5 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors cursor-pointer"
           >
             <Edit2 className="h-3.5 w-3.5" />
             Rename

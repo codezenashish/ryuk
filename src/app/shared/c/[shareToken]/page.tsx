@@ -48,19 +48,19 @@ export default async function SharedCategoryPage({
   const ownerName = sharedCategory.user?.name || sharedCategory.user?.email || "Someone";
 
   return (
-    <div className="min-h-screen bg-paper font-body text-ink pb-24">
+    <div className="min-h-screen bg-background font-sans text-foreground pb-24">
       {/* Minimal Header */}
-      <header className="sticky top-0 z-50 h-16 border-b border-line bg-paper/80 backdrop-blur-md flex items-center justify-between px-6">
+      <header className="sticky top-0 z-50 h-16 border-b border-border bg-background/80 backdrop-blur-md flex items-center justify-between px-6">
         <div className="flex items-center gap-3">
-          <Link href="/" className="font-display text-lg font-bold tracking-tight text-ink hover:text-ink-2 transition">
+          <Link href="/" className="font-sans text-lg font-bold tracking-tight text-foreground hover:text-muted-foreground transition">
             Ryuk
           </Link>
-          <span className="text-ink-3">/</span>
-          <span className="text-sm font-medium text-ink-2">Shared Category</span>
+          <span className="text-muted-foreground">/</span>
+          <span className="text-sm font-medium text-muted-foreground">Shared Category</span>
         </div>
         <Link
           href="/"
-          className="inline-flex items-center gap-2 rounded-xl bg-ink px-4 py-2 text-xs font-medium text-paper hover:bg-ink-2 transition shadow-sm"
+          className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-xs font-medium text-primary-foreground hover:bg-primary/80 transition shadow-sm"
         >
           Create your own
         </Link>
@@ -69,24 +69,24 @@ export default async function SharedCategoryPage({
       <main className="max-w-6xl mx-auto px-4 md:px-8 py-12">
         {/* Category Info */}
         <div className="flex flex-col items-center text-center space-y-6 mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="p-4 rounded-3xl bg-paper-2 border border-line shadow-sm relative overflow-hidden group">
+          <div className="p-4 rounded-3xl bg-card border border-border shadow-sm relative overflow-hidden group">
              <div 
                className="absolute inset-0 opacity-20 group-hover:opacity-30 transition duration-500" 
                style={{ backgroundColor: sharedCategory.color }} 
              />
-             <HugeiconsIcon icon={categoryIcon} size={48} className="text-ink relative z-10" />
+             <HugeiconsIcon icon={categoryIcon} size={48} className="text-foreground relative z-10" />
           </div>
           
           <div className="space-y-2">
-            <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tight text-ink">
+            <h1 className="text-4xl md:text-5xl font-sans font-bold tracking-tight text-foreground">
               {sharedCategory.name}
             </h1>
-            <p className="text-lg text-ink-3 max-w-xl mx-auto">
-              A curated collection by <span className="font-semibold text-ink">{ownerName}</span>
+            <p className="text-lg text-muted-foreground max-w-xl mx-auto">
+              A curated collection by <span className="font-semibold text-foreground">{ownerName}</span>
             </p>
           </div>
           
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-paper-3 border border-line-2 text-sm text-ink-2 font-mono">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted border border-border text-sm text-muted-foreground font-mono">
             {sharedCategory.bookmarks.length} Bookmarks
           </div>
         </div>
@@ -105,9 +105,9 @@ export default async function SharedCategoryPage({
             ))}
           </div>
         ) : (
-          <div className="text-center py-24 border border-dashed border-line-2 rounded-3xl bg-paper-2">
-            <h3 className="text-xl font-semibold text-ink-2 mb-2">It&apos;s empty here!</h3>
-            <p className="text-ink-3">There are no bookmarks in this category yet.</p>
+          <div className="text-center py-24 border border-dashed border-border rounded-3xl bg-card">
+            <h3 className="text-xl font-semibold text-muted-foreground mb-2">It&apos;s empty here!</h3>
+            <p className="text-muted-foreground">There are no bookmarks in this category yet.</p>
           </div>
         )}
       </main>

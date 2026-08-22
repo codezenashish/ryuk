@@ -46,22 +46,22 @@ export function BookmarkGrid({
         {Array.from({ length: 8 }).map((_, index) => (
           <div
             key={index}
-            className="flex flex-col justify-between rounded-2xl border border-line bg-paper-2 p-4 h-44"
+            className="flex flex-col justify-between rounded-2xl border border-border bg-card p-4 h-44"
           >
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Skeleton className="h-10 w-10 rounded-xl bg-paper-card" />
-                  <Skeleton className="h-3 w-20 rounded-md bg-paper-card" />
+                  <Skeleton className="h-10 w-10 rounded-xl bg-card" />
+                  <Skeleton className="h-3 w-20 rounded-md bg-card" />
                 </div>
-                <Skeleton className="h-6 w-6 rounded-lg bg-paper-card" />
+                <Skeleton className="h-6 w-6 rounded-lg bg-card" />
               </div>
-              <Skeleton className="h-4 w-3/4 rounded-md bg-paper-card" />
-              <Skeleton className="h-3.5 w-full rounded-md bg-paper-card" />
+              <Skeleton className="h-4 w-3/4 rounded-md bg-card" />
+              <Skeleton className="h-3.5 w-full rounded-md bg-card" />
             </div>
-            <div className="flex gap-2 pt-3 border-t border-line">
-              <Skeleton className="h-3 w-12 rounded-md bg-paper-card" />
-              <Skeleton className="h-3 w-12 rounded-md bg-paper-card" />
+            <div className="flex gap-2 pt-3 border-t border-border">
+              <Skeleton className="h-3 w-12 rounded-md bg-card" />
+              <Skeleton className="h-3 w-12 rounded-md bg-card" />
             </div>
           </div>
         ))}
@@ -72,14 +72,14 @@ export function BookmarkGrid({
   // Empty State
   if (!bookmarks || bookmarks.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-line-2 bg-paper-2/50 py-16 px-6 text-center">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-paper-card border border-line mb-4 shadow-inner">
-          <Bookmark className="h-7 w-7 text-ink-3" />
+      <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/50 py-16 px-6 text-center">
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-card border border-border mb-4 shadow-inner">
+          <Bookmark className="h-7 w-7 text-muted-foreground" />
         </div>
-        <h3 className="font-display text-lg font-semibold text-ink mb-1">
+        <h3 className="font-sans text-lg font-semibold text-foreground mb-1">
           {emptyTitle}
         </h3>
-        <p className="max-w-md text-xs text-ink-3 mb-6 leading-relaxed">
+        <p className="max-w-md text-xs text-muted-foreground mb-6 leading-relaxed">
           {emptyDescription}
         </p>
 
@@ -87,7 +87,7 @@ export function BookmarkGrid({
           <button
             type="button"
             onClick={onAddClick}
-            className="inline-flex items-center gap-2 rounded-xl bg-ink px-4 py-2.5 text-xs font-medium text-paper hover:bg-ink-2 transition shadow-sm active:translate-y-px cursor-pointer"
+            className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-xs font-medium text-primary-foreground hover:bg-primary/80 transition shadow-sm active:translate-y-px cursor-pointer"
           >
             <Plus className="h-4 w-4" />
             <span>Add your first bookmark</span>

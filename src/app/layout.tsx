@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/providers/auth-provider";
 import QueryProvider from "@/providers/query-provider";
 import { GooeyToaster } from "@/components/ui/goey-toaster";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist",
@@ -33,11 +34,18 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-neutral-950">
+      <body className="min-h-full flex flex-col bg-background text-foreground">
         <AuthProvider>
           <QueryProvider>
-            {children}
-            <GooeyToaster position="bottom-right" theme="dark" />
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="light"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {children}
+              <GooeyToaster position="bottom-right" />
+            </ThemeProvider>
           </QueryProvider>
         </AuthProvider>
       </body>

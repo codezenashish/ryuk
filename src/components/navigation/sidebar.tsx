@@ -11,13 +11,13 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="h-full font-body flex flex-col">
+    <aside className="h-full font-sans flex flex-col">
       {/* App Branding */}
       <div
        
-        className="flex h-16 items-center gap-3 border-b border-line px-4 shrink-0"
+        className="flex h-16 items-center gap-3 border-b border-border px-4 shrink-0"
       >
-        <RyukLogo size={45} className="text-ink" />
+        <RyukLogo size={45} className="text-foreground" />
         
         
       </div>
@@ -33,8 +33,8 @@ export default function Sidebar() {
               href={item.href}
               className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm transition ${
                 isActive
-                  ? "bg-paper-3 text-ink font-medium"
-                  : "text-ink-3 hover:bg-paper-3/60 hover:text-ink"
+                  ? "bg-muted text-foreground font-medium"
+                  : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
               }`}
             >
               <div className="flex items-center gap-3">

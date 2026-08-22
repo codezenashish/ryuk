@@ -26,19 +26,19 @@ export default function DashboardPage() {
   return (
     <div className="py-6 space-y-8">
       <div>
-        <h1 className="text-2xl font-display font-semibold text-ink tracking-tight">
+        <h1 className="text-2xl font-sans font-semibold text-foreground tracking-tight">
           Welcome back{user?.firstName ? `, ${user.firstName}` : ""}
         </h1>
-        <p className="text-sm text-ink-3 mt-1">Here is an overview of your activity.</p>
+        <p className="text-sm text-muted-foreground mt-1">Here is an overview of your activity.</p>
       </div>
 
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-ink">
+          <div className="flex items-center gap-2 text-foreground">
             <Pin className="h-4 w-4" fill="currentColor" />
             <h2 className="text-lg font-semibold tracking-tight">Quick Access</h2>
           </div>
-          <Link href="/bookmarks" className="text-xs font-medium text-ink-3 hover:text-ink transition-colors">
+          <Link href="/bookmarks" className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
             View all
           </Link>
         </div>

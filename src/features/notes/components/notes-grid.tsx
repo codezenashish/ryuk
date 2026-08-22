@@ -64,24 +64,24 @@ export function NotesGrid({
           <button
             type="button"
             onClick={() => setSelectedTag(null)}
-            className="inline-flex items-center gap-2 rounded-xl px-3.5 py-1.5 text-xs font-medium bg-ink text-paper shadow-sm shrink-0 cursor-pointer"
+            className="inline-flex items-center gap-2 rounded-xl px-3.5 py-1.5 text-xs font-medium bg-primary text-primary-foreground shadow-sm shrink-0 cursor-pointer"
           >
             <Layers className="h-3.5 w-3.5" />
             <span>All Notes</span>
-            <span className="ml-0.5 rounded-full px-1.5 py-0.2 font-mono text-[10px] bg-paper/20 text-paper">
+            <span className="ml-0.5 rounded-full px-1.5 py-0.2 font-mono text-[10px] bg-background/20 text-primary-foreground">
               {notes.length}
             </span>
           </button>
         </div>
 
         <div className="flex items-center gap-3 shrink-0">
-          <div className="flex items-center rounded-xl border border-line-2 bg-paper-3 p-1 gap-1">
+          <div className="flex items-center rounded-xl border border-border bg-muted p-1 gap-1">
             <button
               onClick={() => setViewMode("grid")}
               className={`p-1.5 rounded-lg transition cursor-pointer ${
                 viewMode === "grid"
-                  ? "bg-paper text-ink shadow-sm"
-                  : "text-ink-3 hover:text-ink"
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
               title="Grid View"
             >
@@ -91,8 +91,8 @@ export function NotesGrid({
               onClick={() => setViewMode("list")}
               className={`p-1.5 rounded-lg transition cursor-pointer ${
                 viewMode === "list"
-                  ? "bg-paper text-ink shadow-sm"
-                  : "text-ink-3 hover:text-ink"
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
               title="List View"
             >
@@ -103,7 +103,7 @@ export function NotesGrid({
           <button
             type="button"
             onClick={() => onSelectNote("new")}
-            className="inline-flex items-center gap-2 rounded-xl bg-ink px-4 py-2 text-xs font-medium text-paper hover:bg-ink-2 transition shadow-sm cursor-pointer active:translate-y-px"
+            className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-xs font-medium text-primary-foreground hover:bg-primary/80 transition shadow-sm cursor-pointer active:translate-y-px"
           >
             <Plus className="h-4 w-4" />
             <span>Add Note</span>
@@ -113,8 +113,8 @@ export function NotesGrid({
 
       {allTags.length > 0 && (
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-medium text-ink-3 flex items-center gap-1 mr-1">
-            <Tag className="w-3 h-3 text-ink-4" />
+          <span className="text-xs font-medium text-muted-foreground flex items-center gap-1 mr-1">
+            <Tag className="w-3 h-3 text-muted-foreground" />
             Filter by Tag:
           </span>
           <button
@@ -122,8 +122,8 @@ export function NotesGrid({
             onClick={() => setSelectedTag(null)}
             className={`px-2.5 py-1 rounded-lg text-xs font-medium transition cursor-pointer ${
               selectedTag === null
-                ? "bg-ink text-paper shadow-sm"
-                : "bg-paper-2 text-ink-3 hover:bg-paper-3 hover:text-ink border border-line"
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground border border-border"
             }`}
           >
             All
@@ -135,8 +135,8 @@ export function NotesGrid({
               onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
               className={`px-2.5 py-1 rounded-lg text-xs font-medium transition cursor-pointer ${
                 selectedTag === tag
-                  ? "bg-ink text-paper shadow-sm"
-                  : "bg-paper-2 text-ink-3 hover:bg-paper-3 hover:text-ink border border-line"
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground border border-border"
               }`}
             >
               #{tag}
@@ -148,19 +148,19 @@ export function NotesGrid({
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <Skeleton key={i} className="h-44 w-full bg-paper-3 rounded-xl" />
+            <Skeleton key={i} className="h-44 w-full bg-muted rounded-xl" />
           ))}
         </div>
       ) : filteredNotes.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 px-4 rounded-xl border border-line-2 bg-paper-card text-center space-y-4">
-          <div className="p-3.5 rounded-xl bg-paper-3 text-ink-3 border border-line">
+        <div className="flex flex-col items-center justify-center py-16 px-4 rounded-xl border border-border bg-card text-center space-y-4">
+          <div className="p-3.5 rounded-xl bg-muted text-muted-foreground border border-border">
             <StickyNote className="w-6 h-6" />
           </div>
           <div className="max-w-xs space-y-1">
-            <h3 className="text-sm font-semibold text-ink font-sans">
+            <h3 className="text-sm font-semibold text-foreground font-sans">
               No notes yet
             </h3>
-            <p className="text-xs text-ink-3 font-sans">
+            <p className="text-xs text-muted-foreground font-sans">
               {selectedTag
                 ? "No notes matched this tag filter."
                 : "Create Notion-style documents with auto-syntax code blocks."}
@@ -169,7 +169,7 @@ export function NotesGrid({
           <button
             type="button"
             onClick={() => onSelectNote("new")}
-            className="inline-flex items-center gap-2 rounded-xl bg-ink px-4 py-2 text-xs font-medium text-paper hover:bg-ink-2 transition shadow-sm cursor-pointer active:translate-y-px"
+            className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-xs font-medium text-primary-foreground hover:bg-primary/80 transition shadow-sm cursor-pointer active:translate-y-px"
           >
             <Plus className="h-4 w-4" />
             <span>Create First Note</span>

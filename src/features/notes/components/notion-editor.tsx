@@ -149,11 +149,11 @@ export function NotionEditor({
 
   return (
     <div className="min-h-[85vh] w-full max-w-4xl mx-auto py-4 px-2 sm:px-6 space-y-6 animate-in fade-in duration-200">
-      <div className="flex items-center justify-between gap-4 py-2 border-b border-line">
+      <div className="flex items-center justify-between gap-4 py-2 border-b border-border">
         <button
           type="button"
           onClick={onBack}
-          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-medium text-ink-3 hover:text-ink hover:bg-paper-3 transition cursor-pointer"
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer"
         >
           <ArrowLeft className="h-4 w-4" />
           <span>Back to Notes</span>
@@ -163,7 +163,7 @@ export function NotionEditor({
           <button
             type="button"
             onClick={() => setIsBookmarked(!isBookmarked)}
-            className={clsx("p-2 rounded-xl transition cursor-pointer hover:bg-paper-3", isBookmarked ? "text-yellow-500" : "text-ink-4 hover:text-yellow-500")}
+            className={clsx("p-2 rounded-xl transition cursor-pointer hover:bg-muted", isBookmarked ? "text-yellow-500" : "text-muted-foreground hover:text-yellow-500")}
             title={isBookmarked ? "Remove Bookmark" : "Bookmark"}
           >
             <Star className={clsx("h-4 w-4", isBookmarked && "fill-current")} />
@@ -171,7 +171,7 @@ export function NotionEditor({
           <button
             type="button"
             onClick={() => setIsPinned(!isPinned)}
-            className={clsx("p-2 rounded-xl transition cursor-pointer hover:bg-paper-3", isPinned ? "text-primary" : "text-ink-4 hover:text-primary")}
+            className={clsx("p-2 rounded-xl transition cursor-pointer hover:bg-muted", isPinned ? "text-primary" : "text-muted-foreground hover:text-primary")}
             title={isPinned ? "Unpin Note" : "Pin Note"}
           >
             <Pin className={clsx("h-4 w-4", isPinned && "fill-current")} />
@@ -181,7 +181,7 @@ export function NotionEditor({
             <button
               type="button"
               onClick={handleDelete}
-              className="p-2 rounded-xl text-ink-4 hover:text-rose-400 hover:bg-paper-3 transition cursor-pointer ml-2"
+              className="p-2 rounded-xl text-muted-foreground hover:text-rose-400 hover:bg-muted transition cursor-pointer ml-2"
               title="Delete Note"
             >
               <Trash2 className="h-4 w-4" />
@@ -197,16 +197,16 @@ export function NotionEditor({
             placeholder="Untitled Note"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full bg-transparent text-3xl sm:text-4xl font-bold font-sans text-ink placeholder-ink-4 focus:outline-none border-none tracking-tight"
+            className="w-full bg-transparent text-3xl sm:text-4xl font-bold font-sans text-foreground placeholder-muted-foreground focus:outline-none border-none tracking-tight"
           />
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <TagIcon className="w-3.5 h-3.5 text-ink-4 shrink-0" />
+          <TagIcon className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
           {tags.map((tag) => (
             <span
               key={tag}
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-paper-3 text-ink-2 text-xs border border-line font-mono"
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-muted text-muted-foreground text-xs border border-border font-mono"
             >
               #{tag}
               <button
@@ -228,20 +228,20 @@ export function NotionEditor({
               onChange={(e) => setTagInput(e.target.value)}
               onKeyDown={handleAddTag}
               onBlur={() => setIsAddingTag(false)}
-              className="px-2 py-0.5 rounded-lg bg-paper-2 border border-line-2 text-ink text-xs font-mono focus:outline-none min-w-[120px]"
+              className="px-2 py-0.5 rounded-lg bg-card border border-border text-foreground text-xs font-mono focus:outline-none min-w-[120px]"
             />
           ) : (
             <button
               type="button"
               onClick={() => setIsAddingTag(true)}
-              className="text-xs text-ink-4 hover:text-ink transition cursor-pointer font-mono"
+              className="text-xs text-muted-foreground hover:text-foreground transition cursor-pointer font-mono"
             >
               + Add tag
             </button>
           )}
         </div>
 
-        <div className="border-t border-line/60 pt-6">
+        <div className="border-t border-border/60 pt-6">
           <TipTapEditor
             content={content}
             onChange={setContent}

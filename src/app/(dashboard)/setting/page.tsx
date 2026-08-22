@@ -129,7 +129,7 @@ export default function SettingPage() {
   if (isPending) {
     return (
       <div className="flex h-96 items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-ink-3" />
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -137,19 +137,19 @@ export default function SettingPage() {
   return (
     <div className="max-w-4xl py-6 space-y-8">
       <div>
-        <h1 className="text-2xl font-body  text-ink ">
+        <h1 className="text-2xl font-sans  text-foreground ">
           Account Settings
         </h1>
-        <p className="text-xs text-ink-3 mt-1">
+        <p className="text-xs text-muted-foreground mt-1">
           Manage your public profile, API keys, avatar preferences, and security.
         </p>
       </div>
 
       <form onSubmit={handleSaveProfile} className="space-y-6">
-        <div className="rounded-2xl bg-paper-2 border border-line-2 p-6 shadow-sm space-y-6">
-          <div className="flex items-center justify-between border-b border-line-2 pb-4">
-            <h2 className="text-sm font-body font-semibold text-ink  tracking-wider  flex items-center gap-2">
-              <User className="h-4 w-4 text-ink-3" />
+        <div className="rounded-2xl bg-card border border-border p-6 shadow-sm space-y-6">
+          <div className="flex items-center justify-between border-b border-border pb-4">
+            <h2 className="text-sm font-sans font-semibold text-foreground  tracking-wider  flex items-center gap-2">
+              <User className="h-4 w-4 text-muted-foreground" />
               Profile & Avatar
             </h2>
             {savedSuccess && (
@@ -160,15 +160,15 @@ export default function SettingPage() {
             )}
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center gap-6 p-5 rounded-xl bg-paper-3 border border-line-2">
+          <div className="flex flex-col sm:flex-row items-center gap-6 p-5 rounded-xl bg-muted border border-border">
             <div className="relative group shrink-0">
-              <div className="rounded-full ring-4 ring-ink/10 p-1.5 bg-paper shadow-md">
+              <div className="rounded-full ring-4 ring-ring/10 p-1.5 bg-background shadow-md">
                 <Avatar theme={theme} seed={avatarSeed || "ryuk-user"} size={84} />
               </div>
               <button
                 type="button"
                 onClick={handleRandomize}
-                className="absolute -bottom-1 -right-1 p-2 rounded-full bg-ink text-paper hover:bg-ink-2 shadow-md transition hover:scale-105 active:scale-95 cursor-pointer"
+                className="absolute -bottom-1 -right-1 p-2 rounded-full bg-primary text-primary-foreground hover:bg-primary/80 shadow-md transition hover:scale-105 active:scale-95 cursor-pointer"
                 title="Generate Random Avatar"
               >
                 <RefreshCw className="h-4 w-4" />
@@ -176,15 +176,15 @@ export default function SettingPage() {
             </div>
 
             <div className="text-center sm:text-left space-y-1">
-              <h3 className="text-sm font-semibold text-ink">Avatune Avatar</h3>
-              <p className="text-xs text-ink-3 max-w-sm">
+              <h3 className="text-sm font-semibold text-foreground">Avatune Avatar</h3>
+              <p className="text-xs text-muted-foreground max-w-sm">
                 Select an avatar preset below or click the randomize icon to generate a unique personalized avatar.
               </p>
             </div>
           </div>
 
           <div>
-            <label className="block text-xs  text-ink-2 mb-1.5  tracking-wider font-body">
+            <label className="block text-xs  text-muted-foreground mb-1.5  tracking-wider font-sans">
               Display Name
             </label>
             <input
@@ -193,17 +193,17 @@ export default function SettingPage() {
               onChange={(e) => setName(e.target.value)}
               placeholder="Your full name"
               required
-              className="w-full px-4 py-2.5 rounded-xl bg-paper-card border border-line-2 text-ink text-sm placeholder:text-ink-4 focus:outline-none focus:border-ink transition"
+              className="w-full px-4 py-2.5 rounded-xl bg-card border border-border text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:border-foreground transition"
             />
           </div>
 
           <div className="space-y-4 pt-2">
-            <label className="block text-xs  text-ink-2  tracking-wider font-body">
+            <label className="block text-xs  text-muted-foreground  tracking-wider font-sans">
               Avatar Presets
             </label>
 
             <div>
-              <span className="text-[11px] text-ink-3 font-body mb-2 block">
+              <span className="text-[11px] text-muted-foreground font-sans mb-2 block">
                 Male Styles
               </span>
               <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
@@ -215,7 +215,7 @@ export default function SettingPage() {
                     className={`p-1.5 rounded-full border transition shrink-0 cursor-pointer ${
                       avatarSeed === preset
                         ? "border-emerald-500 ring-2 ring-emerald-500/30 bg-emerald-500/10"
-                        : "border-line-2 hover:border-ink"
+                        : "border-border hover:border-foreground"
                     }`}
                   >
                     <Avatar theme={theme} seed={preset} size={44} />
@@ -225,7 +225,7 @@ export default function SettingPage() {
             </div>
 
             <div>
-              <span className="text-[11px] text-ink-3 font-code mb-2 block">
+              <span className="text-[11px] text-muted-foreground font-mono mb-2 block">
                 Female Styles
               </span>
               <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
@@ -237,7 +237,7 @@ export default function SettingPage() {
                     className={`p-1.5 rounded-full border transition shrink-0 cursor-pointer ${
                       avatarSeed === preset
                         ? "border-emerald-500 ring-2 ring-emerald-500/30 bg-emerald-500/10"
-                        : "border-line-2 hover:border-ink"
+                        : "border-border hover:border-foreground"
                     }`}
                   >
                     <Avatar theme={theme} seed={preset} size={44} />
@@ -247,14 +247,14 @@ export default function SettingPage() {
             </div>
           </div>
 
-          <div className="flex justify-end pt-4 border-t border-line-2">
+          <div className="flex justify-end pt-4 border-t border-border">
             <button
               type="submit"
               disabled={isSaving}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-ink text-paper font-medium text-xs hover:bg-ink-2 transition shadow-sm active:translate-y-px cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-medium text-xs hover:bg-primary/80 transition shadow-sm active:translate-y-px cursor-pointer disabled:opacity-50"
             >
               {isSaving ? (
-                <Loader2 className="h-4 w-4 animate-spin text-paper" />
+                <Loader2 className="h-4 w-4 animate-spin text-primary-foreground" />
               ) : (
                 <Sparkles className="h-4 w-4" />
               )}
@@ -265,19 +265,19 @@ export default function SettingPage() {
       </form>
 
       {/* API Key Management Card */}
-      <div className="rounded-2xl bg-paper-2 border border-line-2 p-6 shadow-sm space-y-4">
-        <div className="flex items-center justify-between border-b border-line-2 pb-4">
-          <h2 className="text-sm   text-ink   tracking-wider font-body flex items-center gap-2">
-            <Key className="h-4 w-4 text-ink-3" />
+      <div className="rounded-2xl bg-card border border-border p-6 shadow-sm space-y-4">
+        <div className="flex items-center justify-between border-b border-border pb-4">
+          <h2 className="text-sm   text-foreground   tracking-wider font-sans flex items-center gap-2">
+            <Key className="h-4 w-4 text-muted-foreground" />
             CLI & External API Key
           </h2>
-          <span className="inline-flex items-center gap-1 text-xs text-ink-3 font-code">
+          <span className="inline-flex items-center gap-1 text-xs text-muted-foreground font-mono">
             <Terminal className="h-3.5 w-3.5" />
             ryuk login
           </span>
         </div>
 
-        <p className="text-xs text-ink-3">
+        <p className="text-xs text-muted-foreground">
           Use this API Key to authenticate your Ryuk CLI tool or external integrations.
         </p>
 
@@ -287,7 +287,7 @@ export default function SettingPage() {
               type="text"
               readOnly
               value={apiKey || "No API Key generated yet"}
-              className="w-full px-4 py-2.5 rounded-xl bg-paper-card border border-line-2 text-ink text-sm font-mono focus:outline-none select-all"
+              className="w-full px-4 py-2.5 rounded-xl bg-card border border-border text-foreground text-sm font-mono focus:outline-none select-all"
             />
           </div>
 
@@ -295,7 +295,7 @@ export default function SettingPage() {
             <button
               type="button"
               onClick={handleCopyKey}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-paper-3 hover:bg-paper-card text-ink border border-line-2 text-xs font-medium transition cursor-pointer"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-muted hover:bg-card text-foreground border border-border text-xs font-medium transition cursor-pointer"
             >
               {keyCopied ? (
                 <>
@@ -304,7 +304,7 @@ export default function SettingPage() {
                 </>
               ) : (
                 <>
-                  <Copy className="h-4 w-4 text-ink-3" />
+                  <Copy className="h-4 w-4 text-muted-foreground" />
                   <span>Copy Key</span>
                 </>
               )}
@@ -315,10 +315,10 @@ export default function SettingPage() {
             type="button"
             onClick={handleGenerateKey}
             disabled={isGeneratingKey}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-ink text-paper text-xs font-medium hover:bg-ink-2 transition cursor-pointer disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/80 transition cursor-pointer disabled:opacity-50"
           >
             {isGeneratingKey ? (
-              <Loader2 className="h-4 w-4 animate-spin text-paper" />
+              <Loader2 className="h-4 w-4 animate-spin text-primary-foreground" />
             ) : (
               <RefreshCw className="h-4 w-4" />
             )}
@@ -327,43 +327,43 @@ export default function SettingPage() {
         </div>
       </div>
 
-      <div className="rounded-2xl bg-paper-2 border border-line-2 p-6 shadow-sm space-y-4">
-        <h2 className="text-sm   text-ink  tracking-wider font-body flex items-center gap-2 border-b border-line-2 pb-4">
-          <ShieldCheck className="h-4 w-4 text-ink-3" />
+      <div className="rounded-2xl bg-card border border-border p-6 shadow-sm space-y-4">
+        <h2 className="text-sm   text-foreground  tracking-wider font-sans flex items-center gap-2 border-b border-border pb-4">
+          <ShieldCheck className="h-4 w-4 text-muted-foreground" />
           Account Information
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="p-4 rounded-xl bg-paper-3 border border-line-2 space-y-1">
-            <span className="text-[11px] font-body text-ink-3 flex items-center gap-1.5">
+          <div className="p-4 rounded-xl bg-muted border border-border space-y-1">
+            <span className="text-[11px] font-sans text-muted-foreground flex items-center gap-1.5">
               <Mail className="h-3.5 w-3.5" /> Email Address
             </span>
-            <p className="text-sm font-medium text-ink truncate">
+            <p className="text-sm font-medium text-foreground truncate">
               {session?.user?.email || "guest@ryuk.dev"}
             </p>
           </div>
 
-          <div className="p-4 rounded-xl bg-paper-3 border border-line-2 space-y-1">
-            <span className="text-[11px] font-body text-ink-3 flex items-center gap-1.5">
+          <div className="p-4 rounded-xl bg-muted border border-border space-y-1">
+            <span className="text-[11px] font-sans text-muted-foreground flex items-center gap-1.5">
               <ShieldCheck className="h-3.5 w-3.5" /> Authentication Status
             </span>
-            <p className="text-sm font-medium text-ink">
+            <p className="text-sm font-medium text-foreground">
               {session?.user ? "Authenticated Account" : "Guest Mode"}
             </p>
           </div>
         </div>
       </div>
 
-      <div className="rounded-2xl bg-paper-2 border border-line-2 p-6 shadow-sm space-y-4">
-        <h2 className="text-sm   text-rose-500 tracking-wider font-body flex items-center gap-2 border-b border-line-2 pb-4">
+      <div className="rounded-2xl bg-card border border-border p-6 shadow-sm space-y-4">
+        <h2 className="text-sm   text-rose-500 tracking-wider font-sans flex items-center gap-2 border-b border-border pb-4">
           <LogOut className="h-4 w-4 text-rose-500" />
           Session & Account Actions
         </h2>
 
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
-            <p className="text-sm font-medium text-ink">Sign Out</p>
-            <p className="text-xs text-ink-3">
+            <p className="text-sm font-medium text-foreground">Sign Out</p>
+            <p className="text-xs text-muted-foreground">
               Log out of your current session on this device.
             </p>
           </div>

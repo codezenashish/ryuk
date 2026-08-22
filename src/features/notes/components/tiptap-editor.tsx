@@ -104,7 +104,7 @@ export function TipTapEditor({
     editorProps: {
       attributes: {
         class:
-          "prose prose-invert max-w-none p-0 min-h-[320px] focus:outline-none text-ink text-base md:text-lg leading-relaxed font-sans",
+          "prose prose-invert max-w-none p-0 min-h-[320px] focus:outline-none text-foreground text-base md:text-lg leading-relaxed font-sans",
       },
       handlePaste: (view, event) => {
         const text = event.clipboardData?.getData("text/plain");
@@ -200,7 +200,7 @@ export function TipTapEditor({
 
   if (!editor) {
     return (
-      <div className="w-full min-h-[300px] rounded-xl border border-line-2 bg-paper-card p-6 animate-pulse flex items-center justify-center text-ink-3 text-sm font-mono">
+      <div className="w-full min-h-[300px] rounded-xl border border-border bg-card p-6 animate-pulse flex items-center justify-center text-muted-foreground text-sm font-mono">
         Loading editor...
       </div>
     );
@@ -228,7 +228,7 @@ export function TipTapEditor({
             left: `${bubbleCoords.left}px`,
             transform: "translateX(-50%)",
           }}
-          className={`absolute z-50 flex items-center gap-1 p-1.5 rounded-xl border border-line-2 bg-paper-2 shadow-2xl backdrop-blur-xl text-ink max-w-[92vw] overflow-x-auto scrollbar-none transition-all duration-200 ease-out ${
+          className={`absolute z-50 flex items-center gap-1 p-1.5 rounded-xl border border-border bg-card shadow-2xl backdrop-blur-xl text-foreground max-w-[92vw] overflow-x-auto scrollbar-none transition-all duration-200 ease-out ${
             showToolbar
               ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
               : "opacity-0 scale-95 translate-y-1 pointer-events-none"
@@ -237,8 +237,8 @@ export function TipTapEditor({
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleBold().run()}
-            className={`p-1.5 rounded-lg text-ink-3 hover:text-ink hover:bg-paper-3 transition cursor-pointer ${
-              editor.isActive("bold") ? "bg-paper text-ink shadow-xs" : ""
+            className={`p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer ${
+              editor.isActive("bold") ? "bg-background text-foreground shadow-xs" : ""
             }`}
             title="Bold"
           >
@@ -248,8 +248,8 @@ export function TipTapEditor({
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleItalic().run()}
-            className={`p-1.5 rounded-lg text-ink-3 hover:text-ink hover:bg-paper-3 transition cursor-pointer ${
-              editor.isActive("italic") ? "bg-paper text-ink shadow-xs" : ""
+            className={`p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer ${
+              editor.isActive("italic") ? "bg-background text-foreground shadow-xs" : ""
             }`}
             title="Italic"
           >
@@ -259,8 +259,8 @@ export function TipTapEditor({
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleUnderline().run()}
-            className={`p-1.5 rounded-lg text-ink-3 hover:text-ink hover:bg-paper-3 transition cursor-pointer ${
-              editor.isActive("underline") ? "bg-paper text-ink shadow-xs" : ""
+            className={`p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer ${
+              editor.isActive("underline") ? "bg-background text-foreground shadow-xs" : ""
             }`}
             title="Underline"
           >
@@ -270,8 +270,8 @@ export function TipTapEditor({
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleStrike().run()}
-            className={`p-1.5 rounded-lg text-ink-3 hover:text-ink hover:bg-paper-3 transition cursor-pointer ${
-              editor.isActive("strike") ? "bg-paper text-ink shadow-xs" : ""
+            className={`p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer ${
+              editor.isActive("strike") ? "bg-background text-foreground shadow-xs" : ""
             }`}
             title="Strikethrough"
           >
@@ -281,24 +281,24 @@ export function TipTapEditor({
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleCode().run()}
-            className={`p-1.5 rounded-lg text-ink-3 hover:text-ink hover:bg-paper-3 transition cursor-pointer ${
-              editor.isActive("code") ? "bg-paper text-ink shadow-xs" : ""
+            className={`p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer ${
+              editor.isActive("code") ? "bg-background text-foreground shadow-xs" : ""
             }`}
             title="Inline Code"
           >
             <Code className="w-3.5 h-3.5" />
           </button>
 
-          <div className="w-[1px] h-4 bg-line mx-0.5" />
+          <div className="w-[1px] h-4 bg-border mx-0.5" />
 
           <button
             type="button"
             onClick={() =>
               editor.chain().focus().toggleHeading({ level: 1 }).run()
             }
-            className={`p-1.5 rounded-lg text-ink-3 hover:text-ink hover:bg-paper-3 transition cursor-pointer ${
+            className={`p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer ${
               editor.isActive("heading", { level: 1 })
-                ? "bg-paper text-ink shadow-xs"
+                ? "bg-background text-foreground shadow-xs"
                 : ""
             }`}
             title="Heading 1"
@@ -311,9 +311,9 @@ export function TipTapEditor({
             onClick={() =>
               editor.chain().focus().toggleHeading({ level: 2 }).run()
             }
-            className={`p-1.5 rounded-lg text-ink-3 hover:text-ink hover:bg-paper-3 transition cursor-pointer ${
+            className={`p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer ${
               editor.isActive("heading", { level: 2 })
-                ? "bg-paper text-ink shadow-xs"
+                ? "bg-background text-foreground shadow-xs"
                 : ""
             }`}
             title="Heading 2"
@@ -326,9 +326,9 @@ export function TipTapEditor({
             onClick={() =>
               editor.chain().focus().toggleHeading({ level: 3 }).run()
             }
-            className={`p-1.5 rounded-lg text-ink-3 hover:text-ink hover:bg-paper-3 transition cursor-pointer ${
+            className={`p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer ${
               editor.isActive("heading", { level: 3 })
-                ? "bg-paper text-ink shadow-xs"
+                ? "bg-background text-foreground shadow-xs"
                 : ""
             }`}
             title="Heading 3"
@@ -339,8 +339,8 @@ export function TipTapEditor({
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleBulletList().run()}
-            className={`p-1.5 rounded-lg text-ink-3 hover:text-ink hover:bg-paper-3 transition cursor-pointer ${
-              editor.isActive("bulletList") ? "bg-paper text-ink shadow-xs" : ""
+            className={`p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer ${
+              editor.isActive("bulletList") ? "bg-background text-foreground shadow-xs" : ""
             }`}
             title="Bullet List"
           >
@@ -350,8 +350,8 @@ export function TipTapEditor({
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleTaskList().run()}
-            className={`p-1.5 rounded-lg text-ink-3 hover:text-ink hover:bg-paper-3 transition cursor-pointer ${
-              editor.isActive("taskList") ? "bg-paper text-ink shadow-xs" : ""
+            className={`p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer ${
+              editor.isActive("taskList") ? "bg-background text-foreground shadow-xs" : ""
             }`}
             title="Task List"
           >
@@ -361,8 +361,8 @@ export function TipTapEditor({
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleBlockquote().run()}
-            className={`p-1.5 rounded-lg text-ink-3 hover:text-ink hover:bg-paper-3 transition cursor-pointer ${
-              editor.isActive("blockquote") ? "bg-paper text-ink shadow-xs" : ""
+            className={`p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer ${
+              editor.isActive("blockquote") ? "bg-background text-foreground shadow-xs" : ""
             }`}
             title="Quote"
           >
@@ -372,8 +372,8 @@ export function TipTapEditor({
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-            className={`p-1.5 rounded-lg text-ink-3 hover:text-ink hover:bg-paper-3 transition cursor-pointer ${
-              editor.isActive("codeBlock") ? "bg-paper text-ink shadow-xs" : ""
+            className={`p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer ${
+              editor.isActive("codeBlock") ? "bg-background text-foreground shadow-xs" : ""
             }`}
             title="Code Block"
           >
@@ -389,7 +389,7 @@ export function TipTapEditor({
                 .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
                 .run()
             }
-            className="p-1.5 rounded-lg text-ink-3 hover:text-ink hover:bg-paper-3 transition cursor-pointer"
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer"
             title="Insert Table"
           >
             <TableIcon className="w-3.5 h-3.5" />
@@ -398,8 +398,8 @@ export function TipTapEditor({
           <button
             type="button"
             onClick={setLink}
-            className={`p-1.5 rounded-lg text-ink-3 hover:text-ink hover:bg-paper-3 transition cursor-pointer ${
-              editor.isActive("link") ? "bg-paper text-ink shadow-xs" : ""
+            className={`p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer ${
+              editor.isActive("link") ? "bg-background text-foreground shadow-xs" : ""
             }`}
             title="Link"
           >

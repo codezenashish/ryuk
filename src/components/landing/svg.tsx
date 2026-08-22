@@ -4,7 +4,7 @@ const SVGComponent = (props: React.SVGProps<SVGSVGElement>) => (
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
     viewBox="0 0 1225 808"
-    className="h-auto w-full max-w-[540px] text-ink opacity-90 transition-opacity hover:opacity-100"
+    className="h-auto w-full max-w-[540px] text-foreground opacity-90 transition-opacity hover:opacity-100"
     aria-hidden="true"
     {...props}
   >

@@ -167,36 +167,36 @@ function ImportBookmarksForm({ onClose, onSuccess }: { onClose: () => void; onSu
 
   return createPortal(
     <div className="fixed inset-0 z-100 flex items-center justify-center overflow-y-auto bg-black/70 backdrop-blur-md p-4 sm:p-6">
-      <div className="my-auto w-full max-w-md overflow-hidden rounded-2xl bg-paper-2 border border-line-2 shadow-2xl relative text-ink animate-in fade-in zoom-in-95 duration-200">
+      <div className="my-auto w-full max-w-md overflow-hidden rounded-2xl bg-card border border-border shadow-2xl relative text-foreground animate-in fade-in zoom-in-95 duration-200">
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 rounded-full p-2 text-ink-3 hover:text-ink hover:bg-paper-3 transition cursor-pointer z-10"
+          className="absolute top-4 right-4 rounded-full p-2 text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer z-10"
         >
           <X className="h-5 w-5" />
         </button>
 
         <div className="p-6">
-          <h2 className="text-xl font-display font-semibold text-ink mb-1">
+          <h2 className="text-xl font-sans font-semibold text-foreground mb-1">
             Import Bookmarks
           </h2>
-          <p className="text-xs text-ink-3 mb-6">
+          <p className="text-xs text-muted-foreground mb-6">
             Import from Chrome, Firefox, Edge, or Safari
           </p>
 
           {/* UPLOAD STEP */}
           {step === "upload" && (
             <div
-              className={`border-2 border-dashed rounded-xl p-8 text-center transition ${isDragging ? "border-ink bg-paper-3/50" : "border-line-2 bg-paper-card"}`}
+              className={`border-2 border-dashed rounded-xl p-8 text-center transition ${isDragging ? "border-foreground bg-muted/50" : "border-border bg-card"}`}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
             >
-              <div className="mx-auto h-12 w-12 rounded-full bg-paper-3 flex items-center justify-center mb-4">
-                <UploadCloud className="h-6 w-6 text-ink-2" />
+              <div className="mx-auto h-12 w-12 rounded-full bg-muted flex items-center justify-center mb-4">
+                <UploadCloud className="h-6 w-6 text-muted-foreground" />
               </div>
-              <h3 className="text-sm font-medium text-ink mb-1">Click or drag file to this area</h3>
-              <p className="text-xs text-ink-3 mb-6">Must be a standard browser bookmark HTML file</p>
+              <h3 className="text-sm font-medium text-foreground mb-1">Click or drag file to this area</h3>
+              <p className="text-xs text-muted-foreground mb-6">Must be a standard browser bookmark HTML file</p>
               
               <input
                 type="file"
@@ -212,7 +212,7 @@ function ImportBookmarksForm({ onClose, onSuccess }: { onClose: () => void; onSu
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="inline-flex items-center gap-2 rounded-xl bg-ink px-4 py-2 text-xs font-medium text-paper hover:bg-ink-2 transition shadow-sm cursor-pointer"
+                className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-xs font-medium text-primary-foreground hover:bg-primary/80 transition shadow-sm cursor-pointer"
               >
                 Browse File
               </button>
@@ -222,31 +222,31 @@ function ImportBookmarksForm({ onClose, onSuccess }: { onClose: () => void; onSu
           {/* PREVIEW STEP */}
           {step === "preview" && (
             <div className="space-y-6">
-              <div className="rounded-xl border border-line-2 bg-paper-card p-4 flex items-center gap-4">
+              <div className="rounded-xl border border-border bg-card p-4 flex items-center gap-4">
                 <div className="h-10 w-10 rounded-lg bg-indigo-500/10 flex items-center justify-center">
                   <FileType2 className="h-5 w-5 text-indigo-500" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-medium text-ink">Ready to Import</h3>
-                  <p className="text-xs text-ink-3">
+                  <h3 className="text-sm font-medium text-foreground">Ready to Import</h3>
+                  <p className="text-xs text-muted-foreground">
                     Found <strong>{parsedBookmarks.length}</strong> bookmarks 
                     in <strong>{new Set(parsedBookmarks.map(b => b.categoryName).filter(Boolean)).size}</strong> categories.
                   </p>
                 </div>
               </div>
 
-              <label className="flex items-start gap-3 cursor-pointer p-3 rounded-xl hover:bg-paper-card transition">
+              <label className="flex items-start gap-3 cursor-pointer p-3 rounded-xl hover:bg-card transition">
                 <div className="flex items-center h-5">
                   <input
                     type="checkbox"
                     checked={skipDuplicates}
                     onChange={(e) => setSkipDuplicates(e.target.checked)}
-                    className="w-4 h-4 rounded text-indigo-500 focus:ring-indigo-500 bg-paper-3 border-line-2"
+                    className="w-4 h-4 rounded text-indigo-500 focus:ring-indigo-500 bg-muted border-border"
                   />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-sm font-medium text-ink">Skip Duplicates</span>
-                  <span className="text-xs text-ink-3">Don&apos;t import bookmarks with URLs that already exist in your collection.</span>
+                  <span className="text-sm font-medium text-foreground">Skip Duplicates</span>
+                  <span className="text-xs text-muted-foreground">Don&apos;t import bookmarks with URLs that already exist in your collection.</span>
                 </div>
               </label>
 
@@ -254,14 +254,14 @@ function ImportBookmarksForm({ onClose, onSuccess }: { onClose: () => void; onSu
                 <button
                   type="button"
                   onClick={() => setStep("upload")}
-                  className="px-4 py-2 text-xs font-medium text-ink-3 hover:text-ink transition cursor-pointer"
+                  className="px-4 py-2 text-xs font-medium text-muted-foreground hover:text-foreground transition cursor-pointer"
                 >
                   Back
                 </button>
                 <button
                   type="button"
                   onClick={handleImport}
-                  className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-ink text-paper font-medium text-xs hover:bg-ink-2 transition shadow-sm cursor-pointer"
+                  className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-primary text-primary-foreground font-medium text-xs hover:bg-primary/80 transition shadow-sm cursor-pointer"
                 >
                   Start Import
                 </button>
@@ -274,8 +274,8 @@ function ImportBookmarksForm({ onClose, onSuccess }: { onClose: () => void; onSu
             <div className="flex flex-col items-center justify-center py-8 space-y-4">
               <Loader2 className="h-8 w-8 text-indigo-500 animate-spin" />
               <div className="text-center">
-                <h3 className="text-sm font-medium text-ink">Importing Bookmarks...</h3>
-                <p className="text-xs text-ink-3 mt-1">Please wait while we save your bookmarks.</p>
+                <h3 className="text-sm font-medium text-foreground">Importing Bookmarks...</h3>
+                <p className="text-xs text-muted-foreground mt-1">Please wait while we save your bookmarks.</p>
               </div>
             </div>
           )}
@@ -287,8 +287,8 @@ function ImportBookmarksForm({ onClose, onSuccess }: { onClose: () => void; onSu
                 <CheckCircle2 className="h-8 w-8 text-emerald-500" />
               </div>
               <div>
-                <h3 className="text-lg font-medium text-ink mb-1">Import Complete!</h3>
-                <p className="text-sm text-ink-3">
+                <h3 className="text-lg font-medium text-foreground mb-1">Import Complete!</h3>
+                <p className="text-sm text-muted-foreground">
                   Successfully added <strong>{importStats.importedCount}</strong> bookmarks.
                   {importStats.skippedCount > 0 && (
                     <><br />Skipped <strong>{importStats.skippedCount}</strong> duplicates.</>
@@ -298,7 +298,7 @@ function ImportBookmarksForm({ onClose, onSuccess }: { onClose: () => void; onSu
               <button
                 type="button"
                 onClick={onClose}
-                className="w-full inline-flex justify-center items-center gap-2 rounded-xl bg-ink px-4 py-2.5 text-sm font-medium text-paper hover:bg-ink-2 transition shadow-sm cursor-pointer"
+                className="w-full inline-flex justify-center items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/80 transition shadow-sm cursor-pointer"
               >
                 Close & View Bookmarks
               </button>
@@ -312,8 +312,8 @@ function ImportBookmarksForm({ onClose, onSuccess }: { onClose: () => void; onSu
                 <AlertCircle className="h-8 w-8 text-rose-500" />
               </div>
               <div>
-                <h3 className="text-lg font-medium text-ink mb-1">Import Failed</h3>
-                <p className="text-sm text-ink-3 max-w-xs mx-auto">
+                <h3 className="text-lg font-medium text-foreground mb-1">Import Failed</h3>
+                <p className="text-sm text-muted-foreground max-w-xs mx-auto">
                   {errorMessage}
                 </p>
               </div>
@@ -321,14 +321,14 @@ function ImportBookmarksForm({ onClose, onSuccess }: { onClose: () => void; onSu
                 <button
                   type="button"
                   onClick={onClose}
-                  className="flex-1 py-2.5 text-sm font-medium text-ink-3 hover:text-ink transition cursor-pointer"
+                  className="flex-1 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
                   onClick={() => setStep("upload")}
-                  className="flex-1 rounded-xl bg-ink px-4 py-2.5 text-sm font-medium text-paper hover:bg-ink-2 transition shadow-sm cursor-pointer"
+                  className="flex-1 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/80 transition shadow-sm cursor-pointer"
                 >
                   Try Again
                 </button>

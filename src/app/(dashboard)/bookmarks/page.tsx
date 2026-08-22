@@ -188,13 +188,13 @@ export default function BookmarksPage() {
     return (
       <div className="py-6 space-y-6">
         <div className="flex justify-between items-center">
-          <Skeleton className="h-8 w-48 bg-paper-3 rounded-lg" />
-          <Skeleton className="h-9 w-32 bg-paper-3 rounded-xl" />
+          <Skeleton className="h-8 w-48 bg-muted rounded-lg" />
+          <Skeleton className="h-9 w-32 bg-muted rounded-xl" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <Skeleton className="h-40 w-full bg-paper-3 rounded-xl" />
-          <Skeleton className="h-40 w-full bg-paper-3 rounded-xl" />
-          <Skeleton className="h-40 w-full bg-paper-3 rounded-xl" />
+          <Skeleton className="h-40 w-full bg-muted rounded-xl" />
+          <Skeleton className="h-40 w-full bg-muted rounded-xl" />
+          <Skeleton className="h-40 w-full bg-muted rounded-xl" />
         </div>
       </div>
     );
@@ -263,13 +263,13 @@ export default function BookmarksPage() {
 
         <div className="flex items-center gap-3 shrink-0">
           {/* View Mode Toggle */}
-          <div className="flex items-center rounded-xl border border-line-2 bg-paper-3 p-1 gap-1">
+          <div className="flex items-center rounded-xl border border-border bg-muted p-1 gap-1">
             <button
               onClick={() => setLayoutMode("grid")}
               className={`p-1.5 rounded-lg transition cursor-pointer ${
                 layoutMode === "grid"
-                  ? "bg-paper text-ink shadow-sm"
-                  : "text-ink-3 hover:text-ink"
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
               title="Grid View"
             >
@@ -279,8 +279,8 @@ export default function BookmarksPage() {
               onClick={() => setLayoutMode("list")}
               className={`p-1.5 rounded-lg transition cursor-pointer ${
                 layoutMode === "list"
-                  ? "bg-paper text-ink shadow-sm"
-                  : "text-ink-3 hover:text-ink"
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
               title="List View"
             >
@@ -293,7 +293,7 @@ export default function BookmarksPage() {
             <button
               type="button"
               onClick={() => setIsShareModalOpen(true)}
-              className="inline-flex items-center gap-2 rounded-xl bg-paper-3 px-4 py-2 text-xs font-medium text-ink hover:bg-line-2 transition shadow-sm cursor-pointer border border-line-2"
+              className="inline-flex items-center gap-2 rounded-xl bg-muted px-4 py-2 text-xs font-medium text-foreground hover:bg-border transition shadow-sm cursor-pointer border border-border"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>
               <span className="hidden sm:inline">Share</span>
@@ -304,7 +304,7 @@ export default function BookmarksPage() {
           <button
             type="button"
             onClick={() => setIsImportModalOpen(true)}
-            className="inline-flex items-center gap-2 rounded-xl bg-paper-3 px-4 py-2 text-xs font-medium text-ink hover:bg-line-2 transition shadow-sm cursor-pointer active:translate-y-px border border-line-2"
+            className="inline-flex items-center gap-2 rounded-xl bg-muted px-4 py-2 text-xs font-medium text-foreground hover:bg-border transition shadow-sm cursor-pointer active:translate-y-px border border-border"
           >
             <Upload className="h-4 w-4" />
             <span className="hidden sm:inline">Import</span>
@@ -313,7 +313,7 @@ export default function BookmarksPage() {
           <button
             type="button"
             onClick={() => openAddModal(null)}
-            className="inline-flex items-center gap-2 rounded-xl bg-ink px-4 py-2 text-xs font-medium text-paper hover:bg-ink-2 transition shadow-sm cursor-pointer active:translate-y-px"
+            className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-xs font-medium text-primary-foreground hover:bg-primary/80 transition shadow-sm cursor-pointer active:translate-y-px"
           >
             <Plus className="h-4 w-4" />
             <span>Add Bookmark</span>

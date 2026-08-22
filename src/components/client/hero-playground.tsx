@@ -83,14 +83,14 @@ const SNIPPET_CODE: Record<string, string> = {
 };
 
 const tabBase =
-  "cursor-pointer rounded-md border-none bg-transparent px-3 py-1.5 font-mono text-[11.5px] tracking-[0.06em] whitespace-nowrap hover:bg-paper-3";
+  "cursor-pointer rounded-md border-none bg-transparent px-3 py-1.5 font-mono text-[11.5px] tracking-[0.06em] whitespace-nowrap hover:bg-muted";
 const optionBase =
-  "relative flex aspect-square cursor-pointer flex-col items-center justify-center gap-1 rounded-[10px] border border-line bg-[#0c0c0c] p-2 text-center transition hover:-translate-y-px hover:border-line-strong";
-const optionActive = "border-ink bg-[#181818]";
+  "relative flex aspect-square cursor-pointer flex-col items-center justify-center gap-1 rounded-[10px] border border-border bg-[#0c0c0c] p-2 text-center transition hover:-translate-y-px hover:border-foreground/20";
+const optionActive = "border-foreground bg-[#181818]";
 const buttonClass =
-  "inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-line-2 bg-paper-3 px-2.5 py-1.5 text-xs font-medium whitespace-nowrap text-ink transition hover:border-line-strong hover:bg-paper-card active:translate-y-px";
+  "inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-border bg-muted px-2.5 py-1.5 text-xs font-medium whitespace-nowrap text-foreground transition hover:border-foreground/20 hover:bg-card active:translate-y-px";
 const primaryButtonClass =
-  "inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-ink bg-ink px-2.5 py-1.5 text-xs font-medium whitespace-nowrap text-paper transition hover:border-white hover:bg-white active:translate-y-px";
+  "inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-foreground bg-primary px-2.5 py-1.5 text-xs font-medium whitespace-nowrap text-primary-foreground transition hover:border-white hover:bg-white active:translate-y-px";
 
 export function VyrnHeroPlayground() {
   const [activeTab, setActiveTab] = useState<FeatureId>("notes");
@@ -163,29 +163,29 @@ export function VyrnHeroPlayground() {
   }
 
   return (
-    <div className="overflow-hidden rounded-[14px] border border-line-2 [background:linear-gradient(180deg,#131313_0%,#0d0d0d_100%)]">
-      <div className="flex items-center gap-2.5 border-b border-line px-3.5 py-2.5 font-mono text-[11.5px] tracking-[0.06em] text-ink-3">
-        <span className="h-2 w-2 rounded-[2px] bg-line-2" />
-        <span className="h-2 w-2 rounded-[2px] bg-line-2" />
-        <span className="h-2 w-2 rounded-[2px] bg-line-2" />
+    <div className="overflow-hidden rounded-[14px] border border-border [background:linear-gradient(180deg,#131313_0%,#0d0d0d_100%)]">
+      <div className="flex items-center gap-2.5 border-b border-border px-3.5 py-2.5 font-mono text-[11.5px] tracking-[0.06em] text-muted-foreground">
+        <span className="h-2 w-2 rounded-[2px] bg-border" />
+        <span className="h-2 w-2 rounded-[2px] bg-border" />
+        <span className="h-2 w-2 rounded-[2px] bg-border" />
         <span className="ml-1.5">vyrn · live preview</span>
         <span className="flex-1" />
-        <span className="text-ink-3">viewing:</span>
-        <span className="text-ink">{selectedItem.label}</span>
+        <span className="text-muted-foreground">viewing:</span>
+        <span className="text-foreground">{selectedItem.label}</span>
       </div>
 
       <div className="grid min-h-[480px] grid-cols-1 md:grid-cols-2">
         {/* Left: live preview of the selected feature */}
-        <div className="flex flex-col items-center justify-center gap-[18px] border-b border-line p-6 [background:radial-gradient(60%_60%_at_50%_40%,rgba(25,179,133,0.06),transparent_70%),#0e0e0e] md:border-r md:border-b-0">
+        <div className="flex flex-col items-center justify-center gap-[18px] border-b border-border p-6 [background:radial-gradient(60%_60%_at_50%_40%,rgba(25,179,133,0.06),transparent_70%),#0e0e0e] md:border-r md:border-b-0">
           <FeaturePreview feature={activeTab} item={selectedItem} />
-          <div className="flex flex-col items-center gap-1.5 font-mono text-[11px] tracking-[0.16em] uppercase text-ink-3">
+          <div className="flex flex-col items-center gap-1.5 font-mono text-[11px] tracking-[0.16em] uppercase text-muted-foreground">
             <span>{activeFeature.label} · sample preview</span>
           </div>
         </div>
 
         {/* Right: tabs + sample picker */}
         <div className="flex min-w-0 flex-col gap-4 bg-[#101010] p-5">
-          <div className="relative border-b border-line">
+          <div className="relative border-b border-border">
             <div
               ref={tabsRef}
               className="flex gap-1 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
@@ -196,8 +196,8 @@ export function VyrnHeroPlayground() {
                   type="button"
                   className={`${tabBase} ${
                     activeTab === tab.id
-                      ? "bg-paper-card text-ink shadow-[inset_0_0_0_1px_var(--color-line-2)]"
-                      : "text-ink-3 hover:text-ink-2"
+                      ? "bg-card text-foreground shadow-[inset_0_0_0_1px_var(--color-border)]"
+                      : "text-muted-foreground hover:text-muted-foreground"
                   }`}
                   onClick={() => pickTab(tab.id)}
                 >
@@ -211,7 +211,7 @@ export function VyrnHeroPlayground() {
                 type="button"
                 aria-label="Scroll tabs left"
                 onClick={() => scrollTabs(-1)}
-                className="absolute top-0 bottom-2 left-0 flex w-8 cursor-pointer items-center justify-start border-0 pl-0.5 text-ink-2 [background:linear-gradient(to_right,#101010_55%,transparent)] hover:text-ink"
+                className="absolute top-0 bottom-2 left-0 flex w-8 cursor-pointer items-center justify-start border-0 pl-0.5 text-muted-foreground [background:linear-gradient(to_right,#101010_55%,transparent)] hover:text-foreground"
               >
                 <svg
                   aria-hidden="true"
@@ -234,7 +234,7 @@ export function VyrnHeroPlayground() {
                 type="button"
                 aria-label="Scroll tabs right"
                 onClick={() => scrollTabs(1)}
-                className="absolute top-0 right-0 bottom-2 flex w-8 cursor-pointer items-center justify-end border-0 pr-0.5 text-ink-2 [background:linear-gradient(to_left,#101010_55%,transparent)] hover:text-ink"
+                className="absolute top-0 right-0 bottom-2 flex w-8 cursor-pointer items-center justify-end border-0 pr-0.5 text-muted-foreground [background:linear-gradient(to_left,#101010_55%,transparent)] hover:text-foreground"
               >
                 <svg
                   aria-hidden="true"
@@ -265,7 +265,7 @@ export function VyrnHeroPlayground() {
                 onClick={() => setSelectedId(item.id)}
               >
                 <FeatureIcon feature={activeTab} />
-                <span className="line-clamp-2 text-[10px] leading-tight text-ink-3">
+                <span className="line-clamp-2 text-[10px] leading-tight text-muted-foreground">
                   {item.label}
                 </span>
               </button>
@@ -332,7 +332,7 @@ function FeatureIcon({ feature }: { feature: FeatureId }) {
     strokeWidth: 1.6,
     strokeLinecap: "round" as const,
     strokeLinejoin: "round" as const,
-    className: "text-ink-3",
+    className: "text-muted-foreground",
   };
   switch (feature) {
     case "notes":
@@ -381,21 +381,21 @@ function FeaturePreview({
   item: SampleItem;
 }) {
   const frame =
-    "relative flex h-60 w-60 flex-col overflow-hidden rounded-2xl border border-line-2 bg-[#131313] p-4 text-left shadow-[0_20px_50px_-20px_rgba(0,0,0,0.6)]";
+    "relative flex h-60 w-60 flex-col overflow-hidden rounded-2xl border border-border bg-[#131313] p-4 text-left shadow-[0_20px_50px_-20px_rgba(0,0,0,0.6)]";
 
   if (feature === "notes") {
     return (
       <div className={frame}>
-        <div className="mb-2 text-[13px] font-semibold text-ink">
+        <div className="mb-2 text-[13px] font-semibold text-foreground">
           {item.label}
         </div>
-        <div className="space-y-1.5 text-[11px] leading-relaxed text-ink-3">
-          <div className="h-2 w-[92%] rounded bg-line" />
-          <div className="h-2 w-[78%] rounded bg-line" />
-          <div className="h-2 w-[85%] rounded bg-line" />
-          <div className="h-2 w-[60%] rounded bg-line" />
+        <div className="space-y-1.5 text-[11px] leading-relaxed text-muted-foreground">
+          <div className="h-2 w-[92%] rounded bg-border" />
+          <div className="h-2 w-[78%] rounded bg-border" />
+          <div className="h-2 w-[85%] rounded bg-border" />
+          <div className="h-2 w-[60%] rounded bg-border" />
         </div>
-        <span className="mt-auto pt-3 font-mono text-[10px] tracking-[0.12em] text-ink-3">
+        <span className="mt-auto pt-3 font-mono text-[10px] tracking-[0.12em] text-muted-foreground">
           EDITED 2H AGO
         </span>
       </div>
@@ -406,7 +406,7 @@ function FeaturePreview({
     const days = ["M", "T", "W", "T", "F", "S", "S"];
     return (
       <div className={frame}>
-        <div className="mb-3 text-[13px] font-semibold text-ink">
+        <div className="mb-3 text-[13px] font-semibold text-foreground">
           {item.label}
         </div>
         <div className="grid grid-cols-7 gap-1.5">
@@ -414,19 +414,19 @@ function FeaturePreview({
             const done = (i % 3) !== 1;
             return (
               <div key={i} className="flex flex-col items-center gap-1">
-                <span className="font-mono text-[9px] text-ink-3">{d}</span>
+                <span className="font-mono text-[9px] text-muted-foreground">{d}</span>
                 <div
                   className={`h-6 w-6 rounded-md border ${
                     done
                       ? "border-emerald-500/40 bg-emerald-500/25"
-                      : "border-line bg-transparent"
+                      : "border-border bg-transparent"
                   }`}
                 />
               </div>
             );
           })}
         </div>
-        <span className="mt-auto pt-4 font-mono text-[10px] tracking-[0.12em] text-ink-3">
+        <span className="mt-auto pt-4 font-mono text-[10px] tracking-[0.12em] text-muted-foreground">
           5 DAY STREAK
         </span>
       </div>
@@ -439,19 +439,19 @@ function FeaturePreview({
         <div className="flex items-center gap-2.5">
           <div className="h-8 w-8 shrink-0 rounded-lg bg-gradient-to-br from-emerald-400/70 to-emerald-700/70" />
           <div className="min-w-0">
-            <div className="truncate text-[12.5px] font-semibold text-ink">
+            <div className="truncate text-[12.5px] font-semibold text-foreground">
               {item.label}
             </div>
-            <div className="truncate font-mono text-[10px] text-ink-3">
+            <div className="truncate font-mono text-[10px] text-muted-foreground">
               vyrn.app/saved
             </div>
           </div>
         </div>
         <div className="mt-3 space-y-1.5">
-          <div className="h-2 w-[90%] rounded bg-line" />
-          <div className="h-2 w-[70%] rounded bg-line" />
+          <div className="h-2 w-[90%] rounded bg-border" />
+          <div className="h-2 w-[70%] rounded bg-border" />
         </div>
-        <span className="mt-auto pt-3 font-mono text-[10px] tracking-[0.12em] text-ink-3">
+        <span className="mt-auto pt-3 font-mono text-[10px] tracking-[0.12em] text-muted-foreground">
           SAVED TO BOOKMARKS
         </span>
       </div>
@@ -463,10 +463,10 @@ function FeaturePreview({
     return (
       <div className={`${frame} font-mono`}>
         <div className="mb-2 flex items-center justify-between">
-          <span className="text-[11px] font-semibold text-ink">
+          <span className="text-[11px] font-semibold text-foreground">
             {item.label}
           </span>
-          <span className="rounded bg-line px-1.5 py-0.5 text-[9px] text-ink-3">
+          <span className="rounded bg-border px-1.5 py-0.5 text-[9px] text-muted-foreground">
             {item.id}
           </span>
         </div>
@@ -480,7 +480,7 @@ function FeaturePreview({
   // draw
   return (
     <div className={frame}>
-      <div className="mb-2 text-[13px] font-semibold text-ink">
+      <div className="mb-2 text-[13px] font-semibold text-foreground">
         {item.label}
       </div>
       <svg viewBox="0 0 200 140" className="flex-1">
@@ -495,7 +495,7 @@ function FeaturePreview({
         <circle cx="60" cy="55" r="4" fill="#34d399" />
         <circle cx="140" cy="85" r="4" fill="#34d399" />
       </svg>
-      <span className="mt-auto pt-2 font-mono text-[10px] tracking-[0.12em] text-ink-3">
+      <span className="mt-auto pt-2 font-mono text-[10px] tracking-[0.12em] text-muted-foreground">
         SKETCH · AUTOSAVED
       </span>
     </div>

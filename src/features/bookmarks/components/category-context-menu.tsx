@@ -77,22 +77,22 @@ export function CategoryContextMenu({
   const menu = (
     <div
       ref={menuRef as React.RefObject<HTMLDivElement>}
-      className="fixed z-[100] w-48 rounded-xl border border-line bg-paper-card shadow-xl py-1.5 px-1 animate-in fade-in zoom-in-95 duration-100"
+      className="fixed z-[100] w-48 rounded-xl border border-border bg-card shadow-xl py-1.5 px-1 animate-in fade-in zoom-in-95 duration-100"
       style={{
         top: position.y,
         left: position.x,
       }}
     >
-      <div className="px-2.5 py-2 mb-1 border-b border-line">
-        <p className="text-xs font-semibold text-ink truncate">{category.name}</p>
-        <p className="text-[10px] text-ink-3">
+      <div className="px-2.5 py-2 mb-1 border-b border-border">
+        <p className="text-xs font-semibold text-foreground truncate">{category.name}</p>
+        <p className="text-[10px] text-muted-foreground">
           {category.isShared ? "Publicly Shared" : "Private"}
         </p>
       </div>
 
       <button
         onClick={handleShareClick}
-        className="w-full flex items-center gap-2.5 px-2.5 py-1.5 text-xs text-ink-3 hover:text-ink hover:bg-paper-3 rounded-md transition-colors cursor-pointer"
+        className="w-full flex items-center gap-2.5 px-2.5 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors cursor-pointer"
       >
         <Share2 className="h-3.5 w-3.5" />
         {category.isShared ? "Manage Share" : "Share Category"}
@@ -102,14 +102,14 @@ export function CategoryContextMenu({
         <>
           <button
             onClick={handleCopyLink}
-            className="w-full flex items-center gap-2.5 px-2.5 py-1.5 text-xs text-ink-3 hover:text-ink hover:bg-paper-3 rounded-md transition-colors cursor-pointer"
+            className="w-full flex items-center gap-2.5 px-2.5 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors cursor-pointer"
           >
             <Copy className="h-3.5 w-3.5" />
             Copy Share Link
           </button>
           <button
             onClick={handleRevokeShare}
-            className="w-full flex items-center gap-2.5 px-2.5 py-1.5 text-xs text-ink-3 hover:text-ink hover:bg-paper-3 rounded-md transition-colors cursor-pointer"
+            className="w-full flex items-center gap-2.5 px-2.5 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors cursor-pointer"
           >
             <ShieldOff className="h-3.5 w-3.5" />
             Revoke Share
@@ -117,11 +117,11 @@ export function CategoryContextMenu({
         </>
       )}
 
-      <div className="h-px bg-line my-1 w-full" />
+      <div className="h-px bg-border my-1 w-full" />
 
       <button
         onClick={handleEdit}
-        className="w-full flex items-center gap-2.5 px-2.5 py-1.5 text-xs text-ink-3 hover:text-ink hover:bg-paper-3 rounded-md transition-colors cursor-pointer"
+        className="w-full flex items-center gap-2.5 px-2.5 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors cursor-pointer"
       >
         <Edit2 className="h-3.5 w-3.5" />
         Edit Category

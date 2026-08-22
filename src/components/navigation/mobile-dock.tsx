@@ -10,7 +10,7 @@ export default function MobileDock() {
 
   return (
     <div className="fixed bottom-0 inset-x-0 z-50 lg:hidden">
-      <nav className="flex items-center justify-around px-4 py-2.5 rounded-t-[28px] border-t border-line-2 bg-[#121214]/95 backdrop-blur-2xl shadow-[0_-10px_30px_rgba(0,0,0,0.8)]">
+      <nav className="flex items-center justify-around px-4 py-2.5 rounded-t-[28px] border-t border-border bg-card/95 backdrop-blur-2xl shadow-lg">
         {sidebar.map((item) => {
           const isActive = pathname === item.href;
 
@@ -22,8 +22,8 @@ export default function MobileDock() {
               title={item.label}
               className={`flex items-center justify-center transition-all duration-300 ${
                 isActive
-                  ? "h-11 w-11 rounded-full bg-white text-black shadow-lg scale-105"
-                  : "h-11 w-11 rounded-full text-ink-3 hover:text-ink"
+                  ? "h-11 w-11 rounded-full bg-primary text-primary-foreground shadow-lg scale-105"
+                  : "h-11 w-11 rounded-full text-muted-foreground hover:text-foreground"
               }`}
             >
               <HugeiconsIcon

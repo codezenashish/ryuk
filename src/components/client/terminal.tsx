@@ -99,12 +99,12 @@ const entries: CliTabEntry[] = [
 ]
 
 const tabBase =
-  'flex shrink-0 cursor-pointer items-center gap-2.5 border-0 border-r border-line px-[22px] py-4 text-sm font-medium whitespace-nowrap transition'
-const tabIdle = 'bg-transparent text-ink-3 hover:bg-paper-3 hover:text-ink-2'
+  'flex shrink-0 cursor-pointer items-center gap-2.5 border-0 border-r border-border px-[22px] py-4 text-sm font-medium whitespace-nowrap transition'
+const tabIdle = 'bg-transparent text-muted-foreground hover:bg-muted hover:text-muted-foreground'
 const tabActive =
-  'bg-[#131313] text-ink shadow-[inset_0_-2px_0_var(--color-ink)]'
+  'bg-[#131313] text-foreground shadow-[inset_0_-2px_0_var(--color-ink)]'
 const buttonClass =
-  'inline-flex cursor-pointer items-center gap-2 rounded-lg border border-line-2 bg-paper-3 px-4 py-2.5 text-sm font-medium whitespace-nowrap text-ink transition hover:border-line-strong hover:bg-paper-card active:translate-y-px'
+  'inline-flex cursor-pointer items-center gap-2 rounded-lg border border-border bg-muted px-4 py-2.5 text-sm font-medium whitespace-nowrap text-foreground transition hover:border-foreground/20 hover:bg-card active:translate-y-px'
 
 export function TerminalShowcase() {
   const [activeId, setActiveId] = useState('notes')
@@ -124,8 +124,8 @@ export function TerminalShowcase() {
   }
 
   return (
-    <div className="overflow-hidden rounded-[14px] border border-line bg-[#0d0d0d]">
-      <div className="flex overflow-x-auto border-b border-line">
+    <div className="overflow-hidden rounded-[14px] border border-border bg-[#0d0d0d]">
+      <div className="flex overflow-x-auto border-b border-border">
         {entries.map((entry) => (
           <button
             key={entry.id}
@@ -139,30 +139,30 @@ export function TerminalShowcase() {
       </div>
 
       <div className="grid min-h-80 grid-cols-1 lg:grid-cols-[1fr_1.2fr]">
-        <div className="flex flex-col justify-center gap-4.5 border-b border-line p-8 lg:border-r lg:border-b-0">
-          <div className="font-display text-[32px] leading-tight tracking-[-0.02em]">
+        <div className="flex flex-col justify-center gap-4.5 border-b border-border p-8 lg:border-r lg:border-b-0">
+          <div className="font-sans text-[32px] leading-tight tracking-[-0.02em]">
             {active.tagline}
           </div>
 
-          <div className="flex flex-col gap-2.5 font-code text-[11.5px] text-ink-3">
+          <div className="flex flex-col gap-2.5 font-mono text-[11.5px] text-muted-foreground">
             <div className="flex items-baseline gap-3.5">
-              <span className="w-15 shrink-0 text-ink-4">package</span>
-              <span className="min-w-0 truncate text-ink-2">{active.pkg}</span>
+              <span className="w-15 shrink-0 text-muted-foreground">package</span>
+              <span className="min-w-0 truncate text-muted-foreground">{active.pkg}</span>
             </div>
             <div className="flex items-baseline gap-3.5">
-              <span className="w-15 shrink-0 text-ink-4">size</span>
-              <span className="text-ink-2">
+              <span className="w-15 shrink-0 text-muted-foreground">size</span>
+              <span className="text-muted-foreground">
                 {active.size}
-                <span className="text-ink-4"> gzipped</span>
+                <span className="text-muted-foreground"> gzipped</span>
               </span>
             </div>
             <div className="flex items-baseline gap-3.5">
-              <span className="w-15 shrink-0 text-ink-4">deps</span>
-              <span className="text-ink-2">{active.deps}</span>
+              <span className="w-15 shrink-0 text-muted-foreground">deps</span>
+              <span className="text-muted-foreground">{active.deps}</span>
             </div>
             <div className="flex items-baseline gap-3.5">
-              <span className="w-15 shrink-0 text-ink-4">since</span>
-              <span className="text-ink-2">{active.since}</span>
+              <span className="w-15 shrink-0 text-muted-foreground">since</span>
+              <span className="text-muted-foreground">{active.since}</span>
             </div>
           </div>
 
@@ -182,16 +182,16 @@ export function TerminalShowcase() {
                 <path d="m4 17 6-6-6-6" />
                 <path d="M12 19h8" />
               </svg>
-              <code className="font-code text-[12px]">
+              <code className="font-mono text-[12px]">
                 {copiedInstall ? 'Copied command' : `npm i -g ${active.pkg}`}
               </code>
             </button>
           </div>
         </div>
 
-        <div className="bg-paper p-6">
-          <div className="code-shell rounded-xl border border-line bg-[#0c0c0c]">
-            <div className="flex items-center gap-3 border-b border-line px-3.5 py-2.5 text-ink-3">
+        <div className="bg-background p-6">
+          <div className="code-shell rounded-xl border border-border bg-[#0c0c0c]">
+            <div className="flex items-center gap-3 border-b border-border px-3.5 py-2.5 text-muted-foreground">
               <svg
                 aria-hidden="true"
                 width="13"
@@ -202,27 +202,27 @@ export function TerminalShowcase() {
                 strokeWidth="1.6"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="text-ink-3"
+                className="text-muted-foreground"
               >
                 <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
                 <path d="M14 3v5h5" />
               </svg>
-              <span className="font-code text-[11.5px] text-ink-2">
+              <span className="font-mono text-[11.5px] text-muted-foreground">
                 {active.filePath}
               </span>
             </div>
-            <div className="p-4 font-code text-[12px] leading-relaxed overflow-x-auto">
+            <div className="p-4 font-mono text-[12px] leading-relaxed overflow-x-auto">
               {active.terminalOutput.map((line, idx) => (
                 <div
                   key={idx}
                   className={
                     line.startsWith('$')
-                      ? 'text-ink font-semibold'
+                      ? 'text-foreground font-semibold'
                       : line.startsWith('✔')
                         ? 'text-emerald-400'
                         : line.startsWith('●')
                           ? 'text-sky-400'
-                          : 'text-ink-3'
+                          : 'text-muted-foreground'
                   }
                 >
                   {line || '\u00A0'}

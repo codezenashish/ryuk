@@ -46,7 +46,7 @@ interface IconsPickerProps {
 
 export function IconsPicker({ selectedIcon, onSelectIcon }: IconsPickerProps) {
   return (
-    <div className="grid grid-cols-8 gap-1.5 p-2 rounded-xl bg-paper-card border border-line-2 max-h-36 overflow-y-auto scrollbar-none">
+    <div className="grid grid-cols-8 gap-1.5 p-2 rounded-xl bg-card border border-border max-h-36 overflow-y-auto scrollbar-none">
       {AVAILABLE_ICONS.map((item) => {
         const isSelected = selectedIcon === item.name;
         return (
@@ -57,8 +57,8 @@ export function IconsPicker({ selectedIcon, onSelectIcon }: IconsPickerProps) {
             title={item.label}
             className={`flex items-center justify-center p-2 rounded-lg transition cursor-pointer ${
               isSelected
-                ? "bg-ink text-paper shadow-sm ring-1 ring-ink"
-                : "text-ink-3 hover:text-ink hover:bg-paper-3"
+                ? "bg-primary text-primary-foreground shadow-sm ring-1 ring-ring"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted"
             }`}
           >
             <HugeiconsIcon icon={item.icon} size={18} />

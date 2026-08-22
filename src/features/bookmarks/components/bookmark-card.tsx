@@ -124,19 +124,19 @@ export function BookmarkCard({
           <img
             src={faviconUrl}
             alt=""
-            className="h-10 w-10 shrink-0 rounded-xl object-cover ring-1 ring-line/50 transition-transform group-hover:scale-105"
+            className="h-10 w-10 shrink-0 rounded-xl object-cover ring-1 ring-border/50 transition-transform group-hover:scale-105"
             onError={() => setImgError(true)}
           />
         ) : (
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-paper-3 ring-1 ring-line/50 transition-transform group-hover:scale-105">
-            <HugeiconsIcon icon={GlobalIcon} size={20} className="text-ink-3" />
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted ring-1 ring-border/50 transition-transform group-hover:scale-105">
+            <HugeiconsIcon icon={GlobalIcon} size={20} className="text-muted-foreground" />
           </div>
         )}
         
         {/* Checkbox for Selection Mode */}
         {(selectionMode || isSelected) && (
           <div 
-            className="absolute -top-1.5 -left-1.5 flex h-5 w-5 items-center justify-center rounded bg-paper-card ring-1 ring-line"
+            className="absolute -top-1.5 -left-1.5 flex h-5 w-5 items-center justify-center rounded bg-card ring-1 ring-border"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -147,7 +147,7 @@ export function BookmarkCard({
               type="checkbox" 
               checked={isSelected}
               readOnly
-              className="h-3.5 w-3.5 cursor-pointer rounded-sm border-line text-ink focus:ring-ink"
+              className="h-3.5 w-3.5 cursor-pointer rounded-sm border-border text-foreground focus:ring-ring"
             />
           </div>
         )}
@@ -166,14 +166,14 @@ export function BookmarkCard({
               setIsEditing(false);
             }}
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-            className="block w-full text-sm font-medium text-ink bg-transparent border-b border-ink/20 focus:border-ink focus:outline-none transition-colors px-0 py-0.5"
+            className="block w-full text-sm font-medium text-foreground bg-transparent border-b border-foreground/20 focus:border-foreground focus:outline-none transition-colors px-0 py-0.5"
           />
         ) : (
-          <span className="block truncate text-sm font-medium text-ink font-sans tracking-tight transition-colors">
+          <span className="block truncate text-sm font-medium text-foreground font-sans tracking-tight transition-colors">
             {bookmark.title}
           </span>
         )}
-        <span className="block truncate text-xs text-ink-3 font-mono transition-colors">
+        <span className="block truncate text-xs text-muted-foreground font-mono transition-colors">
           {bookmark.url}
         </span>
       </span>
@@ -189,8 +189,8 @@ export function BookmarkCard({
       <article 
         className={`group flex min-w-0 items-center gap-3 rounded-xl border p-3 shadow-xs transition-all duration-200 hover:shadow-md relative ${
           isSelected 
-            ? "border-ink/50 bg-ink/5 ring-1 ring-ink/20" 
-            : "border-line-2 bg-paper-card hover:border-line-strong hover:bg-paper-3"
+            ? "border-foreground/50 bg-primary/5 ring-1 ring-ring/20" 
+            : "border-border bg-card hover:border-foreground/20 hover:bg-muted"
         }`}
         onMouseEnter={() => {
           // Optional: show checkbox on hover if not in selection mode
@@ -199,7 +199,7 @@ export function BookmarkCard({
         {/* Checkbox Overlay on hover (if not in selection mode and not selected) */}
         {!selectionMode && !isSelected && onToggleSelect && (
           <div 
-            className="absolute -top-1.5 -left-1.5 flex h-5 w-5 items-center justify-center rounded bg-paper-card ring-1 ring-line opacity-0 group-hover:opacity-100 transition-opacity z-10"
+            className="absolute -top-1.5 -left-1.5 flex h-5 w-5 items-center justify-center rounded bg-card ring-1 ring-border opacity-0 group-hover:opacity-100 transition-opacity z-10"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -210,7 +210,7 @@ export function BookmarkCard({
               type="checkbox" 
               checked={false}
               readOnly
-              className="h-3.5 w-3.5 cursor-pointer rounded-sm border-line"
+              className="h-3.5 w-3.5 cursor-pointer rounded-sm border-border"
             />
           </div>
         )}
@@ -248,7 +248,7 @@ export function BookmarkCard({
             target="_blank"
             rel="noreferrer"
             aria-label={`Open ${bookmark.title}`}
-            className="text-ink-4 hover:text-ink transition-colors p-1"
+            className="text-muted-foreground hover:text-foreground transition-colors p-1"
           >
             <HugeiconsIcon icon={ExternalLinkIcon} size={15} />
           </a>
@@ -261,7 +261,7 @@ export function BookmarkCard({
             className={`transition-colors p-1 cursor-pointer ${
               bookmark.isPinned 
                 ? "text-yellow-500 hover:text-yellow-600" 
-                : "text-ink-4 hover:text-ink"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <Star className="h-4 w-4" fill={bookmark.isPinned ? "currentColor" : "none"} />
@@ -273,7 +273,7 @@ export function BookmarkCard({
             aria-label={`Delete ${bookmark.title}`}
             onClick={handleDelete}
             disabled={isDeleting}
-            className="text-ink-4 hover:text-rose-400 transition-colors disabled:opacity-40 cursor-pointer p-1"
+            className="text-muted-foreground hover:text-rose-400 transition-colors disabled:opacity-40 cursor-pointer p-1"
           >
             <HugeiconsIcon icon={Delete02Icon} size={15} />
           </button>

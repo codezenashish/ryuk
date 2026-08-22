@@ -8,13 +8,13 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="text-ink bg-paper font-body grid h-screen grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)] max-w-7xl mx-auto w-full relative">
-      <aside className="hidden lg:block border-r border-line">
+    <div className="text-foreground bg-background font-sans grid h-screen grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)] max-w-7xl mx-auto w-full relative">
+      <aside className="hidden lg:block border-r border-border">
         <Sidebar />
       </aside>
 
       <main className="min-w-0 overflow-y-auto scrollbar-none w-full pb-24 lg:pb-0">
-        <header className="sticky top-0 z-50 h-16 border-b border-line bg-paper/80 backdrop-blur-md">
+        <header className="sticky top-0 z-50 h-16 border-b border-border bg-background/80 backdrop-blur-md">
           <Nav />
         </header>
         <section className="px-4 md:px-6">

@@ -45,8 +45,8 @@ export function CategoryFilter({
         onClick={() => onSelectCategory(null)}
         className={`inline-flex items-center gap-2 rounded-xl px-3.5 py-1.5 text-xs font-medium transition cursor-pointer shrink-0 ${
           selectedCategoryId === null
-            ? "bg-ink text-paper shadow-sm"
-            : "bg-paper-2 text-ink-3 hover:bg-paper-3 hover:text-ink border border-line"
+            ? "bg-primary text-primary-foreground shadow-sm"
+            : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground border border-border"
         }`}
       >
         <Layers className="h-3.5 w-3.5" />
@@ -54,8 +54,8 @@ export function CategoryFilter({
         <span
           className={`ml-0.5 rounded-full px-1.5 py-0.2 font-mono text-[10px] ${
             selectedCategoryId === null
-              ? "bg-paper/20 text-paper"
-              : "bg-paper-card text-ink-3"
+              ? "bg-background/20 text-primary-foreground"
+              : "bg-card text-muted-foreground"
           }`}
         >
           {totalCount}
@@ -76,8 +76,8 @@ export function CategoryFilter({
             onContextMenu={(e) => openMenu(e, cat)}
             className={`inline-flex items-center gap-2 rounded-xl px-3.5 py-1.5 text-xs font-medium transition cursor-pointer shrink-0 ${
               isSelected
-                ? "bg-ink text-paper shadow-sm"
-                : "bg-paper-2 text-ink-3 hover:bg-paper-3 hover:text-ink border border-line"
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground border border-border"
             }`}
           >
             <HugeiconsIcon icon={CatIcon} size={15} className="shrink-0" />
@@ -89,8 +89,8 @@ export function CategoryFilter({
               <span
                 className={`ml-0.5 rounded-full px-1.5 py-0.2 font-mono text-[10px] ${
                   isSelected
-                    ? "bg-paper/20 text-paper"
-                    : "bg-paper-card text-ink-3"
+                    ? "bg-background/20 text-primary-foreground"
+                    : "bg-card text-muted-foreground"
                 }`}
               >
                 {count}

@@ -12,7 +12,7 @@ export default function RightPanelWrapper({
   const [isOpen, setIsOpen] = useState(true);
 
   return (
-    <div className="flex flex-col h-full w-full overflow-hidden bg-paper">
+    <div className="flex flex-col h-full w-full overflow-hidden bg-background">
       <RightPanelHeader isOpen={isOpen} onToggle={() => setIsOpen(!isOpen)} />
 
       <div className="flex-1 overflow-hidden relative">

@@ -16,7 +16,7 @@ const variantStyles: Record<TagVariant, string> = {
   purple:
     "bg-purple-500/10 text-purple-400 border-purple-500/20 hover:bg-purple-500/20",
   blue: "bg-blue-500/10 text-blue-400 border-blue-500/20 hover:bg-blue-500/20",
-  neutral: "bg-paper-3 text-ink-2 border-line-2 hover:bg-paper-card",
+  neutral: "bg-muted text-muted-foreground border-border hover:bg-card",
 };
 
 export function SidebarTag({

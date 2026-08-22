@@ -78,24 +78,24 @@ export function NotesCard({
       <div
         onClick={() => onEdit(note)}
         className={clsx(
-          "group flex items-center justify-between gap-4 rounded-xl border border-line-2 bg-paper-card p-3 shadow-xs hover:border-line-strong hover:bg-paper-3 transition-all duration-200 cursor-pointer",
+          "group flex items-center justify-between gap-4 rounded-xl border border-border bg-card p-3 shadow-xs hover:border-foreground/20 hover:bg-muted transition-all duration-200 cursor-pointer",
           note.isPinned && "border-primary/30 bg-primary/5"
         )}
       >
         <div className="flex items-center gap-3 min-w-0 flex-1">
-          <div className="p-2 rounded-lg bg-paper-2 text-ink-3 group-hover:text-ink shrink-0 transition-colors">
+          <div className="p-2 rounded-lg bg-card text-muted-foreground group-hover:text-foreground shrink-0 transition-colors">
             {note.isPinned ? (
               <Pin className="w-4 h-4 text-primary fill-primary/20" />
             ) : (
-              <FileText className="w-4 h-4 text-ink-2" />
+              <FileText className="w-4 h-4 text-muted-foreground" />
             )}
           </div>
           <div className="min-w-0 flex-1">
-            <h4 className="text-sm font-medium text-ink font-sans truncate group-hover:text-white transition-colors flex items-center gap-1.5">
+            <h4 className="text-sm font-medium text-foreground font-sans truncate group-hover:text-white transition-colors flex items-center gap-1.5">
               {note.title || "Untitled Note"}
               {note.isBookmarked && <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />}
             </h4>
-            <p className="text-xs text-ink-3 font-sans truncate">
+            <p className="text-xs text-muted-foreground font-sans truncate">
               {textPreview || "Empty content..."}
             </p>
           </div>
@@ -107,14 +107,14 @@ export function NotesCard({
               {note.tags.slice(0, 2).map((tag) => (
                 <span
                   key={tag}
-                  className="px-2 py-0.5 rounded-md text-[11px] font-medium bg-paper-2 text-ink-3 border border-line font-mono"
+                  className="px-2 py-0.5 rounded-md text-[11px] font-medium bg-card text-muted-foreground border border-border font-mono"
                 >
                   #{tag}
                 </span>
               ))}
             </div>
           )}
-          <span className="text-[11px] text-ink-4 font-mono">
+          <span className="text-[11px] text-muted-foreground font-mono">
             {formattedDate}
           </span>
           <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
@@ -124,7 +124,7 @@ export function NotesCard({
                 e.stopPropagation();
                 onToggleBookmark?.(note.id, !note.isBookmarked);
               }}
-              className={clsx("p-1 transition-colors cursor-pointer", note.isBookmarked ? "text-yellow-500" : "text-ink-4 hover:text-yellow-500")}
+              className={clsx("p-1 transition-colors cursor-pointer", note.isBookmarked ? "text-yellow-500" : "text-muted-foreground hover:text-yellow-500")}
               title={note.isBookmarked ? "Remove Bookmark" : "Bookmark"}
             >
               <Star className={clsx("w-3.5 h-3.5", note.isBookmarked && "fill-current")} />
@@ -135,7 +135,7 @@ export function NotesCard({
                 e.stopPropagation();
                 onTogglePin?.(note.id, !note.isPinned);
               }}
-              className={clsx("p-1 transition-colors cursor-pointer", note.isPinned ? "text-primary" : "text-ink-4 hover:text-primary")}
+              className={clsx("p-1 transition-colors cursor-pointer", note.isPinned ? "text-primary" : "text-muted-foreground hover:text-primary")}
               title={note.isPinned ? "Unpin Note" : "Pin Note"}
             >
               <Pin className={clsx("w-3.5 h-3.5", note.isPinned && "fill-current")} />
@@ -143,7 +143,7 @@ export function NotesCard({
             <button
               type="button"
               onClick={handleCopy}
-              className="p-1 text-ink-4 hover:text-ink transition-colors cursor-pointer"
+              className="p-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
               title="Copy Content"
             >
               {copied ? (
@@ -158,7 +158,7 @@ export function NotesCard({
                 e.stopPropagation();
                 onDelete(note.id);
               }}
-              className="p-1 text-ink-4 hover:text-rose-400 transition-colors cursor-pointer"
+              className="p-1 text-muted-foreground hover:text-rose-400 transition-colors cursor-pointer"
               title="Delete Note"
             >
               <Trash2 className="w-3.5 h-3.5" />
@@ -173,14 +173,14 @@ export function NotesCard({
     <div
       onClick={() => onEdit(note)}
       className={clsx(
-        "group relative flex flex-col justify-between rounded-xl border border-line-2 bg-paper-card p-4 shadow-xs transition-all duration-200 hover:border-line-strong hover:bg-paper-3 hover:shadow-md cursor-pointer overflow-hidden min-h-[160px]",
+        "group relative flex flex-col justify-between rounded-xl border border-border bg-card p-4 shadow-xs transition-all duration-200 hover:border-foreground/20 hover:bg-muted hover:shadow-md cursor-pointer overflow-hidden min-h-[160px]",
         note.isPinned && "border-primary/30 bg-primary/5"
       )}
     >
       <div>
         <div className="flex items-center justify-between gap-2 mb-2">
           <div className="flex items-center gap-2 overflow-hidden">
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[11px] font-medium bg-paper-2 text-ink-2 border border-line">
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[11px] font-medium bg-card text-muted-foreground border border-border">
               {note.isPinned ? (
                 <>
                   <Pin className="w-3 h-3 text-primary fill-primary/20" />
@@ -202,7 +202,7 @@ export function NotesCard({
                 e.stopPropagation();
                 onToggleBookmark?.(note.id, !note.isBookmarked);
               }}
-              className={clsx("p-1 transition-colors cursor-pointer", note.isBookmarked ? "text-yellow-500" : "text-ink-4 hover:text-yellow-500")}
+              className={clsx("p-1 transition-colors cursor-pointer", note.isBookmarked ? "text-yellow-500" : "text-muted-foreground hover:text-yellow-500")}
               title={note.isBookmarked ? "Remove Bookmark" : "Bookmark"}
             >
               <Star className={clsx("w-3.5 h-3.5", note.isBookmarked && "fill-current")} />
@@ -213,7 +213,7 @@ export function NotesCard({
                 e.stopPropagation();
                 onTogglePin?.(note.id, !note.isPinned);
               }}
-              className={clsx("p-1 transition-colors cursor-pointer", note.isPinned ? "text-primary" : "text-ink-4 hover:text-primary")}
+              className={clsx("p-1 transition-colors cursor-pointer", note.isPinned ? "text-primary" : "text-muted-foreground hover:text-primary")}
               title={note.isPinned ? "Unpin Note" : "Pin Note"}
             >
               <Pin className={clsx("w-3.5 h-3.5", note.isPinned && "fill-current")} />
@@ -221,7 +221,7 @@ export function NotesCard({
             <button
               type="button"
               onClick={handleCopy}
-              className="p-1 text-ink-4 hover:text-ink transition-colors cursor-pointer"
+              className="p-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
               title="Copy Content"
             >
               {copied ? (
@@ -236,7 +236,7 @@ export function NotesCard({
                 e.stopPropagation();
                 onEdit(note);
               }}
-              className="p-1 text-ink-4 hover:text-ink transition-colors cursor-pointer"
+              className="p-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
               title="Edit Note"
             >
               <Edit2 className="w-3.5 h-3.5" />
@@ -247,7 +247,7 @@ export function NotesCard({
                 e.stopPropagation();
                 onDelete(note.id);
               }}
-              className="p-1 text-ink-4 hover:text-rose-400 transition-colors cursor-pointer"
+              className="p-1 text-muted-foreground hover:text-rose-400 transition-colors cursor-pointer"
               title="Delete Note"
             >
               <Trash2 className="w-3.5 h-3.5" />
@@ -255,16 +255,16 @@ export function NotesCard({
           </div>
         </div>
 
-        <h3 className="text-sm font-semibold text-ink font-sans tracking-tight line-clamp-1 mb-1.5 group-hover:text-white transition-colors">
+        <h3 className="text-sm font-semibold text-foreground font-sans tracking-tight line-clamp-1 mb-1.5 group-hover:text-white transition-colors">
           {note.title || "Untitled Note"}
         </h3>
 
-        <p className="text-xs text-ink-3 font-sans leading-relaxed line-clamp-3 mb-3">
+        <p className="text-xs text-muted-foreground font-sans leading-relaxed line-clamp-3 mb-3">
           {textPreview || "No additional text..."}
         </p>
       </div>
 
-      <div className="pt-2.5 border-t border-line flex items-center justify-between gap-2 mt-auto">
+      <div className="pt-2.5 border-t border-border flex items-center justify-between gap-2 mt-auto">
         <div className="flex flex-wrap items-center gap-1 overflow-hidden">
           {note.tags && note.tags.length > 0 ? (
             note.tags.slice(0, 2).map((tag) => (
@@ -275,18 +275,18 @@ export function NotesCard({
                   e.stopPropagation();
                   onTagClick?.(tag);
                 }}
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium bg-paper-2 text-ink-3 hover:text-ink border border-line transition-colors cursor-pointer font-mono"
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium bg-card text-muted-foreground hover:text-foreground border border-border transition-colors cursor-pointer font-mono"
               >
-                <TagIcon className="w-2.5 h-2.5 text-ink-4" />
+                <TagIcon className="w-2.5 h-2.5 text-muted-foreground" />
                 {tag}
               </button>
             ))
           ) : (
-            <span className="text-[10px] text-ink-4 italic">No tags</span>
+            <span className="text-[10px] text-muted-foreground italic">No tags</span>
           )}
         </div>
 
-        <div className="flex items-center gap-1 text-[10px] text-ink-4 font-mono shrink-0">
+        <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-mono shrink-0">
           <Calendar className="w-3 h-3" />
           <span>{formattedDate}</span>
         </div>
