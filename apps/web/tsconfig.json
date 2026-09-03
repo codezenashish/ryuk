@@ -6,7 +6,13 @@
         "name": "next"
       }
     ],
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@ryuk/db": ["../../packages/db/src/index.ts"],
+      "@ryuk/auth/server": ["../../packages/auth/src/server.ts"],
+      "@ryuk/auth/client": ["../../packages/auth/src/client.ts"]
+    }
   },
   "include": [
     "**/*.ts",
