@@ -42,7 +42,7 @@ export async function createBookmarkAction(formData: FormData) {
   });
 
   if (!parsed.success) {
-    return { error: parsed.error.issues[0].message };
+    return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
   try {
@@ -71,11 +71,15 @@ export async function createBookmarkAction(formData: FormData) {
 }
 
 export async function getBookmarksAction() {
-  const user = await getUser();
-  if (!user) return [];
-  return await db
-    .select()
-    .from(bookmarks)
-    .where(eq(bookmarks.userId, user.id))
-    .orderBy(desc(bookmarks.createdAt));
+  try {
+    const user = await getUser();
+    if (!user) return [];
+    return await db
+      .select()
+      .from(bookmarks)
+      .where(eq(bookmarks.userId, user.id))
+      .orderBy(desc(bookmarks.createdAt));
+  } catch {
+    return [];
+  }
 }

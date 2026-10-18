@@ -37,6 +37,48 @@ export async function getUser() {
   return user;
 }
 
+export interface UserProfile {
+  id: string;
+  email: string;
+  fullName?: string | null;
+  avatarUrl?: string | null;
+  [key: string]: unknown;
+}
+
+export async function getUserProfile(): Promise<UserProfile | null> {
+  const supabase = await createServerSupabaseClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return null;
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  return {
+    id: user.id,
+    email: user.email ?? "",
+    fullName:
+      profile?.full_name ||
+      user.user_metadata?.full_name ||
+      user.user_metadata?.name ||
+      user.email?.split("@")[0] ||
+      "User",
+    avatarUrl:
+      profile?.avatar_url ||
+      user.user_metadata?.avatar_url ||
+      user.user_metadata?.picture ||
+      null,
+    ...profile,
+  };
+}
+
 export async function signOut() {
   const supabase = await createServerSupabaseClient();
   await supabase.auth.signOut();

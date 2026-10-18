@@ -1,5 +1,4 @@
 import type { Bookmark } from "@ryuk/db";
-import Image from "next/image";
 
 interface BookmarkCardProps {
   bookmark: Bookmark;
@@ -11,20 +10,28 @@ export function BookmarkCard({ bookmark }: BookmarkCardProps) {
       href={bookmark.url}
       target="_blank"
       rel="noreferrer"
-      className="group flex items-start gap-3 border border-zinc-800 bg-zinc-950 p-4 hover:border-zinc-600 transition"
+      className="group flex items-start gap-3 rounded-xl border border-border bg-card p-4 hover:border-primary/40 hover:shadow-sm transition-all text-foreground"
     >
-      {bookmark.faviconUrl && (
-        <Image
+      {bookmark.faviconUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
           src={bookmark.faviconUrl}
           alt=""
-          className="w-4 h-4 mt-0.5 rounded-sm shrink-0"
+          width={16}
+          height={16}
+          loading="lazy"
+          className="w-4 h-4 mt-0.5 rounded-xs shrink-0 object-contain"
         />
+      ) : (
+        <div className="w-4 h-4 mt-0.5 rounded-xs bg-muted shrink-0 flex items-center justify-center text-[10px] text-muted-foreground">
+          🔗
+        </div>
       )}
-      <div className="overflow-hidden">
-        <h3 className="text-sm font-medium text-white group-hover:underline truncate">
-          {bookmark.title}
+      <div className="overflow-hidden min-w-0">
+        <h3 className="text-sm font-medium text-foreground group-hover:text-primary transition-colors truncate">
+          {bookmark.title || bookmark.url}
         </h3>
-        <p className="text-xs text-zinc-400 truncate mt-0.5">{bookmark.url}</p>
+        <p className="text-xs text-muted-foreground truncate mt-0.5">{bookmark.url}</p>
       </div>
     </a>
   );

@@ -39,39 +39,47 @@ export function BookmarkForm() {
   };
 
   return (
-    <section className="border border-zinc-800 bg-zinc-950 p-4">
-      <h2 className="text-sm font-semibold mb-3 text-zinc-200">Add Bookmark</h2>
+    <section className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-xs">
+      <h2 className="text-sm font-semibold mb-3 text-foreground">Add Bookmark</h2>
       <form ref={formRef} onSubmit={handleSubmit} className="space-y-3">
         <div className="flex flex-col sm:flex-row gap-2">
-          <input
-            type="url"
-            name="url"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            onBlur={handleUrlBlur}
-            placeholder="Paste URL (https://...)"
-            required
-            className="border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-white focus:outline-none focus:border-zinc-500 flex-1"
-          />
-          <input
-            type="text"
-            name="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder={isScraping ? "Fetching title..." : "Title"}
-            required
-            className="border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-white focus:outline-none focus:border-zinc-500 sm:w-1/3"
-          />
+          <div className="flex-1">
+            <label htmlFor="bookmark-url" className="sr-only">Bookmark URL</label>
+            <input
+              id="bookmark-url"
+              type="url"
+              name="url"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              onBlur={handleUrlBlur}
+              placeholder="Paste URL (https://...)"
+              required
+              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+          </div>
+          <div className="sm:w-1/3">
+            <label htmlFor="bookmark-title" className="sr-only">Bookmark Title</label>
+            <input
+              id="bookmark-title"
+              type="text"
+              name="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder={isScraping ? "Fetching title..." : "Title"}
+              required
+              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+          </div>
           <button
             type="submit"
             disabled={isPending || isScraping}
-            className="bg-white text-black px-5 py-2 text-sm font-medium hover:bg-zinc-200 transition disabled:opacity-50 shrink-0"
+            className="rounded-lg bg-primary text-primary-foreground px-5 py-2 text-sm font-medium hover:bg-primary/90 transition disabled:opacity-50 shrink-0 cursor-pointer"
           >
             {isPending ? "Adding..." : "Add"}
           </button>
         </div>
       </form>
-      {error && <p className="text-xs text-red-400 mt-2">{error.message}</p>}
+      {error && <p className="text-xs text-destructive mt-2">{error.message}</p>}
     </section>
   );
 }

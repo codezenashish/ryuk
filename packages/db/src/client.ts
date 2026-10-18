@@ -8,8 +8,19 @@ if (!connectionString) {
   throw new Error("DATABASE_URL environment variable is missing.");
 }
 
-const client = postgres(connectionString, {
-  prepare: false,
-});
+const globalForDb = globalThis as unknown as {
+  conn: postgres.Sql | undefined;
+};
 
-export const db = drizzle(client, { schema });
+const conn =
+  globalForDb.conn ??
+  postgres(connectionString, {
+    prepare: false,
+    max: 1,
+  });
+
+if (process.env.NODE_ENV !== "production") {
+  globalForDb.conn = conn;
+}
+
+export const db = drizzle(conn, { schema });
