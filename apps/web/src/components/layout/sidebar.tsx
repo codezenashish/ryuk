@@ -81,6 +81,8 @@ export default function Sidebar({ user }: SidebarProps) {
     >
       <div className="flex flex-col gap-5">
         {/* Workspace Brand / Logo */}
+
+        
         <div
           className={`flex items-center h-10 overflow-hidden ${
             isOpen ? "px-1.5" : "justify-center px-0"
